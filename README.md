@@ -30,3 +30,13 @@ The app attempts to attach this image for simulated scans if present.
 - The export writes JSON (camelCase keys) to app documents directory.
 - Export includes baby and measurement metadata, with `hasImage` but no raw image bytes.
 - A snackbar displays success/failure and the saved path.
+
+## Windows note (symlink support)
+
+If you see `Building with plugins requires symlink support`, enable **Developer Mode** on Windows:
+
+```powershell
+start ms-settings:developers
+```
+
+Then re-run `flutter pub get`.
