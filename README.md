@@ -1,17 +1,28 @@
-# bilirubin
+# Bilirubin Companion Frontend PoC
 
-A new Flutter project.
+This Flutter app is a **frontend-only proof of concept** that simulates a bilirubin monitoring experience.
 
-## Getting Started
+## What is simulated
+- In-memory babies, measurements, and device connectivity
+- Simulated scan action (adds synthetic measurements instantly)
+- Simulated export action (`Export simulated` snackbar)
+- Device connect/disconnect strip and transport switching (Wi-Fi/BLE)
+- Interactive settings controls (Wi-Fi/Bluetooth stubs, language, theme, app lock)
 
-This project is a starting point for a Flutter application.
+## What is intentionally NOT implemented
+- No database (no Drift/SQLite)
+- No encryption
+- No real Wi-Fi/BLE communication
+- No cloud sync
 
-A few resources to get you started if this is your first Flutter project:
+## Run
+```bash
+flutter pub get
+flutter run
+```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-# Bilirubin-Companion
+## Demo flow
+1. Open dashboard and pick a baby from the selector.
+2. Tap the device strip to toggle connect/disconnect.
+3. Use overflow menu → **Simulate Scan** to append new measurement data.
+4. Open Settings from strip icon or overflow menu and switch language/theme.
