@@ -102,6 +102,7 @@ class BilirubinApp extends ConsumerWidget {
       dividerColor: Colors.white.withValues(alpha: isDark ? 0.08 : 0.32),
     );
   }
+
 }
 
 class DashboardPage extends ConsumerStatefulWidget {
@@ -280,10 +281,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                     : strings.t('notConnected'),
               ),
             ),
-            TextButton.icon(
+            GlassPillButton(
               onPressed: () => _goSettings(context),
-              icon: const Icon(Icons.settings),
-              label: Text(strings.t('settings')),
+              icon: Icons.settings,
+              label: strings.t('settings'),
             ),
           ],
         ),
@@ -291,9 +292,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     );
   }
 
-  Widget _imageCarousel(List<Measurement> measurements) {
-    if (measurements.isEmpty) {
-      return _placeholderCard('No measurement images yet');
+  Widget _heroMeasurementCard(List<Measurement> measurements, Measurement? latest) {
+    if (measurements.isEmpty || latest == null) {
+      return _placeholderCard('No measurements yet');
     }
 
     final imageCount = min(measurements.length, 5);
@@ -413,7 +414,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
             Row(
               children: [
                 Expanded(child: Text(strings.t('showPrevious'))),
-                Switch(value: showPrevious, onChanged: notifier.toggleShowPrevious),
+                GlassTogglePill(value: showPrevious, onChanged: notifier.toggleShowPrevious),
               ],
             ),
             const SizedBox(height: 8),
@@ -493,6 +494,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
   }
 
   Widget _metadataField(BuildContext context, {required String label, required String value}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -507,6 +509,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                 ? Colors.white.withValues(alpha: 0.06)
                 : Colors.white.withValues(alpha: 0.34),
             contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          ),
+          child: Text(
+            value,
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
         ),
       ],
@@ -766,7 +772,6 @@ class SettingsPage extends ConsumerWidget {
                     contentPadding: EdgeInsets.zero,
                     value: state.deviceState.connected,
                     onChanged: (_) => notifier.toggleDevice(),
-                    title: const Text('Auto reconnect'),
                   ),
                   const TextField(decoration: InputDecoration(labelText: 'SSID')),
                   const SizedBox(height: 10),
