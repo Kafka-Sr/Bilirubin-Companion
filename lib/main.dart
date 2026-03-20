@@ -1,8 +1,9 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'app_state.dart';
 import 'bhutani.dart';
@@ -18,26 +19,90 @@ class BilirubinApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(appStateProvider);
+    const seed = Color(0xFF2FA597);
     return MaterialApp(
       title: 'Bilirubin Companion PoC',
       debugShowCheckedModeBanner: false,
       themeMode: state.themeMode,
-      theme: ThemeData(
-        useMaterial3: true,
-        textTheme: GoogleFonts.plusJakartaSansTextTheme(),
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2FA597)),
-      ),
-      darkTheme: ThemeData(
-        useMaterial3: true,
-        textTheme: GoogleFonts.plusJakartaSansTextTheme(ThemeData.dark().textTheme),
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF2FA597),
-          brightness: Brightness.dark,
-        ),
-      ),
+      theme: _buildTheme(Brightness.light, seed),
+      darkTheme: _buildTheme(Brightness.dark, seed),
       home: const DashboardPage(),
     );
   }
+
+  ThemeData _buildTheme(Brightness brightness, Color seed) {
+    final colorScheme = ColorScheme.fromSeed(seedColor: seed, brightness: brightness);
+    final isDark = brightness == Brightness.dark;
+    final base = ThemeData(
+      useMaterial3: true,
+      brightness: brightness,
+      colorScheme: colorScheme,
+      scaffoldBackgroundColor: Colors.transparent,
+      textTheme: isDark
+          ? GoogleFonts.plusJakartaSansTextTheme(ThemeData.dark().textTheme)
+          : GoogleFonts.plusJakartaSansTextTheme(),
+    );
+
+    return base.copyWith(
+      appBarTheme: AppBarTheme(
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
+        foregroundColor: colorScheme.onSurface,
+        titleTextStyle: base.textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: colorScheme.onSurface,
+        ),
+      ),
+      cardTheme: CardThemeData(
+        elevation: 0,
+        margin: EdgeInsets.zero,
+        color: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      ),
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        modalBackgroundColor: Colors.transparent,
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.white.withValues(alpha: 0.42),
+        hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
+        labelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: BorderSide(color: Colors.white.withValues(alpha: isDark ? 0.12 : 0.5)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: BorderSide(color: colorScheme.primary.withValues(alpha: 0.65)),
+        ),
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) return colorScheme.primary;
+          return colorScheme.surface;
+        }),
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return colorScheme.primary.withValues(alpha: 0.36);
+          }
+          return colorScheme.outlineVariant.withValues(alpha: 0.38);
+        }),
+      ),
+      dividerColor: Colors.white.withValues(alpha: isDark ? 0.08 : 0.32),
+    );
+  }
+
 }
 
 class DashboardPage extends ConsumerStatefulWidget {
@@ -67,43 +132,53 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     final latest = measurements.isEmpty ? null : measurements.last;
     final hasBabies = state.babies.isNotEmpty;
 
-    return Scaffold(
-      appBar: AppBar(title: Text(strings.t('dashboard'))),
-      body: hasBabies
-          ? ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                _topRow(context, state),
-                const SizedBox(height: 12),
-                _deviceStrip(context, state),
-                const SizedBox(height: 16),
-                _imageCarousel(measurements),
-                const SizedBox(height: 16),
-                _latestCard(latest),
-                const SizedBox(height: 16),
-                _bhutaniCard(context, measurements, latest, state.showPrevious),
-                const SizedBox(height: 16),
-                _metadataCard(context, selectedBaby),
-                const SizedBox(height: 16),
-                _recommendationCard(latest),
-              ],
-            )
-          : Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.child_care, size: 56),
-                  const SizedBox(height: 12),
-                  const Text('No babies yet'),
-                  const SizedBox(height: 12),
-                  ElevatedButton.icon(
-                    onPressed: notifier.addBaby,
-                    icon: const Icon(Icons.add),
-                    label: Text(strings.t('addBaby')),
+    return AppBackground(
+      child: Scaffold(
+        appBar: AppBar(title: Text(strings.t('dashboard'))),
+        body: SafeArea(
+          top: false,
+          child: hasBabies
+              ? ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                  children: [
+                    _topRow(context, state),
+                    const SizedBox(height: 12),
+                    _deviceStrip(context, state),
+                    const SizedBox(height: 16),
+                    _imageCarousel(measurements),
+                    const SizedBox(height: 16),
+                    _bhutaniCard(context, measurements, latest, state.showPrevious),
+                    const SizedBox(height: 16),
+                    _metadataCard(context, selectedBaby),
+                    const SizedBox(height: 16),
+                    _recommendationCard(latest),
+                  ],
+                )
+              : Center(
+                  child: GlassPanel(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.child_care,
+                          size: 56,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(height: 12),
+                        const Text('No babies yet'),
+                        const SizedBox(height: 12),
+                        ElevatedButton.icon(
+                          onPressed: notifier.addBaby,
+                          icon: const Icon(Icons.add),
+                          label: Text(strings.t('addBaby')),
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
-            ),
+                ),
+        ),
+      ),
     );
   }
 
@@ -117,16 +192,11 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
           child: InkWell(
             onTap: () => _showBabyPicker(context, state),
             borderRadius: BorderRadius.circular(99),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(99),
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              ),
+            child: GlassPanel(
+              radius: 999,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               child: Row(
                 children: [
-                  const Icon(Icons.child_friendly),
-                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       selectedName,
@@ -141,22 +211,31 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
           ),
         ),
         const SizedBox(width: 8),
-        PopupMenuButton<String>(
-          onSelected: (value) {
+        GlassIconButton(
+          icon: Icons.more_horiz,
+          onPressed: () async {
+            final value = await showMenu<String>(
+              context: context,
+              position: const RelativeRect.fromLTRB(1000, 88, 16, 0),
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? const Color(0xFF1B2031).withValues(alpha: 0.96)
+                  : Colors.white.withValues(alpha: 0.94),
+              items: [
+                PopupMenuItem(value: 'scan', child: Text(strings.t('simulateScan'))),
+                PopupMenuItem(value: 'add', child: Text(strings.t('addBaby'))),
+                PopupMenuItem(value: 'delete', child: Text(strings.t('deleteBaby'))),
+              ],
+            );
             if (value == 'scan') notifier.simulateScan();
             if (value == 'add') notifier.addBaby();
             if (value == 'delete') notifier.deleteSelectedBaby();
           },
-          itemBuilder: (context) => [
-            PopupMenuItem(value: 'scan', child: Text(strings.t('simulateScan'))),
-            PopupMenuItem(value: 'add', child: Text(strings.t('addBaby'))),
-            PopupMenuItem(value: 'delete', child: Text(strings.t('deleteBaby'))),
-          ],
         ),
-        IconButton(
+        const SizedBox(width: 8),
+        GlassIconButton(
+          icon: Icons.download,
           onPressed: () => ScaffoldMessenger.of(context)
               .showSnackBar(const SnackBar(content: Text('Export simulated'))),
-          icon: const Icon(Icons.download),
         ),
       ],
     );
@@ -169,21 +248,25 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     final connected = device.connected;
     return InkWell(
       onTap: notifier.toggleDevice,
-      borderRadius: BorderRadius.circular(14),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(14),
-          color: Theme.of(context).colorScheme.surfaceContainer,
-        ),
+      borderRadius: BorderRadius.circular(26),
+      child: GlassPanel(
+        radius: 26,
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         child: Row(
           children: [
             Container(
-              width: 10,
-              height: 10,
+              width: 12,
+              height: 12,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: connected ? Colors.green : Colors.red,
+                color: connected ? Colors.greenAccent.shade400 : Colors.redAccent.shade200,
+                boxShadow: [
+                  BoxShadow(
+                    color: (connected ? Colors.greenAccent : Colors.redAccent).withValues(alpha: 0.35),
+                    blurRadius: 12,
+                    spreadRadius: 1,
+                  ),
+                ],
               ),
             ),
             const SizedBox(width: 10),
@@ -194,10 +277,11 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                     : strings.t('notConnected'),
               ),
             ),
-            TextButton.icon(
+            _buildPillButton(
+              context,
               onPressed: () => _goSettings(context),
-              icon: const Icon(Icons.settings),
-              label: Text(strings.t('settings')),
+              icon: Icons.settings,
+              label: strings.t('settings'),
             ),
           ],
         ),
@@ -205,102 +289,131 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     );
   }
 
-  Widget _imageCarousel(List<Measurement> measurements) {
-    if (measurements.isEmpty) {
-      return _placeholderCard('No measurement images yet');
+  Widget _heroMeasurementCard(List<Measurement> measurements, Measurement? latest) {
+    if (measurements.isEmpty || latest == null) {
+      return _placeholderCard('No measurements yet');
     }
 
     final imageCount = min(measurements.length, 5);
     final recent = measurements.reversed.take(imageCount).toList();
-    return Column(
-      children: [
-        SizedBox(
-          height: 160,
-          child: PageView.builder(
-            controller: _pageController,
-            onPageChanged: (value) => setState(() => _carouselIndex = value),
-            itemCount: recent.length,
-            itemBuilder: (context, index) {
-              final m = recent[index];
-              return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 2),
-                clipBehavior: Clip.antiAlias,
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.amber.shade100,
-                        Colors.orange.shade200,
-                      ],
+    return GlassPanel(
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 168,
+            child: PageView.builder(
+              controller: _pageController,
+              onPageChanged: (value) => setState(() => _carouselIndex = value),
+              itemCount: recent.length,
+              itemBuilder: (context, index) {
+                final m = recent[index];
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.amber.shade100.withValues(alpha: 0.95),
+                          Colors.orange.shade200.withValues(alpha: 0.88),
+                        ],
+                      ),
+                    ),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.white.withValues(alpha: 0.22),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Image • ${m.bilirubinMgDl.toStringAsFixed(1)} mg/dL\nAge ${m.ageHours.toStringAsFixed(0)} h',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                      ),
                     ),
                   ),
-                  child: Center(
-                    child: Text(
-                      'Image • ${m.bilirubinMgDl.toStringAsFixed(1)} mg/dL\nAge ${m.ageHours.toStringAsFixed(0)} h',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 14),
+          Text(
+            '${latest.bilirubinMgDl.toStringAsFixed(1)} mg/dL',
+            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Captured: ${latest.capturedAt}\nAge: ${latest.ageHours.toStringAsFixed(0)} hours',
+          ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(recent.length, (index) {
+              final active = index == _carouselIndex;
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                width: active ? 20 : 8,
+                height: 8,
+                margin: const EdgeInsets.symmetric(horizontal: 3),
+                decoration: BoxDecoration(
+                  color: active
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.7),
+                  borderRadius: BorderRadius.circular(8),
                 ),
               );
-            },
+            }),
           ),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(recent.length, (index) {
-            final active = index == _carouselIndex;
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              width: active ? 20 : 8,
-              height: 8,
-              margin: const EdgeInsets.symmetric(horizontal: 3),
-              decoration: BoxDecoration(
-                color: active
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.outlineVariant,
-                borderRadius: BorderRadius.circular(8),
-              ),
-            );
-          }),
-        ),
-      ],
-    );
-  }
-
-  Widget _latestCard(Measurement? latest) {
-    if (latest == null) {
-      return _placeholderCard('No measurements yet');
-    }
-    return Card(
-      child: ListTile(
-        title: Text('${latest.bilirubinMgDl.toStringAsFixed(1)} mg/dL',
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-        subtitle: Text(
-            'Captured: ${latest.capturedAt}\nAge: ${latest.ageHours.toStringAsFixed(0)} hours'),
+        ],
       ),
     );
   }
 
+  Widget _imageCarousel(List<Measurement> measurements) {
+    final latest = measurements.isEmpty ? null : measurements.last;
+    return _heroMeasurementCard(measurements, latest);
+  }
+
   Widget _bhutaniCard(
-      BuildContext context, List<Measurement> measurements, Measurement? latest, bool showPrevious) {
+    BuildContext context,
+    List<Measurement> measurements,
+    Measurement? latest,
+    bool showPrevious,
+  ) {
     final strings = LocalizedStrings(languageCode: ref.read(appStateProvider).localeCode);
     final notifier = ref.read(appStateProvider.notifier);
     final yMax = chartYMax(measurements.map((e) => e.bilirubinMgDl));
-    return Card(
+    return GlassPanel(
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(2),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Bhutani Nomogram', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+              'Bhutani Nomogram',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 8),
             Row(
               children: [
                 Expanded(child: Text(strings.t('showPrevious'))),
-                Switch(value: showPrevious, onChanged: notifier.toggleShowPrevious),
+                _buildTogglePill(
+                  value: showPrevious,
+                  onChanged: notifier.toggleShowPrevious,
+                ),
               ],
             ),
+            const SizedBox(height: 8),
             SizedBox(
               height: 250,
               child: CustomPaint(
@@ -326,55 +439,59 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     final ageText = '${age.inHours} Jam';
     final dob =
         '${baby.dateOfBirth.day.toString().padLeft(2, '0')}-${baby.dateOfBirth.month.toString().padLeft(2, '0')}-${baby.dateOfBirth.year}';
-    return Card(
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Expanded(
-                  child: Text('Metadata Bayi', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+    return GlassPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Metadata Bayi',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
                 ),
-                IconButton(
-                  onPressed: () => _editBaby(context, baby),
-                  icon: const Icon(Icons.edit),
-                )
-              ],
-            ),
-            _metadataField(context, label: 'Nama', value: baby.name),
-            const SizedBox(height: 10),
-            _metadataField(context, label: 'Berat', value: '${baby.weightKg.toStringAsFixed(1)} Kg'),
-            const SizedBox(height: 10),
-            _metadataField(context, label: 'Umur', value: ageText),
-            const SizedBox(height: 10),
-            _metadataField(context, label: 'Tanggal Lahir', value: dob),
-          ],
-        ),
+              ),
+              _buildPillButton(
+                context,
+                onPressed: () => _editBaby(context, baby),
+                icon: Icons.edit,
+                label: 'Edit Metadata',
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _metadataField(context, label: 'Nama', value: baby.name),
+          const SizedBox(height: 10),
+          _metadataField(context, label: 'Berat', value: '${baby.weightKg.toStringAsFixed(1)} Kg'),
+          const SizedBox(height: 10),
+          _metadataField(context, label: 'Umur', value: ageText),
+          const SizedBox(height: 10),
+          _metadataField(context, label: 'Tanggal Lahir', value: dob),
+        ],
       ),
     );
   }
 
   Widget _metadataField(BuildContext context, {required String label, required String value}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
         const SizedBox(height: 6),
-        TextFormField(
-          initialValue: value,
-          readOnly: true,
-          decoration: InputDecoration(
-            isDense: true,
-            filled: true,
-            fillColor: Theme.of(context).colorScheme.surface,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(18),
+            color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.white.withValues(alpha: 0.34),
+            border: Border.all(
+              color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.white.withValues(alpha: 0.36),
             ),
+          ),
+          child: Text(
+            value,
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
         ),
       ],
@@ -401,34 +518,22 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
       };
     }
 
-    return Column(
-      children: [
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            color: Colors.lightGreen.shade200,
+    return GlassPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            strings.t('recommendation'),
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
           ),
-          child: Center(
-            child: Text(
-              strings.t('recommendation'),
-              style: const TextStyle(fontWeight: FontWeight.w700),
-            ),
-          ),
-        ),
-        const SizedBox(height: 10),
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Text(message),
-          ),
-        ),
-      ],
+          const SizedBox(height: 10),
+          Text(message),
+        ],
+      ),
     );
   }
 
-  Widget _placeholderCard(String text) => Card(
+  Widget _placeholderCard(String text) => GlassPanel(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Center(child: Text(text)),
@@ -440,50 +545,74 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
+      backgroundColor: Colors.transparent,
       builder: (context) {
         String query = '';
         final babies = state.babies;
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            final filtered = babies
-                .where((baby) => baby.name.toLowerCase().contains(query.toLowerCase()))
-                .toList();
-            return Padding(
-              padding: EdgeInsets.only(
-                left: 16,
-                right: 16,
-                top: 12,
-                bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    decoration: const InputDecoration(prefixIcon: Icon(Icons.search), hintText: 'Search baby'),
-                    onChanged: (value) => setModalState(() => query = value),
-                  ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    height: 280,
-                    child: ListView.builder(
-                      itemCount: filtered.length,
-                      itemBuilder: (context, index) {
-                        final baby = filtered[index];
-                        return ListTile(
-                          title: Text(baby.name),
-                          subtitle: Text('Weight ${baby.weightKg.toStringAsFixed(1)} kg'),
-                          onTap: () {
-                            notifier.selectBaby(baby.babyId);
-                            Navigator.pop(context);
-                          },
-                        );
-                      },
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 12,
+            right: 12,
+            top: 12,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+          ),
+          child: StatefulBuilder(
+            builder: (context, setModalState) {
+              final filtered = babies
+                  .where((baby) => baby.name.toLowerCase().contains(query.toLowerCase()))
+                  .toList();
+              return GlassPanel(
+                radius: 28,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.outlineVariant,
+                        borderRadius: BorderRadius.circular(99),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          },
+                    const SizedBox(height: 16),
+                    TextField(
+                      decoration: const InputDecoration(
+                        prefixIcon: Icon(Icons.search),
+                        hintText: 'Search baby',
+                      ),
+                      onChanged: (value) => setModalState(() => query = value),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      height: 280,
+                      child: ListView.builder(
+                        itemCount: filtered.length,
+                        itemBuilder: (context, index) {
+                          final baby = filtered[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: GlassPanel(
+                              radius: 20,
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              child: ListTile(
+                                title: Text(baby.name),
+                                subtitle: Text('Weight ${baby.weightKg.toStringAsFixed(1)} kg'),
+                                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                                onTap: () {
+                                  notifier.selectBaby(baby.babyId);
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         );
       },
     );
@@ -498,72 +627,86 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
+      backgroundColor: Colors.transparent,
       builder: (context) {
-        return StatefulBuilder(builder: (context, setModalState) {
-          return Padding(
-            padding: EdgeInsets.only(
-              left: 16,
-              right: 16,
-              top: 16,
-              bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Edit Baby', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                TextField(controller: nameController, decoration: const InputDecoration(labelText: 'Name')),
-                TextField(
-                  controller: weightController,
-                  decoration: const InputDecoration(labelText: 'Weight (kg)'),
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                ),
-                const SizedBox(height: 8),
-                Row(
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 12,
+            right: 12,
+            top: 12,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+          ),
+          child: StatefulBuilder(
+            builder: (context, setModalState) {
+              return GlassPanel(
+                radius: 28,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(child: Text('DoB: ${selectedDob.toLocal().toString().split('.').first}')),
-                    TextButton(
-                      onPressed: () async {
-                        final picked = await showDatePicker(
-                          context: context,
-                          firstDate: DateTime(2020),
-                          lastDate: DateTime.now(),
-                          initialDate: selectedDob,
-                        );
-                        if (picked != null) setModalState(() => selectedDob = picked);
-                      },
-                      child: const Text('Pick date'),
+                    Text(
+                      'Edit Baby',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(controller: nameController, decoration: const InputDecoration(labelText: 'Name')),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: weightController,
+                      decoration: const InputDecoration(labelText: 'Weight (kg)'),
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(child: Text('DoB: ${selectedDob.toLocal().toString().split('.').first}')),
+                        TextButton(
+                          onPressed: () async {
+                            final picked = await showDatePicker(
+                              context: context,
+                              firstDate: DateTime(2020),
+                              lastDate: DateTime.now(),
+                              initialDate: selectedDob,
+                            );
+                            if (picked != null) setModalState(() => selectedDob = picked);
+                          },
+                          child: const Text('Pick date'),
+                        )
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton(
+                        onPressed: () {
+                          final name = nameController.text.trim();
+                          final weight = double.tryParse(weightController.text.trim());
+                          if (name.isEmpty) {
+                            _toast(context, 'Name is required');
+                            return;
+                          }
+                          if (weight == null || weight < 0.8 || weight > 7.0) {
+                            _toast(context, 'Weight must be between 0.8 and 7.0 kg');
+                            return;
+                          }
+                          if (selectedDob.isAfter(DateTime.now())) {
+                            _toast(context, 'DoB cannot be in the future');
+                            return;
+                          }
+                          notifier.updateBaby(
+                            baby.copyWith(name: name, weightKg: weight, dateOfBirth: selectedDob),
+                          );
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Save'),
+                      ),
                     )
                   ],
                 ),
-                const SizedBox(height: 12),
-                FilledButton(
-                  onPressed: () {
-                    final name = nameController.text.trim();
-                    final weight = double.tryParse(weightController.text.trim());
-                    if (name.isEmpty) {
-                      _toast(context, 'Name is required');
-                      return;
-                    }
-                    if (weight == null || weight < 0.8 || weight > 7.0) {
-                      _toast(context, 'Weight must be between 0.8 and 7.0 kg');
-                      return;
-                    }
-                    if (selectedDob.isAfter(DateTime.now())) {
-                      _toast(context, 'DoB cannot be in the future');
-                      return;
-                    }
-                    notifier.updateBaby(
-                      baby.copyWith(name: name, weightKg: weight, dateOfBirth: selectedDob),
-                    );
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Save'),
-                )
-              ],
-            ),
-          );
-        });
+              );
+            },
+          ),
+        );
       },
     );
   }
@@ -577,6 +720,59 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
   void _toast(BuildContext context, String text) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
   }
+
+  Widget _buildPillButton(
+    BuildContext context, {
+    required VoidCallback onPressed,
+    required IconData icon,
+    required String label,
+  }) {
+    return SizedBox(
+      height: 44,
+      child: GlassPanel(
+        radius: 999,
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(999),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 18),
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTogglePill({
+    required bool value,
+    required ValueChanged<bool> onChanged,
+  }) {
+    return SizedBox(
+      width: 84,
+      height: 44,
+      child: GlassPanel(
+        radius: 999,
+        padding: EdgeInsets.zero,
+        child: Center(
+          child: Transform.scale(
+            scale: 0.82,
+            child: Switch(
+              value: value,
+              onChanged: onChanged,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class SettingsPage extends ConsumerWidget {
@@ -587,84 +783,293 @@ class SettingsPage extends ConsumerWidget {
     final state = ref.watch(appStateProvider);
     final notifier = ref.read(appStateProvider.notifier);
     final strings = LocalizedStrings(languageCode: state.localeCode);
-    return Scaffold(
-      appBar: AppBar(title: Text(strings.t('settings'))),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Text(strings.t('wifi'), style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(12),
+    return AppBackground(
+      child: Scaffold(
+        appBar: AppBar(title: Text(strings.t('settings'))),
+        body: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+          children: [
+            Text(strings.t('wifi'), style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            GlassPanel(
               child: Column(
                 children: [
-                  SwitchListTile(
+                  _settingsToggleRow(
+                    label: 'Auto reconnect',
                     value: state.deviceState.connected,
                     onChanged: (_) => notifier.toggleDevice(),
-                    title: const Text('Auto reconnect'),
                   ),
                   const TextField(decoration: InputDecoration(labelText: 'SSID')),
+                  const SizedBox(height: 10),
                   const TextField(decoration: InputDecoration(labelText: 'Password')),
-                  const SizedBox(height: 8),
-                  FilledButton(onPressed: () {}, child: const Text('Test Wi-Fi')),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(onPressed: () {}, child: const Text('Test Wi-Fi')),
+                  ),
                 ],
               ),
             ),
-          ),
-          const SizedBox(height: 16),
-          Text(strings.t('bluetooth'), style: Theme.of(context).textTheme.titleMedium),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(12),
+            const SizedBox(height: 16),
+            Text(strings.t('bluetooth'), style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            GlassPanel(
               child: Column(
                 children: [
-                  SwitchListTile(value: true, onChanged: (_) {}, title: const Text('BLE enabled')),
-                  FilledButton.tonal(onPressed: () {}, child: const Text('Scan devices')),
+                  _settingsToggleRow(
+                    label: 'BLE enabled',
+                    value: true,
+                    onChanged: (_) {},
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.tonal(onPressed: () {}, child: const Text('Scan devices')),
+                  ),
                 ],
               ),
             ),
-          ),
-          const SizedBox(height: 16),
-          Text(strings.t('language'), style: Theme.of(context).textTheme.titleMedium),
-          Wrap(
-            spacing: 8,
-            children: [
-              ChoiceChip(
-                label: const Text('Indonesian'),
-                selected: state.localeCode == 'id',
-                onSelected: (_) => notifier.setLocale('id'),
+            const SizedBox(height: 16),
+            Text(strings.t('language'), style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            GlassPanel(
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  ChoiceChip(
+                    label: const Text('Indonesian'),
+                    selected: state.localeCode == 'id',
+                    onSelected: (_) => notifier.setLocale('id'),
+                  ),
+                  ChoiceChip(
+                    label: const Text('English'),
+                    selected: state.localeCode == 'en',
+                    onSelected: (_) => notifier.setLocale('en'),
+                  ),
+                  ChoiceChip(
+                    label: const Text('German'),
+                    selected: state.localeCode == 'de',
+                    onSelected: (_) => notifier.setLocale('de'),
+                  ),
+                ],
               ),
-              ChoiceChip(
-                label: const Text('English'),
-                selected: state.localeCode == 'en',
-                onSelected: (_) => notifier.setLocale('en'),
+            ),
+            const SizedBox(height: 16),
+            Text(strings.t('theme'), style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            GlassPanel(
+              child: SegmentedButton<ThemeMode>(
+                segments: const [
+                  ButtonSegment(value: ThemeMode.system, label: Text('System')),
+                  ButtonSegment(value: ThemeMode.light, label: Text('Light')),
+                  ButtonSegment(value: ThemeMode.dark, label: Text('Dark')),
+                ],
+                selected: {state.themeMode},
+                onSelectionChanged: (set) => notifier.setThemeMode(set.first),
               ),
-              ChoiceChip(
-                label: const Text('German'),
-                selected: state.localeCode == 'de',
-                onSelected: (_) => notifier.setLocale('de'),
+            ),
+            const SizedBox(height: 16),
+            GlassPanel(
+              child: _settingsToggleRow(
+                label: strings.t('appLock'),
+                value: state.appLockEnabled,
+                onChanged: notifier.setAppLock,
               ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Text(strings.t('theme'), style: Theme.of(context).textTheme.titleMedium),
-          SegmentedButton<ThemeMode>(
-            segments: const [
-              ButtonSegment(value: ThemeMode.system, label: Text('System')),
-              ButtonSegment(value: ThemeMode.light, label: Text('Light')),
-              ButtonSegment(value: ThemeMode.dark, label: Text('Dark')),
-            ],
-            selected: {state.themeMode},
-            onSelectionChanged: (set) => notifier.setThemeMode(set.first),
-          ),
-          const SizedBox(height: 16),
-          SwitchListTile(
-            value: state.appLockEnabled,
-            onChanged: notifier.setAppLock,
-            title: Text(strings.t('appLock')),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _settingsToggleRow({
+    required String label,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        children: [
+          Expanded(child: Text(label)),
+          SizedBox(
+            width: 84,
+            height: 44,
+            child: GlassPanel(
+              radius: 999,
+              padding: EdgeInsets.zero,
+              child: Center(
+                child: Transform.scale(
+                  scale: 0.82,
+                  child: Switch(
+                    value: value,
+                    onChanged: onChanged,
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class AppBackground extends StatelessWidget {
+  const AppBackground({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final base = isDark ? const Color(0xFF0A1020) : const Color(0xFFF2F5FB);
+    final overlay = isDark ? const Color(0xFF141C32) : const Color(0xFFEAF2FF);
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [base, overlay],
+        ),
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            top: -80,
+            left: -40,
+            child: _GlowOrb(
+              size: 220,
+              color: isDark ? const Color(0xFF52D6C4) : const Color(0xFFBEE9E1),
+            ),
+          ),
+          Positioned(
+            top: 120,
+            right: -40,
+            child: _GlowOrb(
+              size: 180,
+              color: isDark ? const Color(0xFF6D7BFF) : const Color(0xFFD8DEFF),
+            ),
+          ),
+          Positioned(
+            bottom: -60,
+            left: 30,
+            child: _GlowOrb(
+              size: 190,
+              color: isDark ? const Color(0xFF143B58) : const Color(0xFFFFE2C2),
+            ),
+          ),
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+class _GlowOrb extends StatelessWidget {
+  const _GlowOrb({required this.size, required this.color});
+
+  final double size;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: ImageFiltered(
+        imageFilter: ImageFilter.blur(sigmaX: 42, sigmaY: 42),
+        child: Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: color.withValues(alpha: 0.42),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class GlassPanel extends StatelessWidget {
+  const GlassPanel({
+    super.key,
+    required this.child,
+    this.padding = const EdgeInsets.all(16),
+    this.radius = 28,
+  });
+
+  final Widget child;
+  final EdgeInsetsGeometry padding;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(radius),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+        child: Container(
+          padding: padding,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(radius),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: isDark
+                  ? [
+                      Colors.white.withValues(alpha: 0.16),
+                      Colors.white.withValues(alpha: 0.06),
+                    ]
+                  : [
+                      Colors.white.withValues(alpha: 0.72),
+                      Colors.white.withValues(alpha: 0.36),
+                    ],
+            ),
+            border: Border.all(
+              color: isDark ? Colors.white.withValues(alpha: 0.14) : Colors.white.withValues(alpha: 0.66),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.08),
+                blurRadius: 24,
+                offset: const Offset(0, 12),
+              ),
+            ],
+          ),
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
+class GlassIconButton extends StatelessWidget {
+  const GlassIconButton({
+    super.key,
+    required this.icon,
+    required this.onPressed,
+    this.size = 48,
+  });
+
+  final IconData icon;
+  final VoidCallback onPressed;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: size,
+      height: size,
+      child: GlassPanel(
+        radius: size / 2,
+        padding: EdgeInsets.zero,
+        child: IconButton(
+          onPressed: onPressed,
+          icon: Icon(icon, size: size * 0.42),
+          splashRadius: size / 2,
+        ),
       ),
     );
   }
@@ -783,9 +1188,10 @@ class BhutaniPainter extends CustomPainter {
       canvas.drawPath(path, line);
       for (final p in measurements) {
         canvas.drawCircle(
-            Offset(pxX(p.ageHours), pxY(p.bilirubinMgDl)),
-            3,
-            Paint()..color = colorScheme.primary.withValues(alpha: 0.8));
+          Offset(pxX(p.ageHours), pxY(p.bilirubinMgDl)),
+          3,
+          Paint()..color = colorScheme.primary.withValues(alpha: 0.8),
+        );
       }
     }
 
