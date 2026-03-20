@@ -45,7 +45,7 @@ class BilirubinApp extends ConsumerWidget {
 
     return base.copyWith(
       appBarTheme: AppBarTheme(
-        centerTitle: true,
+        centerTitle: false,
         backgroundColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
@@ -145,7 +145,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                     const SizedBox(height: 12),
                     _deviceStrip(context, state),
                     const SizedBox(height: 16),
-                    _heroMeasurementCard(measurements, latest),
+                    _imageCarousel(measurements),
+                    const SizedBox(height: 16),
+                    _latestCard(latest),
                     const SizedBox(height: 16),
                     _bhutaniCard(context, measurements, latest, state.showPrevious),
                     const SizedBox(height: 16),
@@ -197,6 +199,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               child: Row(
                 children: [
+                  Icon(Icons.child_friendly, color: Theme.of(context).colorScheme.primary),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       selectedName,
@@ -298,7 +302,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     return GlassPanel(
       padding: const EdgeInsets.all(14),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
             height: 168,
@@ -345,15 +348,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
               },
             ),
           ),
-          const SizedBox(height: 14),
-          Text(
-            '${latest.bilirubinMgDl.toStringAsFixed(1)} mg/dL',
-            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Captured: ${latest.capturedAt}\nAge: ${latest.ageHours.toStringAsFixed(0)} hours',
-          ),
           const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -374,6 +368,25 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
             }),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _latestCard(Measurement? latest) {
+    if (latest == null) {
+      return _placeholderCard('No measurements yet');
+    }
+    return GlassPanel(
+      child: ListTile(
+        contentPadding: EdgeInsets.zero,
+        title: Text(
+          '${latest.bilirubinMgDl.toStringAsFixed(1)} mg/dL',
+          style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+        ),
+        subtitle: Text(
+          'Captured: ${latest.capturedAt}\nAge: ${latest.ageHours.toStringAsFixed(0)} hours',
+        ),
+        trailing: GlassBadge(label: '${latest.ageHours.toStringAsFixed(0)}h'),
       ),
     );
   }
@@ -405,17 +418,35 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
               ],
             ),
             const SizedBox(height: 8),
-            SizedBox(
-              height: 250,
-              child: CustomPaint(
-                painter: BhutaniPainter(
-                  context: context,
-                  measurements: measurements,
-                  latest: latest,
-                  showPrevious: showPrevious,
-                  yMax: yMax,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(22),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+                child: Container(
+                  height: 250,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(22),
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white.withValues(alpha: 0.04)
+                        : Colors.white.withValues(alpha: 0.26),
+                    border: Border.all(
+                      color: Colors.white.withValues(
+                        alpha: Theme.of(context).brightness == Brightness.dark ? 0.08 : 0.4,
+                      ),
+                    ),
+                  ),
+                  child: CustomPaint(
+                    painter: BhutaniPainter(
+                      context: context,
+                      measurements: measurements,
+                      latest: latest,
+                      showPrevious: showPrevious,
+                      yMax: yMax,
+                    ),
+                    child: Container(),
+                  ),
                 ),
-                child: Container(),
               ),
             ),
           ],
@@ -442,10 +473,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
                 ),
               ),
-              GlassPillButton(
-                onPressed: () => _editBaby(context, baby),
+              GlassIconButton(
                 icon: Icons.edit,
-                label: 'Edit Metadata',
+                size: 42,
+                onPressed: () => _editBaby(context, baby),
               ),
             ],
           ),
@@ -469,15 +500,15 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
       children: [
         Text(label, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
         const SizedBox(height: 6),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.white.withValues(alpha: 0.34),
-            border: Border.all(
-              color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.white.withValues(alpha: 0.36),
-            ),
+        TextFormField(
+          initialValue: value,
+          readOnly: true,
+          decoration: InputDecoration(
+            isDense: true,
+            fillColor: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white.withValues(alpha: 0.06)
+                : Colors.white.withValues(alpha: 0.34),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           ),
           child: Text(
             value,
@@ -508,18 +539,24 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
       };
     }
 
-    return GlassPanel(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            strings.t('recommendation'),
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+    return Column(
+      children: [
+        GlassPanel(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          child: Row(
+            children: [
+              Icon(Icons.medical_information, color: Theme.of(context).colorScheme.primary),
+              const SizedBox(width: 10),
+              Text(
+                strings.t('recommendation'),
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ],
           ),
-          const SizedBox(height: 10),
-          Text(message),
-        ],
-      ),
+        ),
+        const SizedBox(height: 10),
+        GlassPanel(child: Text(message)),
+      ],
     );
   }
 
@@ -731,8 +768,8 @@ class SettingsPage extends ConsumerWidget {
             GlassPanel(
               child: Column(
                 children: [
-                  _settingsToggleRow(
-                    label: 'Auto reconnect',
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
                     value: state.deviceState.connected,
                     onChanged: (_) => notifier.toggleDevice(),
                   ),
@@ -753,10 +790,11 @@ class SettingsPage extends ConsumerWidget {
             GlassPanel(
               child: Column(
                 children: [
-                  _settingsToggleRow(
-                    label: 'BLE enabled',
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
                     value: true,
                     onChanged: (_) {},
+                    title: const Text('BLE enabled'),
                   ),
                   SizedBox(
                     width: double.infinity,
@@ -807,30 +845,15 @@ class SettingsPage extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             GlassPanel(
-              child: _settingsToggleRow(
-                label: strings.t('appLock'),
+              child: SwitchListTile(
+                contentPadding: EdgeInsets.zero,
                 value: state.appLockEnabled,
                 onChanged: notifier.setAppLock,
+                title: Text(strings.t('appLock')),
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _settingsToggleRow({
-    required String label,
-    required bool value,
-    required ValueChanged<bool> onChanged,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Row(
-        children: [
-          Expanded(child: Text(label)),
-          GlassTogglePill(value: value, onChanged: onChanged),
-        ],
       ),
     );
   }
@@ -996,72 +1019,19 @@ class GlassIconButton extends StatelessWidget {
   }
 }
 
-class GlassPillButton extends StatelessWidget {
-  const GlassPillButton({
-    super.key,
-    required this.onPressed,
-    required this.icon,
-    required this.label,
-  });
+class GlassBadge extends StatelessWidget {
+  const GlassBadge({super.key, required this.label});
 
-  final VoidCallback onPressed;
-  final IconData icon;
   final String label;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 44,
-      child: GlassPanel(
-        radius: 999,
-        padding: const EdgeInsets.symmetric(horizontal: 14),
-        child: InkWell(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(999),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 18),
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class GlassTogglePill extends StatelessWidget {
-  const GlassTogglePill({
-    super.key,
-    required this.value,
-    required this.onChanged,
-  });
-
-  final bool value;
-  final ValueChanged<bool> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 84,
-      height: 44,
-      child: GlassPanel(
-        radius: 999,
-        padding: EdgeInsets.zero,
-        child: Center(
-          child: Transform.scale(
-            scale: 0.82,
-            child: Switch(
-              value: value,
-              onChanged: onChanged,
-            ),
-          ),
-        ),
+    return GlassPanel(
+      radius: 999,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
       ),
     );
   }
