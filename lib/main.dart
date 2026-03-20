@@ -514,10 +514,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
             value,
             style: Theme.of(context).textTheme.bodyLarge,
           ),
-          child: Text(
-            value,
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
         ),
       ],
     );
@@ -750,59 +746,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
 
   void _toast(BuildContext context, String text) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
-  }
-
-  Widget _buildPillButton(
-    BuildContext context, {
-    required VoidCallback onPressed,
-    required IconData icon,
-    required String label,
-  }) {
-    return SizedBox(
-      height: 44,
-      child: GlassPanel(
-        radius: 999,
-        padding: const EdgeInsets.symmetric(horizontal: 14),
-        child: InkWell(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(999),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 18),
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTogglePill({
-    required bool value,
-    required ValueChanged<bool> onChanged,
-  }) {
-    return SizedBox(
-      width: 84,
-      height: 44,
-      child: GlassPanel(
-        radius: 999,
-        padding: EdgeInsets.zero,
-        child: Center(
-          child: Transform.scale(
-            scale: 0.82,
-            child: Switch(
-              value: value,
-              onChanged: onChanged,
-            ),
-          ),
-        ),
-      ),
-    );
   }
 }
 
