@@ -100,7 +100,7 @@ class BilirubinApp extends ConsumerWidget {
             color: scheme.onSurface,
           ),
         ),
-        cardTheme: CardThemeData(
+        cardTheme: CardTheme(
           color: Colors.transparent,
           elevation: 0,
           surfaceTintColor: Colors.transparent,
