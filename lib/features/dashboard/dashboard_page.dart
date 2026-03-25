@@ -1635,7 +1635,7 @@ class BhutaniChartPainter extends CustomPainter {
     List<Offset> points, {
     Offset? firstPoint,
   }) {
-    final pathPoints = <Offset>[if (firstPoint != null) firstPoint, ...points];
+    final pathPoints = <Offset>[?firstPoint, ...points];
     if (pathPoints.length < 2) {
       return;
     }
