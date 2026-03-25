@@ -1,0 +1,89 @@
+{
+  "@@locale": "de",
+
+  "appTitle": "Bilirubin-Monitor",
+  "dashboardTitle": "Dashboard",
+  "settingsTitle": "Einstellungen",
+
+  "noBabiesTitle": "Noch keine Babys hinzugefügt",
+  "noBabiesCta": "Erstes Baby hinzufügen",
+  "noMeasurementsTitle": "Noch keine Messungen",
+  "noMeasurementsBody": "Gerät verbinden und Messung durchführen.",
+
+  "deviceConnected": "Verbunden: {deviceName} ({transport})",
+  "deviceDisconnected": "Nicht verbunden",
+  "deviceTransportWifi": "WLAN",
+  "deviceTransportBle": "BLE",
+  "deviceTransportFake": "Simulator",
+
+  "bhutaniChartTitle": "Bhutani-Nomogramm",
+  "showPreviousBilirubin": "Frühere Bilirubin-Werte anzeigen",
+
+  "zoneLow": "Geringes Risiko",
+  "zoneIntermediate": "Mittleres Risiko",
+  "zoneHighIntermediate": "Erhöhtes mittleres Risiko",
+  "zoneHigh": "Hohes Risiko",
+  "zoneVeryHigh": "Sehr hohes Risiko",
+
+  "recommendationHeader": "Empfehlung",
+  "recommendationLow": "Die Bilirubinwerte liegen im sicheren Bereich. Routineüberwachung fortsetzen. Kein sofortiger Handlungsbedarf.",
+  "recommendationIntermediate": "Bilirubin liegt im mittleren Bereich. Messung in 8–12 Stunden wiederholen und engmaschig beobachten.",
+  "recommendationHighIntermediate": "Bilirubin liegt im erhöhten mittleren Bereich. Messung in 4–8 Stunden wiederholen. Phototherapie gemäß AAP-Leitlinie 2022 erwägen.",
+  "recommendationHigh": "Bilirubin im Hochrisikobereich. Sofortige Phototherapie erwägen. Neonatologen konsultieren.",
+  "recommendationVeryHigh": "Bilirubin kritisch erhöht. Sofortiger Handlungsbedarf. Dringend Neonatologen hinzuziehen.",
+
+  "metadataTitle": "Babyinformationen",
+  "metadataName": "Name",
+  "metadataWeight": "Gewicht",
+  "metadataWeightKg": "{weight} kg",
+  "metadataDob": "Geburtsdatum",
+  "metadataAge": "Alter",
+  "metadataAgeHours": "{hours} Stunden alt",
+  "metadataEdit": "Bearbeiten",
+
+  "bilirubinValue": "{value} mg/dL",
+
+  "editBabyTitle": "Baby bearbeiten",
+  "addBabyTitle": "Baby hinzufügen",
+  "fieldName": "Name",
+  "fieldWeight": "Gewicht (kg)",
+  "fieldDob": "Geburtsdatum",
+  "selectDate": "Datum auswählen",
+  "save": "Speichern",
+  "cancel": "Abbrechen",
+  "delete": "Löschen",
+
+  "validationRequired": "Dieses Feld ist erforderlich.",
+  "validationWeightRange": "Gewicht muss zwischen 0,4 und 8,0 kg liegen.",
+  "validationDobFuture": "Geburtsdatum kann nicht in der Zukunft liegen.",
+  "validationDobTooOld": "Geburtsdatum liegt zu weit in der Vergangenheit.",
+  "validationNameTooLong": "Name darf höchstens 100 Zeichen lang sein.",
+  "validationNameInvalid": "Name enthält ungültige Zeichen.",
+
+  "settingsWifi": "WLAN-Konfiguration",
+  "settingsWifiSsid": "Netzwerkname (SSID)",
+  "settingsWifiPassword": "Passwort",
+  "settingsBle": "Bluetooth-Konfiguration",
+  "settingsBleNotAvailable": "BLE wird in dieser Version noch nicht unterstützt.",
+  "settingsLanguage": "Sprache",
+  "settingsTheme": "Design",
+  "settingsThemeSystem": "System",
+  "settingsThemeLight": "Hell",
+  "settingsThemeDark": "Dunkel",
+  "settingsAppLock": "App-Sperre",
+  "settingsAppLockSubtitle": "PIN oder Biometrie zum Öffnen der App verlangen.",
+
+  "pinLockTitle": "PIN eingeben",
+  "pinLockEnterNew": "Neue PIN festlegen",
+  "pinLockConfirm": "PIN bestätigen",
+  "pinLockIncorrect": "Falsche PIN. Erneut versuchen.",
+  "pinLockMismatch": "PINs stimmen nicht überein.",
+  "pinLockUseBiometric": "Biometrie verwenden",
+
+  "exportSuccess": "Daten erfolgreich exportiert.",
+  "exportFailed": "Export fehlgeschlagen.",
+
+  "languageEnglish": "Englisch",
+  "languageIndonesian": "Indonesisch",
+  "languageGerman": "Deutsch"
+}

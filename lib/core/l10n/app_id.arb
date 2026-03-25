@@ -1,0 +1,89 @@
+{
+  "@@locale": "id",
+
+  "appTitle": "Monitor Bilirubin",
+  "dashboardTitle": "Dasbor",
+  "settingsTitle": "Pengaturan",
+
+  "noBabiesTitle": "Belum ada bayi yang ditambahkan",
+  "noBabiesCta": "Tambahkan bayi pertama Anda",
+  "noMeasurementsTitle": "Belum ada pengukuran",
+  "noMeasurementsBody": "Hubungkan perangkat dan lakukan pengukuran.",
+
+  "deviceConnected": "Terhubung: {deviceName} ({transport})",
+  "deviceDisconnected": "Tidak terhubung",
+  "deviceTransportWifi": "Wi-Fi",
+  "deviceTransportBle": "BLE",
+  "deviceTransportFake": "Simulator",
+
+  "bhutaniChartTitle": "Nomogram Bhutani",
+  "showPreviousBilirubin": "Tampilkan Bilirubin Sebelumnya",
+
+  "zoneLow": "Risiko Rendah",
+  "zoneIntermediate": "Risiko Menengah",
+  "zoneHighIntermediate": "Risiko Menengah Tinggi",
+  "zoneHigh": "Risiko Tinggi",
+  "zoneVeryHigh": "Risiko Sangat Tinggi",
+
+  "recommendationHeader": "Rekomendasi",
+  "recommendationLow": "Kadar bilirubin dalam batas aman. Terus lakukan pemantauan rutin. Tidak diperlukan tindakan segera.",
+  "recommendationIntermediate": "Bilirubin berada di zona menengah. Ulangi pengukuran dalam 8–12 jam dan pantau dengan cermat.",
+  "recommendationHighIntermediate": "Bilirubin berada di zona menengah tinggi. Ulangi pengukuran dalam 4–8 jam. Pertimbangkan fototerapi sesuai panduan AAP 2022.",
+  "recommendationHigh": "Bilirubin berada di zona risiko tinggi. Pertimbangkan fototerapi segera. Konsultasikan dengan dokter spesialis neonatologi.",
+  "recommendationVeryHigh": "Bilirubin berada dalam kondisi kritis. Diperlukan intervensi segera. Segera eskalasi ke dokter neonatologi.",
+
+  "metadataTitle": "Informasi Bayi",
+  "metadataName": "Nama",
+  "metadataWeight": "Berat",
+  "metadataWeightKg": "{weight} kg",
+  "metadataDob": "Tanggal Lahir",
+  "metadataAge": "Usia",
+  "metadataAgeHours": "{hours} jam",
+  "metadataEdit": "Ubah",
+
+  "bilirubinValue": "{value} mg/dL",
+
+  "editBabyTitle": "Ubah Data Bayi",
+  "addBabyTitle": "Tambah Bayi",
+  "fieldName": "Nama",
+  "fieldWeight": "Berat (kg)",
+  "fieldDob": "Tanggal Lahir",
+  "selectDate": "Pilih tanggal",
+  "save": "Simpan",
+  "cancel": "Batal",
+  "delete": "Hapus",
+
+  "validationRequired": "Kolom ini wajib diisi.",
+  "validationWeightRange": "Berat harus antara 0,4 dan 8,0 kg.",
+  "validationDobFuture": "Tanggal lahir tidak boleh di masa depan.",
+  "validationDobTooOld": "Tanggal lahir terlalu jauh ke masa lalu.",
+  "validationNameTooLong": "Nama tidak boleh lebih dari 100 karakter.",
+  "validationNameInvalid": "Nama mengandung karakter yang tidak valid.",
+
+  "settingsWifi": "Konfigurasi Wi-Fi",
+  "settingsWifiSsid": "Nama jaringan (SSID)",
+  "settingsWifiPassword": "Kata sandi",
+  "settingsBle": "Konfigurasi Bluetooth",
+  "settingsBleNotAvailable": "BLE belum didukung pada versi ini.",
+  "settingsLanguage": "Bahasa",
+  "settingsTheme": "Tema",
+  "settingsThemeSystem": "Sistem",
+  "settingsThemeLight": "Terang",
+  "settingsThemeDark": "Gelap",
+  "settingsAppLock": "Kunci Aplikasi",
+  "settingsAppLockSubtitle": "Wajibkan PIN atau biometrik untuk membuka aplikasi.",
+
+  "pinLockTitle": "Masukkan PIN",
+  "pinLockEnterNew": "Buat PIN baru",
+  "pinLockConfirm": "Konfirmasi PIN",
+  "pinLockIncorrect": "PIN salah. Coba lagi.",
+  "pinLockMismatch": "PIN tidak cocok.",
+  "pinLockUseBiometric": "Gunakan biometrik",
+
+  "exportSuccess": "Data berhasil diekspor.",
+  "exportFailed": "Ekspor gagal.",
+
+  "languageEnglish": "Inggris",
+  "languageIndonesian": "Indonesia",
+  "languageGerman": "Jerman"
+}

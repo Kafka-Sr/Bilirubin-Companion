@@ -1,0 +1,110 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "Bilirubin Monitor",
+  "dashboardTitle": "Dashboard",
+  "settingsTitle": "Settings",
+
+  "noBabiesTitle": "No babies added yet",
+  "noBabiesCta": "Add your first baby",
+  "noMeasurementsTitle": "No measurements yet",
+  "noMeasurementsBody": "Connect the device and take a measurement.",
+
+  "deviceConnected": "Connected: {deviceName} ({transport})",
+  "@deviceConnected": {
+    "placeholders": {
+      "deviceName": { "type": "String" },
+      "transport": { "type": "String" }
+    }
+  },
+  "deviceDisconnected": "Not connected",
+  "deviceTransportWifi": "Wi-Fi",
+  "deviceTransportBle": "BLE",
+  "deviceTransportFake": "Simulator",
+
+  "bhutaniChartTitle": "Bhutani Nomogram",
+  "showPreviousBilirubin": "Show Previous Bilirubin",
+
+  "zoneLow": "Low Risk",
+  "zoneIntermediate": "Intermediate Risk",
+  "zoneHighIntermediate": "High Intermediate Risk",
+  "zoneHigh": "High Risk",
+  "zoneVeryHigh": "Very High Risk",
+
+  "recommendationHeader": "Recommendation",
+  "recommendationLow": "Bilirubin levels are within the safe range. Continue routine monitoring. No immediate action required.",
+  "recommendationIntermediate": "Bilirubin is in the intermediate zone. Repeat measurement in 8–12 hours and monitor closely.",
+  "recommendationHighIntermediate": "Bilirubin is in the high-intermediate zone. Repeat measurement in 4–8 hours. Consider initiating phototherapy per AAP 2022 guidelines.",
+  "recommendationHigh": "Bilirubin is in the high-risk zone. Consider phototherapy immediately. Consult a neonatologist.",
+  "recommendationVeryHigh": "Bilirubin is critically elevated. Immediate intervention required. Escalate to a neonatologist urgently.",
+
+  "metadataTitle": "Baby Information",
+  "metadataName": "Name",
+  "metadataWeight": "Weight",
+  "metadataWeightKg": "{weight} kg",
+  "@metadataWeightKg": {
+    "placeholders": {
+      "weight": { "type": "String" }
+    }
+  },
+  "metadataDob": "Date of Birth",
+  "metadataAge": "Age",
+  "metadataAgeHours": "{hours} h old",
+  "@metadataAgeHours": {
+    "placeholders": {
+      "hours": { "type": "String" }
+    }
+  },
+  "metadataEdit": "Edit",
+
+  "bilirubinValue": "{value} mg/dL",
+  "@bilirubinValue": {
+    "placeholders": {
+      "value": { "type": "String" }
+    }
+  },
+
+  "editBabyTitle": "Edit Baby",
+  "addBabyTitle": "Add Baby",
+  "fieldName": "Name",
+  "fieldWeight": "Weight (kg)",
+  "fieldDob": "Date of Birth",
+  "selectDate": "Select date",
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+
+  "validationRequired": "This field is required.",
+  "validationWeightRange": "Weight must be between 0.4 and 8.0 kg.",
+  "validationDobFuture": "Date of birth cannot be in the future.",
+  "validationDobTooOld": "Date of birth is too far in the past.",
+  "validationNameTooLong": "Name must be 100 characters or fewer.",
+  "validationNameInvalid": "Name contains invalid characters.",
+
+  "settingsWifi": "Wi-Fi Configuration",
+  "settingsWifiSsid": "Network name (SSID)",
+  "settingsWifiPassword": "Password",
+  "settingsBle": "Bluetooth Configuration",
+  "settingsBleNotAvailable": "BLE not yet supported in this version.",
+  "settingsLanguage": "Language",
+  "settingsTheme": "Theme",
+  "settingsThemeSystem": "System",
+  "settingsThemeLight": "Light",
+  "settingsThemeDark": "Dark",
+  "settingsAppLock": "App Lock",
+  "settingsAppLockSubtitle": "Require PIN or biometric to open the app.",
+
+  "pinLockTitle": "Enter PIN",
+  "pinLockEnterNew": "Set a new PIN",
+  "pinLockConfirm": "Confirm PIN",
+  "pinLockIncorrect": "Incorrect PIN. Try again.",
+  "pinLockMismatch": "PINs do not match.",
+  "pinLockUseBiometric": "Use biometric",
+
+  "exportSuccess": "Data exported successfully.",
+  "exportFailed": "Export failed.",
+
+  "languageEnglish": "English",
+  "languageIndonesian": "Indonesian",
+  "languageGerman": "German"
+}
