@@ -50,11 +50,16 @@ class DashboardScreen extends ConsumerWidget {
                       if (baby == null) ...[
                         const EmptyState.noMeasurements(),
                       ] else ...[
-                        // 3. Image carousel
-                        ImageCarousel(babyId: baby.id),
-
-                        // 4. Latest result
-                        const LatestResultCard(),
+                        // 3. Image carousel + latest result (one card)
+                        Card(
+                          clipBehavior: Clip.antiAlias,
+                          child: Column(
+                            children: [
+                              ImageCarousel(babyId: baby.id, embedded: true),
+                              const LatestResultCard(embedded: true),
+                            ],
+                          ),
+                        ),
 
                         // 5. Bhutani chart
                         BhutaniChart(babyId: baby.id),

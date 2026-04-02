@@ -295,7 +295,7 @@ abstract class AppLocalizations {
   /// No description provided for @metadataEdit.
   ///
   /// In en, this message translates to:
-  /// **'Edit'**
+  /// **'Edit Baby'**
   String get metadataEdit;
 
   /// No description provided for @bilirubinValue.
@@ -514,6 +514,42 @@ abstract class AppLocalizations {
   /// **'Export failed.'**
   String get exportFailed;
 
+  /// No description provided for @exportAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Export'**
+  String get exportAction;
+
+  /// No description provided for @exportedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Exported to {filename}'**
+  String exportedTo(String filename);
+
+  /// No description provided for @exportSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Data'**
+  String get exportSheetTitle;
+
+  /// No description provided for @exportFileName.
+  ///
+  /// In en, this message translates to:
+  /// **'File Name'**
+  String get exportFileName;
+
+  /// No description provided for @exportSaveLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Location'**
+  String get exportSaveLocation;
+
+  /// No description provided for @exportBrowse.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse'**
+  String get exportBrowse;
+
   /// No description provided for @languageEnglish.
   ///
   /// In en, this message translates to:
@@ -531,6 +567,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'German'**
   String get languageGerman;
+
+  /// No description provided for @zoneLowFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Low Risk Zone'**
+  String get zoneLowFull;
+
+  /// No description provided for @zoneIntermediateFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Intermediate Risk Zone'**
+  String get zoneIntermediateFull;
+
+  /// No description provided for @zoneHighIntermediateFull.
+  ///
+  /// In en, this message translates to:
+  /// **'High Intermediate Risk Zone'**
+  String get zoneHighIntermediateFull;
+
+  /// No description provided for @zoneHighFull.
+  ///
+  /// In en, this message translates to:
+  /// **'High Risk Zone'**
+  String get zoneHighFull;
+
+  /// No description provided for @zoneVeryHighFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Very High Risk Zone'**
+  String get zoneVeryHighFull;
+
+  /// No description provided for @deviceConnecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting…'**
+  String get deviceConnecting;
+
+  /// No description provided for @deviceConnectedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected:'**
+  String get deviceConnectedLabel;
+
+  /// No description provided for @deviceConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect'**
+  String get deviceConnect;
+
+  /// No description provided for @deviceDisconnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect'**
+  String get deviceDisconnect;
+
+  /// No description provided for @selectBaby.
+  ///
+  /// In en, this message translates to:
+  /// **'Select baby'**
+  String get selectBaby;
+
+  /// No description provided for @searchBabiesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search babies…'**
+  String get searchBabiesHint;
+
+  /// No description provided for @archivedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived ({count})'**
+  String archivedCount(int count);
+
+  /// No description provided for @archiveBabyAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive Baby'**
+  String get archiveBabyAction;
+
+  /// No description provided for @archiveBabyContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive \"{name}\"? The record will be preserved and can be restored later.'**
+  String archiveBabyContent(String name);
+
+  /// No description provided for @archiveAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive'**
+  String get archiveAction;
+
+  /// No description provided for @permanentDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Permanently Delete Baby'**
+  String get permanentDeleteTitle;
+
+  /// No description provided for @permanentDeleteContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Permanently delete \"{name}\"? All data will be lost and cannot be recovered.'**
+  String permanentDeleteContent(String name);
+
+  /// No description provided for @deleteForever.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Forever'**
+  String get deleteForever;
+
+  /// No description provided for @restoreAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get restoreAction;
+
+  /// No description provided for @permanentlyDeleteTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Permanently delete'**
+  String get permanentlyDeleteTooltip;
 }
 
 class _AppLocalizationsDelegate

@@ -206,13 +206,12 @@ class _DobField extends StatelessWidget {
         children: [
           InkWell(
             onTap: () async {
+              final now = DateTime.now();
               final picked = await showDatePicker(
                 context: context,
-                initialDate: selected ?? DateTime.now(),
-                firstDate: DateTime.now().subtract(
-                  const Duration(days: 365 * 2),
-                ),
-                lastDate: DateTime.now(),
+                initialDate: selected ?? now,
+                firstDate: now.subtract(const Duration(days: 7)),
+                lastDate: now,
               );
               if (picked != null) {
                 state.didChange(picked);

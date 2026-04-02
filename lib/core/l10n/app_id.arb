@@ -82,8 +82,37 @@
 
   "exportSuccess": "Data berhasil diekspor.",
   "exportFailed": "Ekspor gagal.",
+  "exportAction": "Ekspor",
+  "exportedTo": "Diekspor ke {filename}",
+  "exportSheetTitle": "Ekspor Data",
+  "exportFileName": "Nama File",
+  "exportSaveLocation": "Lokasi Simpan",
+  "exportBrowse": "Jelajahi",
 
   "languageEnglish": "Inggris",
   "languageIndonesian": "Indonesia",
-  "languageGerman": "Jerman"
+  "languageGerman": "Jerman",
+
+  "zoneLowFull": "Zona Risiko Rendah",
+  "zoneIntermediateFull": "Zona Risiko Menengah",
+  "zoneHighIntermediateFull": "Zona Risiko Menengah Tinggi",
+  "zoneHighFull": "Zona Risiko Tinggi",
+  "zoneVeryHighFull": "Zona Risiko Sangat Tinggi",
+
+  "deviceConnecting": "Menghubungkan\u2026",
+  "deviceConnectedLabel": "Terhubung:",
+  "deviceConnect": "Hubungkan",
+  "deviceDisconnect": "Putuskan",
+
+  "selectBaby": "Pilih bayi",
+  "searchBabiesHint": "Cari bayi\u2026",
+  "archivedCount": "Diarsipkan ({count})",
+  "archiveBabyAction": "Arsipkan Bayi",
+  "archiveBabyContent": "Arsipkan \"{name}\"? Data akan disimpan dan dapat dipulihkan nanti.",
+  "archiveAction": "Arsipkan",
+  "permanentDeleteTitle": "Hapus Permanen Bayi",
+  "permanentDeleteContent": "Hapus permanen \"{name}\"? Semua data akan hilang dan tidak dapat dipulihkan.",
+  "deleteForever": "Hapus Selamanya",
+  "restoreAction": "Pulihkan",
+  "permanentlyDeleteTooltip": "Hapus permanen"
 }

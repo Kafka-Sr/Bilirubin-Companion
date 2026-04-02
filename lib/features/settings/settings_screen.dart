@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:bilirubin/core/l10n/app_localizations.dart';
 import 'package:bilirubin/features/shared/pin_lock_screen.dart';
 import 'package:bilirubin/providers/settings_providers.dart';
@@ -13,7 +14,13 @@ class SettingsScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.settingsTitle)),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/dashboard'),
+        ),
+        title: Text(l10n.settingsTitle),
+      ),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: const [
@@ -115,6 +122,7 @@ class _LanguageSection extends ConsumerWidget {
       icon: Icons.language,
       children: [
         SegmentedButton<String>(
+          showSelectedIcon: false,
           selected: {locale.languageCode},
           onSelectionChanged: (s) =>
               ref.read(appLocaleProvider.notifier).set(Locale(s.first)),
@@ -185,23 +193,29 @@ class _AppLockSection extends ConsumerWidget {
       title: l10n.settingsAppLock,
       icon: Icons.lock_outline,
       children: [
-        SwitchListTile(
+        ListTile(
           contentPadding: EdgeInsets.zero,
           title: Text(l10n.settingsAppLock),
           subtitle: Text(l10n.settingsAppLockSubtitle),
-          value: enabled,
-          onChanged: (v) async {
-            if (v) {
-              final set = await showSetPinSheet(context);
-              if (set) {
-                ref.read(appLockEnabledProvider.notifier).state = true;
-              }
-            } else {
-              await lockService.disableLock();
-              ref.read(appLockEnabledProvider.notifier).state = false;
-            }
-          },
-        ),
+          trailing: Transform.scale(
+            scale: 0.75,
+            alignment: Alignment.centerRight,
+            child: Switch(
+              value: enabled,
+              onChanged: (v) async {
+                if (v) {
+                  final set = await showSetPinSheet(context);
+                  if (set) {
+                    ref.read(appLockEnabledProvider.notifier).state = true;
+                  }
+                } else {
+                  await lockService.disableLock();
+                  ref.read(appLockEnabledProvider.notifier).state = false;
+                }
+              },
+            ),
+          ),
+        )
       ],
     );
   }
@@ -238,8 +252,9 @@ class _Section extends StatelessWidget {
                       color: theme.colorScheme.primary, size: 20),
                   const SizedBox(width: 8),
                   Text(title,
-                      style: theme.textTheme.titleSmall?.copyWith(
+                      style: theme.textTheme.titleMedium?.copyWith(
                         color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.bold,
                       )),
                 ],
               ),

@@ -4,6 +4,8 @@ import 'package:bilirubin/features/shared/baby_edit_modal.dart';
 import 'package:bilirubin/models/baby.dart';
 
 /// Card showing name, weight, date of birth, and computed age of [baby].
+///
+/// Each field is rendered as a readonly filled text input (matches frontend design).
 class BabyMetadataSection extends StatelessWidget {
   const BabyMetadataSection({super.key, required this.baby});
 
@@ -14,6 +16,10 @@ class BabyMetadataSection extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final ageHours = baby.ageHoursAt(DateTime.now());
+
+    final ageLabel = ageHours >= 24
+        ? '${(ageHours / 24).floor()}d ${(ageHours % 24).floor()}h'
+        : l10n.metadataAgeHours(ageHours.toStringAsFixed(0));
 
     return Card(
       child: Padding(
@@ -26,34 +32,32 @@ class BabyMetadataSection extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(l10n.metadataTitle,
-                    style: theme.textTheme.titleMedium),
-                IconButton(
-                  icon: const Icon(Icons.edit_outlined),
-                  tooltip: l10n.metadataEdit,
-                  onPressed: () =>
-                      showBabyEditModal(context, existing: baby),
+                    style: theme.textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.bold)),
+                TextButton.icon(
+                  icon: const Icon(Icons.edit_outlined, size: 18),
+                  label: Text(l10n.metadataEdit),
+                  onPressed: () => showBabyEditModal(context, existing: baby),
                 ),
               ],
             ),
-            const Divider(),
-            _Row(label: l10n.metadataName, value: baby.name),
-            _Row(
+            const SizedBox(height: 4),
+
+            _MetadataField(label: l10n.metadataName, value: baby.name),
+            const SizedBox(height: 10),
+            _MetadataField(
               label: l10n.metadataWeight,
-              value: l10n.metadataWeightKg(
-                  baby.weightKg.toStringAsFixed(1)),
+              value: l10n.metadataWeightKg(baby.weightKg.toStringAsFixed(1)),
             ),
-            _Row(
+            const SizedBox(height: 10),
+            _MetadataField(label: l10n.metadataAge, value: ageLabel),
+            const SizedBox(height: 10),
+            _MetadataField(
               label: l10n.metadataDob,
               value:
-                  '${baby.dateOfBirth.day}/${baby.dateOfBirth.month}/${baby.dateOfBirth.year}',
-            ),
-            _Row(
-              label: l10n.metadataAge,
-              value: l10n.metadataAgeHours(
-                ageHours >= 24
-                    ? '${(ageHours / 24).floor()}d ${(ageHours % 24).floor()}h'
-                    : ageHours.toStringAsFixed(0),
-              ),
+                  '${baby.dateOfBirth.day.toString().padLeft(2, '0')}/'
+                  '${baby.dateOfBirth.month.toString().padLeft(2, '0')}/'
+                  '${baby.dateOfBirth.year}',
             ),
           ],
         ),
@@ -62,26 +66,44 @@ class BabyMetadataSection extends StatelessWidget {
   }
 }
 
-class _Row extends StatelessWidget {
-  const _Row({required this.label, required this.value});
+class _MetadataField extends StatelessWidget {
+  const _MetadataField({required this.label, required this.value});
 
   final String label;
   final String value;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label,
-              style: theme.textTheme.bodySmall
-                  ?.copyWith(color: theme.colorScheme.outline)),
-          Text(value, style: theme.textTheme.bodyMedium),
-        ],
-      ),
+    final colorScheme = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+        const SizedBox(height: 6),
+        TextFormField(
+          key: ValueKey(value),
+          initialValue: value,
+          readOnly: true,
+          decoration: InputDecoration(
+            isDense: true,
+            filled: true,
+            fillColor: colorScheme.surface,
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

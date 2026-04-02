@@ -55,7 +55,7 @@
       "hours": { "type": "String" }
     }
   },
-  "metadataEdit": "Edit",
+  "metadataEdit": "Edit Baby",
 
   "bilirubinValue": "{value} mg/dL",
   "@bilirubinValue": {
@@ -103,8 +103,57 @@
 
   "exportSuccess": "Data exported successfully.",
   "exportFailed": "Export failed.",
+  "exportAction": "Export",
+  "exportedTo": "Exported to {filename}",
+  "@exportedTo": {
+    "placeholders": {
+      "filename": { "type": "String" }
+    }
+  },
+  "exportSheetTitle": "Export Data",
+  "exportFileName": "File Name",
+  "exportSaveLocation": "Save Location",
+  "exportBrowse": "Browse",
 
   "languageEnglish": "English",
   "languageIndonesian": "Indonesian",
-  "languageGerman": "German"
+  "languageGerman": "German",
+
+  "zoneLowFull": "Low Risk Zone",
+  "zoneIntermediateFull": "Intermediate Risk Zone",
+  "zoneHighIntermediateFull": "High Intermediate Risk Zone",
+  "zoneHighFull": "High Risk Zone",
+  "zoneVeryHighFull": "Very High Risk Zone",
+
+  "deviceConnecting": "Connecting\u2026",
+  "deviceConnectedLabel": "Connected:",
+  "deviceConnect": "Connect",
+  "deviceDisconnect": "Disconnect",
+
+  "selectBaby": "Select baby",
+  "searchBabiesHint": "Search babies\u2026",
+  "archivedCount": "Archived ({count})",
+  "@archivedCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "archiveBabyAction": "Archive Baby",
+  "archiveBabyContent": "Archive \"{name}\"? The record will be preserved and can be restored later.",
+  "@archiveBabyContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "archiveAction": "Archive",
+  "permanentDeleteTitle": "Permanently Delete Baby",
+  "permanentDeleteContent": "Permanently delete \"{name}\"? All data will be lost and cannot be recovered.",
+  "@permanentDeleteContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "deleteForever": "Delete Forever",
+  "restoreAction": "Restore",
+  "permanentlyDeleteTooltip": "Permanently delete"
 }

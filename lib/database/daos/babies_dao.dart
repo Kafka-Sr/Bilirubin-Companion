@@ -32,4 +32,21 @@ class BabiesDao extends DatabaseAccessor<AppDatabase> with _$BabiesDaoMixin {
       .write(
     const BabiesCompanion(isArchived: Value(true)),
   );
+
+  /// Stream of all archived babies, ordered by name.
+  Stream<List<Baby>> watchAllArchived() => (select(babies)
+        ..where((b) => b.isArchived.equals(true))
+        ..orderBy([(b) => OrderingTerm.asc(b.name)]))
+      .watch();
+
+  /// Restores an archived baby by setting [isArchived] = false.
+  Future<void> restoreBaby(int id) => (update(babies)
+        ..where((b) => b.id.equals(id)))
+      .write(
+    const BabiesCompanion(isArchived: Value(false)),
+  );
+
+  /// Permanently deletes a baby row by [id].
+  Future<void> deleteBaby(int id) =>
+      (delete(babies)..where((b) => b.id.equals(id))).go();
 }

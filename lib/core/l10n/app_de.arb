@@ -82,8 +82,37 @@
 
   "exportSuccess": "Daten erfolgreich exportiert.",
   "exportFailed": "Export fehlgeschlagen.",
+  "exportAction": "Exportieren",
+  "exportedTo": "Exportiert nach {filename}",
+  "exportSheetTitle": "Daten exportieren",
+  "exportFileName": "Dateiname",
+  "exportSaveLocation": "Speicherort",
+  "exportBrowse": "Durchsuchen",
 
   "languageEnglish": "Englisch",
   "languageIndonesian": "Indonesisch",
-  "languageGerman": "Deutsch"
+  "languageGerman": "Deutsch",
+
+  "zoneLowFull": "Niedrigrisikozone",
+  "zoneIntermediateFull": "Mittlere Risikozone",
+  "zoneHighIntermediateFull": "Erhöhte mittlere Risikozone",
+  "zoneHighFull": "Hochrisikozone",
+  "zoneVeryHighFull": "Sehr hohe Risikozone",
+
+  "deviceConnecting": "Verbinden\u2026",
+  "deviceConnectedLabel": "Verbunden:",
+  "deviceConnect": "Verbinden",
+  "deviceDisconnect": "Trennen",
+
+  "selectBaby": "Baby auswählen",
+  "searchBabiesHint": "Baby suchen\u2026",
+  "archivedCount": "Archiviert ({count})",
+  "archiveBabyAction": "Baby archivieren",
+  "archiveBabyContent": "\"{name}\" archivieren? Der Datensatz bleibt erhalten und kann wiederhergestellt werden.",
+  "archiveAction": "Archivieren",
+  "permanentDeleteTitle": "Baby dauerhaft löschen",
+  "permanentDeleteContent": "\"{name}\" dauerhaft löschen? Alle Daten gehen verloren und können nicht wiederhergestellt werden.",
+  "deleteForever": "Für immer löschen",
+  "restoreAction": "Wiederherstellen",
+  "permanentlyDeleteTooltip": "Dauerhaft löschen"
 }

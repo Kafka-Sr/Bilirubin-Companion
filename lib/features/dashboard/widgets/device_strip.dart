@@ -24,14 +24,17 @@ class DeviceStrip extends ConsumerWidget {
     final isConnecting = connectionState == DeviceConnectionState.connecting ||
         connectionState == DeviceConnectionState.scanning;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
+    return InkWell(
+      onTap: () => _toggle(ref, isConnected),
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainer,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Row(
         children: [
           // Status dot
           AnimatedContainer(
@@ -52,16 +55,23 @@ class DeviceStrip extends ConsumerWidget {
           // Status text
           Expanded(
             child: isConnected && info != null
-                ? Text(
-                    l10n.deviceConnected(
-                      info.displayName,
-                      _transportLabel(info.transport, l10n),
-                    ),
-                    style: Theme.of(context).textTheme.bodySmall,
-                    overflow: TextOverflow.ellipsis,
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        l10n.deviceConnectedLabel,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                      Text(
+                        '${info.displayName} (${_transportLabel(info.transport, l10n)})',
+                        style: Theme.of(context).textTheme.bodySmall,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   )
                 : Text(
-                    isConnecting ? 'Connecting…' : l10n.deviceDisconnected,
+                    isConnecting ? l10n.deviceConnecting : l10n.deviceDisconnected,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
           ),
@@ -69,7 +79,7 @@ class DeviceStrip extends ConsumerWidget {
           // Connect / disconnect toggle
           TextButton(
             onPressed: () => _toggle(ref, isConnected),
-            child: Text(isConnected ? 'Disconnect' : 'Connect'),
+            child: Text(isConnected ? l10n.deviceDisconnect : l10n.deviceConnect),
           ),
 
           // Settings shortcut
@@ -79,6 +89,7 @@ class DeviceStrip extends ConsumerWidget {
             onPressed: () => context.go('/settings'),
           ),
         ],
+        ),
       ),
     );
   }

@@ -29,7 +29,7 @@ class RecommendationCard extends ConsumerWidget {
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             child: Text(
               l10n.recommendationHeader,
-              style: theme.textTheme.titleSmall?.copyWith(
+              style: theme.textTheme.titleMedium?.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
@@ -48,7 +48,7 @@ class RecommendationCard extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        zone.label.toUpperCase(),
+                        zone.localizedLabel(l10n).toUpperCase(),
                         style: theme.textTheme.labelLarge?.copyWith(
                           color: zoneColor,
                           fontWeight: FontWeight.bold,

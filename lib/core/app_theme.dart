@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Clinical colour tokens.
 abstract final class AppColors {
@@ -39,15 +38,16 @@ abstract final class AppTheme {
     final base = ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
+      fontFamily: 'PlusJakartaSans',
     );
     return base.copyWith(
-      textTheme: GoogleFonts.plusJakartaSansTextTheme(base.textTheme),
+      textTheme: base.textTheme.apply(fontFamily: 'PlusJakartaSans'),
       cardTheme: CardThemeData(
         elevation: 1,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       ),
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(
@@ -59,7 +59,8 @@ abstract final class AppTheme {
       appBarTheme: AppBarTheme(
         centerTitle: false,
         elevation: 0,
-        titleTextStyle: GoogleFonts.plusJakartaSans(
+        titleTextStyle: TextStyle(
+          fontFamily: 'PlusJakartaSans',
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: colorScheme.onSurface,

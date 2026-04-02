@@ -49,6 +49,14 @@ class BabyRepository {
   /// Soft-deletes (archives) a baby by [id].
   Future<void> archive(int id) => _db.babiesDao.archiveBaby(id);
 
+  Stream<List<domain.Baby>> watchAllArchived() =>
+      _db.babiesDao.watchAllArchived().map((rows) => rows.map(_toModel).toList());
+
+  Future<void> restore(int id) => _db.babiesDao.restoreBaby(id);
+
+  /// Permanently removes a baby record by [id].
+  Future<void> delete(int id) => _db.babiesDao.deleteBaby(id);
+
   // ── Mapper ─────────────────────────────────────────────────────────────────
 
   static domain.Baby _toModel(Baby row) => domain.Baby(

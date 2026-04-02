@@ -6,10 +6,14 @@ import 'package:bilirubin/providers/measurement_providers.dart';
 ///
 /// Each image is stored encrypted on disk; this widget decrypts on demand
 /// using [MeasurementRepository.getDecryptedImage].
+///
+/// Set [embedded] to true when hosting inside another card so the widget
+/// does not wrap itself in its own [Card].
 class ImageCarousel extends ConsumerStatefulWidget {
-  const ImageCarousel({super.key, required this.babyId});
+  const ImageCarousel({super.key, required this.babyId, this.embedded = false});
 
   final int babyId;
+  final bool embedded;
 
   @override
   ConsumerState<ImageCarousel> createState() => _ImageCarouselState();
@@ -30,21 +34,24 @@ class _ImageCarouselState extends ConsumerState<ImageCarousel> {
     final measurementsAsync = ref.watch(measurementsProvider(widget.babyId));
 
     return measurementsAsync.when(
-      loading: () => const _PlaceholderFrame(child: CircularProgressIndicator()),
-      error: (e, _) => _PlaceholderFrame(child: Text('Error: $e')),
+      loading: () => _PlaceholderFrame(
+          embedded: widget.embedded, child: const CircularProgressIndicator()),
+      error: (e, _) =>
+          _PlaceholderFrame(embedded: widget.embedded, child: Text('Error: $e')),
       data: (measurements) {
         final withImages = measurements.where((m) => m.hasImage).toList();
 
         if (withImages.isEmpty) {
-          return const _PlaceholderFrame(
-            child: Icon(Icons.image_not_supported_outlined, size: 48),
+          return _PlaceholderFrame(
+            embedded: widget.embedded,
+            child: const SizedBox.shrink(),
           );
         }
 
-        return Column(
+        final content = Column(
           children: [
             SizedBox(
-              height: 200,
+              height: 160,
               child: PageView.builder(
                 controller: _controller,
                 itemCount: withImages.length,
@@ -64,12 +71,12 @@ class _ImageCarouselState extends ConsumerState<ImageCarousel> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(withImages.length, (i) {
                 return AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
+                  duration: const Duration(milliseconds: 180),
                   margin: const EdgeInsets.symmetric(horizontal: 3),
-                  width: _currentPage == i ? 10 : 6,
-                  height: _currentPage == i ? 10 : 6,
+                  width: _currentPage == i ? 20 : 8,
+                  height: 8,
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
+                    borderRadius: BorderRadius.circular(8),
                     color: _currentPage == i
                         ? Theme.of(context).colorScheme.primary
                         : Theme.of(context).colorScheme.outlineVariant,
@@ -80,6 +87,9 @@ class _ImageCarouselState extends ConsumerState<ImageCarousel> {
             const SizedBox(height: 8),
           ],
         );
+
+        if (widget.embedded) return ClipRRect(child: content);
+        return Card(clipBehavior: Clip.antiAlias, child: content);
       },
     );
   }
@@ -130,18 +140,84 @@ class _EncryptedImageTileState extends State<_EncryptedImageTile> {
   }
 }
 
-class _PlaceholderFrame extends StatelessWidget {
-  const _PlaceholderFrame({required this.child});
+class _PlaceholderFrame extends StatefulWidget {
+  const _PlaceholderFrame({required this.child, this.embedded = false});
 
   final Widget child;
+  final bool embedded;
+
+  @override
+  State<_PlaceholderFrame> createState() => _PlaceholderFrameState();
+}
+
+class _PlaceholderFrameState extends State<_PlaceholderFrame> {
+  static const _placeholders = [
+    'assets/images/ashbaby.jpg',
+    'assets/images/ashbebe.jpg',
+    'assets/images/baby.jpg',
+  ];
+
+  final _ctrl = PageController();
+  int _page = 0;
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 200,
-      width: double.infinity,
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-      child: Center(child: child),
+    final colorScheme = Theme.of(context).colorScheme;
+
+    final content = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          height: 160,
+          child: Stack(
+            children: [
+              PageView.builder(
+                controller: _ctrl,
+                itemCount: _placeholders.length,
+                onPageChanged: (i) => setState(() => _page = i),
+                itemBuilder: (_, i) => Image.asset(
+                  _placeholders[i],
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  errorBuilder: (_, __, ___) => ColoredBox(
+                    color: colorScheme.surfaceContainerHighest,
+                  ),
+                ),
+              ),
+              if (widget.child is! SizedBox)
+                Center(child: widget.child),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(_placeholders.length, (i) {
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              margin: const EdgeInsets.symmetric(horizontal: 3),
+              width: _page == i ? 20 : 8,
+              height: 8,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: _page == i
+                    ? colorScheme.primary
+                    : colorScheme.outlineVariant,
+              ),
+            );
+          }),
+        ),
+        const SizedBox(height: 8),
+      ],
     );
+
+    if (widget.embedded) return ClipRRect(child: content);
+    return Card(clipBehavior: Clip.antiAlias, child: content);
   }
 }

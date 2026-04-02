@@ -36,48 +36,51 @@ class BhutaniChart extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Title + toggle
+                // Title
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Row(
-                    children: [
-                      Text(
-                        l10n.bhutaniChartTitle,
-                        style: theme.textTheme.titleMedium,
-                      ),
-                      const Spacer(),
-                      Text(
-                        l10n.showPreviousBilirubin,
-                        style: theme.textTheme.bodySmall,
-                      ),
-                      const SizedBox(width: 4),
-                      Checkbox(
-                        value: showHistory,
-                        onChanged: (v) =>
-                            ref.read(showHistoryProvider.notifier).state =
-                                v ?? false,
-                        visualDensity: VisualDensity.compact,
-                      ),
-                    ],
+                  child: Text(
+                    l10n.bhutaniChartTitle,
+                    style: theme.textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
                 const SizedBox(height: 8),
                 // Chart canvas
-                AspectRatio(
-                  aspectRatio: 1.6,
+                SizedBox(
+                  height: 250,
                   child: RepaintBoundary(
                     child: CustomPaint(
                       painter: BhutaniPainter(
+                        context: context,
                         measurements: measurements,
                         showHistory: showHistory,
                         maxY: maxY,
-                        labelStyle: theme.textTheme.labelSmall!.copyWith(
-                          color: theme.colorScheme.outline,
-                          fontSize: 9,
-                        ),
-                        gridColor: theme.colorScheme.outline,
                       ),
+                      child: const SizedBox.expand(),
                     ),
+                  ),
+                ),
+                // Toggle below chart
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        l10n.showPreviousBilirubin,
+                        style: theme.textTheme.bodySmall,
+                      ),
+                      Transform.scale(
+                        scale: 0.75,
+                        alignment: Alignment.centerRight,
+                        child: Switch(
+                          value: showHistory,
+                          onChanged: (v) =>
+                              ref.read(showHistoryProvider.notifier).state = v,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],

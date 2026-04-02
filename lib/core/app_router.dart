@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bilirubin/features/dashboard/dashboard_screen.dart';
@@ -29,59 +28,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/lock',
         builder: (_, __) => const PinLockScreen(),
       ),
-      StatefulShellRoute.indexedStack(
-        builder: (context, state, shell) => _AppShell(shell: shell),
-        branches: [
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/dashboard',
-                builder: (_, __) => const DashboardScreen(),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/settings',
-                builder: (_, __) => const SettingsScreen(),
-              ),
-            ],
-          ),
-        ],
+      GoRoute(
+        path: '/dashboard',
+        builder: (_, __) => const DashboardScreen(),
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (_, __) => const SettingsScreen(),
       ),
     ],
   );
 });
-
-class _AppShell extends StatelessWidget {
-  const _AppShell({required this.shell});
-
-  final StatefulNavigationShell shell;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: shell,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: shell.currentIndex,
-        onDestinationSelected: (i) => shell.goBranch(
-          i,
-          initialLocation: i == shell.currentIndex,
-        ),
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.dashboard_outlined),
-            selectedIcon: Icon(Icons.dashboard),
-            label: 'Dashboard',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.settings_outlined),
-            selectedIcon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-      ),
-    );
-  }
-}

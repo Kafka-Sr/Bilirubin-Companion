@@ -13,6 +13,11 @@ final babiesListProvider = StreamProvider<List<Baby>>((ref) {
   return ref.watch(babyRepositoryProvider).watchAllActive();
 });
 
+/// Stream of all archived babies, ordered by name.
+final archivedBabiesListProvider = StreamProvider<List<Baby>>((ref) {
+  return ref.watch(babyRepositoryProvider).watchAllArchived();
+});
+
 /// The currently selected baby's ID. Null means "none selected".
 final selectedBabyIdProvider = StateProvider<int?>((ref) => null);
 

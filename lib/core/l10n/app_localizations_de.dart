@@ -235,6 +235,26 @@ class AppLocalizationsDe extends AppLocalizations {
   String get exportFailed => 'Export fehlgeschlagen.';
 
   @override
+  String get exportAction => 'Exportieren';
+
+  @override
+  String exportedTo(String filename) {
+    return 'Exportiert nach $filename';
+  }
+
+  @override
+  String get exportSheetTitle => 'Daten exportieren';
+
+  @override
+  String get exportFileName => 'Dateiname';
+
+  @override
+  String get exportSaveLocation => 'Speicherort';
+
+  @override
+  String get exportBrowse => 'Durchsuchen';
+
+  @override
   String get languageEnglish => 'Englisch';
 
   @override
@@ -242,4 +262,70 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get languageGerman => 'Deutsch';
+
+  @override
+  String get zoneLowFull => 'Niedrigrisikozone';
+
+  @override
+  String get zoneIntermediateFull => 'Mittlere Risikozone';
+
+  @override
+  String get zoneHighIntermediateFull => 'Erhöhte mittlere Risikozone';
+
+  @override
+  String get zoneHighFull => 'Hochrisikozone';
+
+  @override
+  String get zoneVeryHighFull => 'Sehr hohe Risikozone';
+
+  @override
+  String get deviceConnecting => 'Verbinden…';
+
+  @override
+  String get deviceConnectedLabel => 'Verbunden:';
+
+  @override
+  String get deviceConnect => 'Verbinden';
+
+  @override
+  String get deviceDisconnect => 'Trennen';
+
+  @override
+  String get selectBaby => 'Baby auswählen';
+
+  @override
+  String get searchBabiesHint => 'Baby suchen…';
+
+  @override
+  String archivedCount(int count) {
+    return 'Archiviert ($count)';
+  }
+
+  @override
+  String get archiveBabyAction => 'Baby archivieren';
+
+  @override
+  String archiveBabyContent(String name) {
+    return '\"$name\" archivieren? Der Datensatz bleibt erhalten und kann wiederhergestellt werden.';
+  }
+
+  @override
+  String get archiveAction => 'Archivieren';
+
+  @override
+  String get permanentDeleteTitle => 'Baby dauerhaft löschen';
+
+  @override
+  String permanentDeleteContent(String name) {
+    return '\"$name\" dauerhaft löschen? Alle Daten gehen verloren und können nicht wiederhergestellt werden.';
+  }
+
+  @override
+  String get deleteForever => 'Für immer löschen';
+
+  @override
+  String get restoreAction => 'Wiederherstellen';
+
+  @override
+  String get permanentlyDeleteTooltip => 'Dauerhaft löschen';
 }

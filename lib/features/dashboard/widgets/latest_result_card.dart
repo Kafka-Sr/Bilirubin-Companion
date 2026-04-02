@@ -5,8 +5,13 @@ import 'package:bilirubin/providers/bhutani_providers.dart';
 import 'package:bilirubin/providers/measurement_providers.dart';
 
 /// Card showing the most recent bilirubin value, timestamp, and age.
+///
+/// Set [embedded] to true when hosting inside another card so the widget
+/// does not wrap itself in its own [Card].
 class LatestResultCard extends ConsumerWidget {
-  const LatestResultCard({super.key});
+  const LatestResultCard({super.key, this.embedded = false});
+
+  final bool embedded;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -19,56 +24,55 @@ class LatestResultCard extends ConsumerWidget {
 
     final zoneColor = zone?.color ?? theme.colorScheme.primary;
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            // Big bilirubin value
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.bilirubinValue(
-                      m.bilirubinMgDl.toStringAsFixed(1),
-                    ),
-                    style: theme.textTheme.displaySmall?.copyWith(
-                      color: zoneColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  if (zone != null)
-                    Text(
-                      zone.label,
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: zoneColor,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            // Timestamp + age
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+    final content = Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          // Big bilirubin value
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _formatTimestamp(m.capturedAt),
-                  style: theme.textTheme.bodySmall,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  l10n.metadataAgeHours(m.ageHours.toStringAsFixed(1)),
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.outline,
+                  l10n.bilirubinValue(m.bilirubinMgDl.toStringAsFixed(1)),
+                  style: theme.textTheme.displaySmall?.copyWith(
+                    color: zoneColor,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
+                if (zone != null)
+                  Text(
+                    zone.localizedLabel(l10n),
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: zoneColor,
+                    ),
+                  ),
               ],
             ),
-          ],
-        ),
+          ),
+          // Timestamp + age
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                _formatTimestamp(m.capturedAt),
+                style: theme.textTheme.bodySmall,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                l10n.metadataAgeHours(m.ageHours.toStringAsFixed(1)),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.outline,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
+
+    if (embedded) return content;
+    return Card(child: content);
   }
 
   String _formatTimestamp(DateTime dt) {

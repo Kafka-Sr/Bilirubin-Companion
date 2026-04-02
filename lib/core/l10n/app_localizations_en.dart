@@ -116,7 +116,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get metadataEdit => 'Edit';
+  String get metadataEdit => 'Edit Baby';
 
   @override
   String bilirubinValue(String value) {
@@ -231,6 +231,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportFailed => 'Export failed.';
 
   @override
+  String get exportAction => 'Export';
+
+  @override
+  String exportedTo(String filename) {
+    return 'Exported to $filename';
+  }
+
+  @override
+  String get exportSheetTitle => 'Export Data';
+
+  @override
+  String get exportFileName => 'File Name';
+
+  @override
+  String get exportSaveLocation => 'Save Location';
+
+  @override
+  String get exportBrowse => 'Browse';
+
+  @override
   String get languageEnglish => 'English';
 
   @override
@@ -238,4 +258,70 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get languageGerman => 'German';
+
+  @override
+  String get zoneLowFull => 'Low Risk Zone';
+
+  @override
+  String get zoneIntermediateFull => 'Intermediate Risk Zone';
+
+  @override
+  String get zoneHighIntermediateFull => 'High Intermediate Risk Zone';
+
+  @override
+  String get zoneHighFull => 'High Risk Zone';
+
+  @override
+  String get zoneVeryHighFull => 'Very High Risk Zone';
+
+  @override
+  String get deviceConnecting => 'Connecting…';
+
+  @override
+  String get deviceConnectedLabel => 'Connected:';
+
+  @override
+  String get deviceConnect => 'Connect';
+
+  @override
+  String get deviceDisconnect => 'Disconnect';
+
+  @override
+  String get selectBaby => 'Select baby';
+
+  @override
+  String get searchBabiesHint => 'Search babies…';
+
+  @override
+  String archivedCount(int count) {
+    return 'Archived ($count)';
+  }
+
+  @override
+  String get archiveBabyAction => 'Archive Baby';
+
+  @override
+  String archiveBabyContent(String name) {
+    return 'Archive \"$name\"? The record will be preserved and can be restored later.';
+  }
+
+  @override
+  String get archiveAction => 'Archive';
+
+  @override
+  String get permanentDeleteTitle => 'Permanently Delete Baby';
+
+  @override
+  String permanentDeleteContent(String name) {
+    return 'Permanently delete \"$name\"? All data will be lost and cannot be recovered.';
+  }
+
+  @override
+  String get deleteForever => 'Delete Forever';
+
+  @override
+  String get restoreAction => 'Restore';
+
+  @override
+  String get permanentlyDeleteTooltip => 'Permanently delete';
 }

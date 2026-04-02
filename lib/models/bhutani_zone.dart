@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bilirubin/core/l10n/app_localizations.dart';
 
 /// The five Bhutani nomogram risk zones for neonatal hyperbilirubinemia.
 enum BhutaniZone {
@@ -17,7 +18,8 @@ enum BhutaniZone {
   /// Above the 95th-percentile curve – highest risk.
   veryHigh;
 
-  /// Display-friendly label (title case).
+  /// Display-friendly label (title case). Prefer [localizedLabel] when a
+  /// [BuildContext] is available.
   String get label {
     switch (this) {
       case BhutaniZone.low:
@@ -30,6 +32,38 @@ enum BhutaniZone {
         return 'High Risk';
       case BhutaniZone.veryHigh:
         return 'Very High Risk';
+    }
+  }
+
+  /// Localized short label (e.g. "Risiko Rendah" in Indonesian).
+  String localizedLabel(AppLocalizations l10n) {
+    switch (this) {
+      case BhutaniZone.low:
+        return l10n.zoneLow;
+      case BhutaniZone.intermediate:
+        return l10n.zoneIntermediate;
+      case BhutaniZone.highIntermediate:
+        return l10n.zoneHighIntermediate;
+      case BhutaniZone.high:
+        return l10n.zoneHigh;
+      case BhutaniZone.veryHigh:
+        return l10n.zoneVeryHigh;
+    }
+  }
+
+  /// Localized full zone-name label (e.g. "Zona Risiko Rendah").
+  String localizedFullLabel(AppLocalizations l10n) {
+    switch (this) {
+      case BhutaniZone.low:
+        return l10n.zoneLowFull;
+      case BhutaniZone.intermediate:
+        return l10n.zoneIntermediateFull;
+      case BhutaniZone.highIntermediate:
+        return l10n.zoneHighIntermediateFull;
+      case BhutaniZone.high:
+        return l10n.zoneHighFull;
+      case BhutaniZone.veryHigh:
+        return l10n.zoneVeryHighFull;
     }
   }
 

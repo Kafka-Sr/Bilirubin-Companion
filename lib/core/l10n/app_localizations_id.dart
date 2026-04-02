@@ -233,6 +233,26 @@ class AppLocalizationsId extends AppLocalizations {
   String get exportFailed => 'Ekspor gagal.';
 
   @override
+  String get exportAction => 'Ekspor';
+
+  @override
+  String exportedTo(String filename) {
+    return 'Diekspor ke $filename';
+  }
+
+  @override
+  String get exportSheetTitle => 'Ekspor Data';
+
+  @override
+  String get exportFileName => 'Nama File';
+
+  @override
+  String get exportSaveLocation => 'Lokasi Simpan';
+
+  @override
+  String get exportBrowse => 'Jelajahi';
+
+  @override
   String get languageEnglish => 'Inggris';
 
   @override
@@ -240,4 +260,70 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get languageGerman => 'Jerman';
+
+  @override
+  String get zoneLowFull => 'Zona Risiko Rendah';
+
+  @override
+  String get zoneIntermediateFull => 'Zona Risiko Menengah';
+
+  @override
+  String get zoneHighIntermediateFull => 'Zona Risiko Menengah Tinggi';
+
+  @override
+  String get zoneHighFull => 'Zona Risiko Tinggi';
+
+  @override
+  String get zoneVeryHighFull => 'Zona Risiko Sangat Tinggi';
+
+  @override
+  String get deviceConnecting => 'Menghubungkan…';
+
+  @override
+  String get deviceConnectedLabel => 'Terhubung:';
+
+  @override
+  String get deviceConnect => 'Hubungkan';
+
+  @override
+  String get deviceDisconnect => 'Putuskan';
+
+  @override
+  String get selectBaby => 'Pilih bayi';
+
+  @override
+  String get searchBabiesHint => 'Cari bayi…';
+
+  @override
+  String archivedCount(int count) {
+    return 'Diarsipkan ($count)';
+  }
+
+  @override
+  String get archiveBabyAction => 'Arsipkan Bayi';
+
+  @override
+  String archiveBabyContent(String name) {
+    return 'Arsipkan \"$name\"? Data akan disimpan dan dapat dipulihkan nanti.';
+  }
+
+  @override
+  String get archiveAction => 'Arsipkan';
+
+  @override
+  String get permanentDeleteTitle => 'Hapus Permanen Bayi';
+
+  @override
+  String permanentDeleteContent(String name) {
+    return 'Hapus permanen \"$name\"? Semua data akan hilang dan tidak dapat dipulihkan.';
+  }
+
+  @override
+  String get deleteForever => 'Hapus Selamanya';
+
+  @override
+  String get restoreAction => 'Pulihkan';
+
+  @override
+  String get permanentlyDeleteTooltip => 'Hapus permanen';
 }
