@@ -121,16 +121,26 @@ class _LanguageSection extends ConsumerWidget {
       title: l10n.settingsLanguage,
       icon: Icons.language,
       children: [
-        SegmentedButton<String>(
-          showSelectedIcon: false,
-          selected: {locale.languageCode},
-          onSelectionChanged: (s) =>
-              ref.read(appLocaleProvider.notifier).set(Locale(s.first)),
-          segments: [
-            ButtonSegment(value: 'en', label: Text(l10n.languageEnglish)),
-            ButtonSegment(value: 'id', label: Text(l10n.languageIndonesian)),
-            ButtonSegment(value: 'de', label: Text(l10n.languageGerman)),
-          ],
+        SizedBox(
+          width: double.infinity,
+          child: SegmentedButton<String>(
+            showSelectedIcon: false,
+            selected: {locale.languageCode},
+            onSelectionChanged: (s) =>
+                ref.read(appLocaleProvider.notifier).set(Locale(s.first)),
+            segments: [
+              ButtonSegment(
+                value: 'en',
+                icon: const Text('🇬🇧'),
+                label: Text(l10n.languageEnglish),
+              ),
+              ButtonSegment(
+                value: 'id',
+                icon: const Text('🇮🇩'),
+                label: Text(l10n.languageIndonesian),
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -151,11 +161,14 @@ class _ThemeSection extends ConsumerWidget {
       title: l10n.settingsTheme,
       icon: Icons.palette_outlined,
       children: [
-        SegmentedButton<ThemeMode>(
-          selected: {mode},
-          onSelectionChanged: (s) =>
-              ref.read(appThemeModeProvider.notifier).set(s.first),
-          segments: [
+        SizedBox(
+          width: double.infinity,
+          child: SegmentedButton<ThemeMode>(
+            showSelectedIcon: false,
+            selected: {mode},
+            onSelectionChanged: (s) =>
+                ref.read(appThemeModeProvider.notifier).set(s.first),
+            segments: [
             ButtonSegment(
               value: ThemeMode.system,
               label: Text(l10n.settingsThemeSystem),
@@ -172,6 +185,7 @@ class _ThemeSection extends ConsumerWidget {
               icon: const Icon(Icons.dark_mode),
             ),
           ],
+        ),
         ),
       ],
     );
@@ -238,7 +252,7 @@ class _Section extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: Card(
         margin: EdgeInsets.zero,
         child: Padding(
@@ -252,7 +266,7 @@ class _Section extends StatelessWidget {
                       color: theme.colorScheme.primary, size: 20),
                   const SizedBox(width: 8),
                   Text(title,
-                      style: theme.textTheme.titleMedium?.copyWith(
+                      style: theme.textTheme.titleLarge?.copyWith(
                         color: theme.colorScheme.primary,
                         fontWeight: FontWeight.bold,
                       )),

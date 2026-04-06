@@ -58,6 +58,44 @@ class _BabyEditSheetState extends ConsumerState<_BabyEditSheet> {
     super.dispose();
   }
 
+  static InputDecoration _pillDecoration({
+    Widget? suffixIcon,
+    String? errorText,
+  }) =>
+      InputDecoration(
+        errorText: errorText,
+        suffixIcon: suffixIcon,
+        filled: true,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(99),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(99),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(99),
+          borderSide: BorderSide.none,
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(99),
+          borderSide: const BorderSide(color: Colors.red),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(99),
+          borderSide: const BorderSide(color: Colors.red),
+        ),
+      );
+
+  static Widget _fieldLabel(BuildContext context, String text) => Text(
+        text,
+        style: Theme.of(context)
+            .textTheme
+            .bodyLarge
+            ?.copyWith(fontWeight: FontWeight.bold),
+      );
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -82,7 +120,9 @@ class _BabyEditSheetState extends ConsumerState<_BabyEditSheet> {
               children: [
                 Text(
                   isEditing ? l10n.editBabyTitle : l10n.addBabyTitle,
-                  style: Theme.of(context).textTheme.titleLarge,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.close),
@@ -93,9 +133,11 @@ class _BabyEditSheetState extends ConsumerState<_BabyEditSheet> {
             const SizedBox(height: 16),
 
             // ── Name ──────────────────────────────────────────────────────
+            _fieldLabel(context, l10n.fieldName),
+            const SizedBox(height: 6),
             TextFormField(
               controller: _nameCtrl,
-              decoration: InputDecoration(labelText: l10n.fieldName),
+              decoration: _pillDecoration(),
               textCapitalization: TextCapitalization.words,
               maxLength: 100,
               validator: (_) => validateName(_nameCtrl.text),
@@ -103,9 +145,11 @@ class _BabyEditSheetState extends ConsumerState<_BabyEditSheet> {
             const SizedBox(height: 12),
 
             // ── Weight ────────────────────────────────────────────────────
+            _fieldLabel(context, l10n.fieldWeight),
+            const SizedBox(height: 6),
             TextFormField(
               controller: _weightCtrl,
-              decoration: InputDecoration(labelText: l10n.fieldWeight),
+              decoration: _pillDecoration(),
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: true),
               validator: (_) => validateWeightString(_weightCtrl.text),
@@ -113,8 +157,10 @@ class _BabyEditSheetState extends ConsumerState<_BabyEditSheet> {
             const SizedBox(height: 12),
 
             // ── Date of birth ─────────────────────────────────────────────
+            _fieldLabel(context, l10n.fieldDob),
+            const SizedBox(height: 6),
             _DobField(
-              label: l10n.fieldDob,
+              label: '',
               selected: _selectedDob,
               onChanged: (d) => setState(() => _selectedDob = d),
               validator: () => validateDateOfBirth(_selectedDob),
@@ -207,10 +253,18 @@ class _DobField extends StatelessWidget {
           InkWell(
             onTap: () async {
               final now = DateTime.now();
+              final first = now.subtract(const Duration(days: 7));
+              final clampedInitial = selected == null
+                  ? now
+                  : selected!.isBefore(first)
+                      ? first
+                      : selected!.isAfter(now)
+                          ? now
+                          : selected!;
               final picked = await showDatePicker(
                 context: context,
-                initialDate: selected ?? now,
-                firstDate: now.subtract(const Duration(days: 7)),
+                initialDate: clampedInitial,
+                firstDate: first,
                 lastDate: now,
               );
               if (picked != null) {
@@ -218,12 +272,24 @@ class _DobField extends StatelessWidget {
                 onChanged(picked);
               }
             },
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(99),
             child: InputDecorator(
               decoration: InputDecoration(
-                labelText: label,
                 errorText: state.errorText,
                 suffixIcon: const Icon(Icons.calendar_today_outlined),
+                filled: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(99),
+                  borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(99),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(99),
+                  borderSide: BorderSide.none,
+                ),
               ),
               child: Text(
                 selected != null

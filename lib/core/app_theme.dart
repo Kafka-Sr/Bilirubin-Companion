@@ -61,7 +61,7 @@ abstract final class AppTheme {
         elevation: 0,
         titleTextStyle: TextStyle(
           fontFamily: 'PlusJakartaSans',
-          fontSize: 20,
+          fontSize: 24,
           fontWeight: FontWeight.w600,
           color: colorScheme.onSurface,
         ),

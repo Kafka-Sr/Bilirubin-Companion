@@ -32,12 +32,17 @@ class BabyMetadataSection extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(l10n.metadataTitle,
-                    style: theme.textTheme.titleMedium
+                    style: theme.textTheme.titleLarge
                         ?.copyWith(fontWeight: FontWeight.bold)),
-                TextButton.icon(
-                  icon: const Icon(Icons.edit_outlined, size: 18),
-                  label: Text(l10n.metadataEdit),
+                FilledButton.tonal(
                   onPressed: () => showBabyEditModal(context, existing: baby),
+                  style: FilledButton.styleFrom(
+                    shape: const CircleBorder(),
+                    padding: EdgeInsets.zero,
+                    minimumSize: const Size(48, 48),
+                    maximumSize: const Size(48, 48),
+                  ),
+                  child: const Icon(Icons.edit_outlined, size: 18),
                 ),
               ],
             ),
@@ -80,13 +85,16 @@ class _MetadataField extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 6),
         TextFormField(
           key: ValueKey(value),
           initialValue: value,
           readOnly: true,
+          style: Theme.of(context).textTheme.bodyLarge,
           decoration: InputDecoration(
             isDense: true,
             filled: true,

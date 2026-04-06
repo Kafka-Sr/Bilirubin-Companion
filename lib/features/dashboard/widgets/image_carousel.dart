@@ -1,6 +1,37 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bilirubin/providers/measurement_providers.dart';
+
+void _showFullscreen(BuildContext context, ImageProvider image) {
+  showDialog<void>(
+    context: context,
+    builder: (_) => Dialog.fullscreen(
+      backgroundColor: Colors.black,
+      child: Stack(
+        children: [
+          InteractiveViewer(
+            maxScale: 4.0,
+            child: Center(
+              child: Image(image: image, fit: BoxFit.contain),
+            ),
+          ),
+          Positioned(
+            top: 0,
+            right: 0,
+            child: SafeArea(
+              child: IconButton(
+                icon: const Icon(Icons.close, color: Colors.white),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
 
 /// Carousel of measurement images for the currently selected baby.
 ///
@@ -48,48 +79,64 @@ class _ImageCarouselState extends ConsumerState<ImageCarousel> {
           );
         }
 
-        final content = Column(
-          children: [
-            SizedBox(
-              height: 160,
-              child: PageView.builder(
-                controller: _controller,
-                itemCount: withImages.length,
-                onPageChanged: (i) => setState(() => _currentPage = i),
-                itemBuilder: (_, i) {
-                  final m = withImages[i];
-                  return _EncryptedImageTile(
-                    imageRef: m.encryptedImageRef!,
-                    measurementRepo: ref.read(measurementRepositoryProvider),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 8),
-            // Dots indicator
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(withImages.length, (i) {
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 180),
-                  margin: const EdgeInsets.symmetric(horizontal: 3),
-                  width: _currentPage == i ? 20 : 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: _currentPage == i
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).colorScheme.outlineVariant,
-                  ),
-                );
-              }),
-            ),
-            const SizedBox(height: 8),
-          ],
+        final pageView = SizedBox(
+          height: 200,
+          child: PageView.builder(
+            controller: _controller,
+            itemCount: withImages.length,
+            onPageChanged: (i) => setState(() => _currentPage = i),
+            itemBuilder: (_, i) {
+              final m = withImages[i];
+              return _EncryptedImageTile(
+                imageRef: m.encryptedImageRef!,
+                measurementRepo: ref.read(measurementRepositoryProvider),
+              );
+            },
+          ),
         );
 
-        if (widget.embedded) return ClipRRect(child: content);
-        return Card(clipBehavior: Clip.antiAlias, child: content);
+        final dots = Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(withImages.length, (i) {
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              margin: const EdgeInsets.symmetric(horizontal: 3),
+              width: _currentPage == i ? 20 : 8,
+              height: 8,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: _currentPage == i
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.outlineVariant,
+              ),
+            );
+          }),
+        );
+
+        if (widget.embedded) {
+          return Column(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: pageView,
+              ),
+              const SizedBox(height: 8),
+              dots,
+              const SizedBox(height: 4),
+            ],
+          );
+        }
+        return Card(
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            children: [
+              pageView,
+              const SizedBox(height: 8),
+              dots,
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
       },
     );
   }
@@ -130,10 +177,14 @@ class _EncryptedImageTileState extends State<_EncryptedImageTile> {
             child: Icon(Icons.broken_image_outlined, size: 48),
           );
         }
-        return Image.memory(
-          snap.data as dynamic,
-          fit: BoxFit.cover,
-          width: double.infinity,
+        final image = MemoryImage(Uint8List.fromList(snap.data!));
+        return GestureDetector(
+          onTap: () => _showFullscreen(context, image),
+          child: Image(
+            image: image,
+            fit: BoxFit.cover,
+            width: double.infinity,
+          ),
         );
       },
     );
@@ -170,54 +221,71 @@ class _PlaceholderFrameState extends State<_PlaceholderFrame> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    final content = Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        SizedBox(
-          height: 160,
-          child: Stack(
-            children: [
-              PageView.builder(
-                controller: _ctrl,
-                itemCount: _placeholders.length,
-                onPageChanged: (i) => setState(() => _page = i),
-                itemBuilder: (_, i) => Image.asset(
-                  _placeholders[i],
+    final imageStack = SizedBox(
+      height: 200,
+      child: Stack(
+        children: [
+          PageView.builder(
+            controller: _ctrl,
+            itemCount: _placeholders.length,
+            onPageChanged: (i) => setState(() => _page = i),
+            itemBuilder: (_, i) {
+              final image = AssetImage(_placeholders[i]);
+              return GestureDetector(
+                onTap: () => _showFullscreen(context, image),
+                child: Image(
+                  image: image,
                   fit: BoxFit.cover,
                   width: double.infinity,
                   errorBuilder: (_, __, ___) => ColoredBox(
                     color: colorScheme.surfaceContainerHighest,
                   ),
                 ),
-              ),
-              if (widget.child is! SizedBox)
-                Center(child: widget.child),
-            ],
+              );
+            },
           ),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(_placeholders.length, (i) {
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              margin: const EdgeInsets.symmetric(horizontal: 3),
-              width: _page == i ? 20 : 8,
-              height: 8,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: _page == i
-                    ? colorScheme.primary
-                    : colorScheme.outlineVariant,
-              ),
-            );
-          }),
-        ),
-        const SizedBox(height: 8),
-      ],
+          if (widget.child is! SizedBox)
+            Center(child: widget.child),
+        ],
+      ),
     );
 
-    if (widget.embedded) return ClipRRect(child: content);
-    return Card(clipBehavior: Clip.antiAlias, child: content);
+    final dots = Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(_placeholders.length, (i) {
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          margin: const EdgeInsets.symmetric(horizontal: 3),
+          width: _page == i ? 20 : 8,
+          height: 8,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: _page == i ? colorScheme.primary : colorScheme.outlineVariant,
+          ),
+        );
+      }),
+    );
+
+    if (widget.embedded) {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: imageStack,
+          ),
+          const SizedBox(height: 8),
+          dots,
+          const SizedBox(height: 4),
+        ],
+      );
+    }
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [imageStack, const SizedBox(height: 8), dots, const SizedBox(height: 8)],
+      ),
+    );
   }
 }

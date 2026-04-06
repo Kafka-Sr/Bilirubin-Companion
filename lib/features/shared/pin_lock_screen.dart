@@ -82,7 +82,13 @@ class _PinLockScreenState extends ConsumerState<PinLockScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.lock_outline, size: 48),
+                Image.asset(
+                  'assets/images/icon.png',
+                  width: 72,
+                  height: 72,
+                  errorBuilder: (_, __, ___) =>
+                      const Icon(Icons.lock_outline, size: 72),
+                ),
                 const SizedBox(height: 16),
                 Text(l10n.pinLockTitle, style: theme.textTheme.headlineSmall),
                 const SizedBox(height: 32),

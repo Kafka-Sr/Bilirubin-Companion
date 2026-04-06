@@ -133,7 +133,8 @@ class _OverflowMenu extends ConsumerWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final hasSelection = selectedBaby != null;
 
-    return PopupMenuButton<_BabyMenuAction>(
+    return ClipOval(
+      child: PopupMenuButton<_BabyMenuAction>(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       onSelected: (action) => _onAction(context, ref, action),
       itemBuilder: (ctx) {
@@ -156,11 +157,10 @@ class _OverflowMenu extends ConsumerWidget {
       child: Container(
         width: 48,
         height: 48,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(99),
-          color: colorScheme.surfaceContainerHighest,
-        ),
+        alignment: Alignment.center,
+        color: colorScheme.surfaceContainerHighest,
         child: const Icon(Icons.more_vert),
+      ),
       ),
     );
   }
@@ -370,7 +370,7 @@ class _BabySearchSheetState extends ConsumerState<_BabySearchSheet> {
                 final baby = filtered[i];
                 if (_showArchived) {
                   return ListTile(
-                    leading: const CircleAvatar(child: Icon(Icons.child_care)),
+                    leading: const CircleAvatar(child: Icon(Icons.child_friendly)),
                     title: Text(baby.name),
                     subtitle: Text(
                       '${baby.weightKg.toStringAsFixed(1)} kg · '
@@ -398,7 +398,7 @@ class _BabySearchSheetState extends ConsumerState<_BabySearchSheet> {
                   );
                 }
                 return ListTile(
-                  leading: const CircleAvatar(child: Icon(Icons.child_care)),
+                  leading: const CircleAvatar(child: Icon(Icons.child_friendly)),
                   title: Text(baby.name),
                   subtitle: Text(
                     '${baby.weightKg.toStringAsFixed(1)} kg · '

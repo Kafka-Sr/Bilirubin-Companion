@@ -212,7 +212,9 @@ class _ExportSheetState extends State<_ExportSheet> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(l10n.exportSheetTitle, style: theme.textTheme.titleLarge),
+              Text(l10n.exportSheetTitle,
+              style: theme.textTheme.titleLarge
+                  ?.copyWith(fontWeight: FontWeight.bold)),
               IconButton(
                 icon: const Icon(Icons.close),
                 onPressed: () => Navigator.of(context).pop(),
@@ -222,34 +224,68 @@ class _ExportSheetState extends State<_ExportSheet> {
           const SizedBox(height: 20),
 
           // ── File name ────────────────────────────────────────────────────────
-          Text(l10n.exportFileName, style: theme.textTheme.labelLarge),
+          Text(l10n.exportFileName,
+              style: theme.textTheme.bodyLarge
+                  ?.copyWith(fontWeight: FontWeight.bold)),
           const SizedBox(height: 6),
           TextField(
             controller: _filenameCtrl,
             decoration: InputDecoration(
               suffixText: _extension,
               suffixStyle: TextStyle(color: colorScheme.outline),
+              filled: true,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(99),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(99),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(99),
+                borderSide: BorderSide.none,
+              ),
             ),
           ),
           const SizedBox(height: 16),
 
           // ── Save location ────────────────────────────────────────────────────
-          Text(l10n.exportSaveLocation, style: theme.textTheme.labelLarge),
+          Text(l10n.exportSaveLocation,
+              style: theme.textTheme.bodyLarge
+                  ?.copyWith(fontWeight: FontWeight.bold)),
           const SizedBox(height: 6),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _locationCtrl,
-                  decoration: const InputDecoration(),
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _locationCtrl,
+                    decoration: InputDecoration(
+                      filled: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(99),
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(99),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(99),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              FilledButton.tonal(
-                onPressed: _pickDirectory,
-                child: Text(l10n.exportBrowse),
-              ),
-            ],
+                const SizedBox(width: 8),
+                FilledButton.tonal(
+                  onPressed: _pickDirectory,
+                  child: Text(l10n.exportBrowse),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 20),
 

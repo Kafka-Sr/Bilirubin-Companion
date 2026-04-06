@@ -15,7 +15,7 @@ const double kBilirubinMaxMgDl = 30.0;
 const double kWeightMinKg = 0.4;
 
 /// Maximum acceptable newborn weight in kg.
-const double kWeightMaxKg = 8.0;
+const double kWeightMaxKg = 10.0;
 
 // ── Baby metadata ─────────────────────────────────────────────────────────────
 /// Maximum name length (characters) accepted for storage.

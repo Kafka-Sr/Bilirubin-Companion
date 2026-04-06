@@ -39,8 +39,8 @@ class DeviceStrip extends ConsumerWidget {
           // Status dot
           AnimatedContainer(
             duration: const Duration(milliseconds: 300),
-            width: 10,
-            height: 10,
+            width: 20,
+            height: 20,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: isConnected
@@ -61,32 +61,46 @@ class DeviceStrip extends ConsumerWidget {
                     children: [
                       Text(
                         l10n.deviceConnectedLabel,
-                        style: Theme.of(context).textTheme.bodySmall,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                       Text(
                         '${info.displayName} (${_transportLabel(info.transport, l10n)})',
-                        style: Theme.of(context).textTheme.bodySmall,
+                        style: Theme.of(context).textTheme.bodyMedium,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   )
                 : Text(
                     isConnecting ? l10n.deviceConnecting : l10n.deviceDisconnected,
-                    style: Theme.of(context).textTheme.bodySmall,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
           ),
 
           // Connect / disconnect toggle
           TextButton(
             onPressed: () => _toggle(ref, isConnected),
+            style: TextButton.styleFrom(
+              textStyle: Theme.of(context).textTheme.labelLarge,
+            ),
             child: Text(isConnected ? l10n.deviceDisconnect : l10n.deviceConnect),
           ),
 
+          const SizedBox(width: 8),
+
           // Settings shortcut
-          IconButton(
-            icon: const Icon(Icons.settings_outlined, size: 20),
-            tooltip: l10n.settingsTitle,
+          FilledButton.tonal(
             onPressed: () => context.go('/settings'),
+            style: FilledButton.styleFrom(
+              shape: const CircleBorder(),
+              padding: EdgeInsets.zero,
+              minimumSize: const Size(48, 48),
+              maximumSize: const Size(48, 48),
+            ),
+            child: const Icon(Icons.settings_outlined, size: 20),
           ),
         ],
         ),
@@ -114,3 +128,4 @@ class DeviceStrip extends ConsumerWidget {
     }
   }
 }
+ 

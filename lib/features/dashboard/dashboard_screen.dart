@@ -50,14 +50,19 @@ class DashboardScreen extends ConsumerWidget {
                       if (baby == null) ...[
                         const EmptyState.noMeasurements(),
                       ] else ...[
-                        // 3. Image carousel + latest result (one card)
+                        // 3. Image carousel + latest result
                         Card(
                           clipBehavior: Clip.antiAlias,
-                          child: Column(
-                            children: [
-                              ImageCarousel(babyId: baby.id, embedded: true),
-                              const LatestResultCard(embedded: true),
-                            ],
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                ImageCarousel(babyId: baby.id, embedded: true),
+                                const SizedBox(height: 1),
+                                const LatestResultCard(embedded: true),
+                              ],
+                            ),
                           ),
                         ),
 

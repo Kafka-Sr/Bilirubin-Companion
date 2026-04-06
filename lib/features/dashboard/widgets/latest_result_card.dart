@@ -35,7 +35,7 @@ class LatestResultCard extends ConsumerWidget {
               children: [
                 Text(
                   l10n.bilirubinValue(m.bilirubinMgDl.toStringAsFixed(1)),
-                  style: theme.textTheme.displaySmall?.copyWith(
+                  style: theme.textTheme.headlineLarge?.copyWith(
                     color: zoneColor,
                     fontWeight: FontWeight.bold,
                   ),
@@ -43,7 +43,7 @@ class LatestResultCard extends ConsumerWidget {
                 if (zone != null)
                   Text(
                     zone.localizedLabel(l10n),
-                    style: theme.textTheme.labelMedium?.copyWith(
+                    style: theme.textTheme.bodyMedium?.copyWith(
                       color: zoneColor,
                     ),
                   ),
@@ -56,12 +56,12 @@ class LatestResultCard extends ConsumerWidget {
             children: [
               Text(
                 _formatTimestamp(m.capturedAt),
-                style: theme.textTheme.bodySmall,
+                style: theme.textTheme.bodyMedium,
               ),
               const SizedBox(height: 4),
               Text(
                 l10n.metadataAgeHours(m.ageHours.toStringAsFixed(1)),
-                style: theme.textTheme.bodySmall?.copyWith(
+                style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.outline,
                 ),
               ),

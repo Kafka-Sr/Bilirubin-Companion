@@ -41,7 +41,7 @@ class BhutaniChart extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Text(
                     l10n.bhutaniChartTitle,
-                    style: theme.textTheme.titleMedium
+                    style: theme.textTheme.titleLarge
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -69,7 +69,8 @@ class BhutaniChart extends ConsumerWidget {
                     children: [
                       Text(
                         l10n.showPreviousBilirubin,
-                        style: theme.textTheme.bodySmall,
+                        style: theme.textTheme.bodyLarge
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       Transform.scale(
                         scale: 0.75,
