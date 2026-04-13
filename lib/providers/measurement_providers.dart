@@ -4,6 +4,7 @@ import 'package:bilirubin/providers/baby_providers.dart';
 import 'package:bilirubin/providers/database_provider.dart';
 import 'package:bilirubin/repositories/measurement_repository.dart';
 import 'package:bilirubin/security/encryption_service.dart';
+import 'package:bilirubin/providers/sync_queue_providers.dart';
 
 /// Singleton [EncryptionService].
 final encryptionServiceProvider = Provider<EncryptionService>((ref) {
@@ -15,6 +16,7 @@ final measurementRepositoryProvider = Provider<MeasurementRepository>((ref) {
   return MeasurementRepository(
     ref.watch(appDatabaseProvider),
     ref.watch(encryptionServiceProvider),
+    outbox: ref.watch(localSyncOutboxProvider),
   );
 });
 

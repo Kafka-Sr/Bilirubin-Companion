@@ -17,6 +17,12 @@ dependencies:
   # State management
   flutter_riverpod: ^2.6.1
 
+  # Environment config
+  flutter_dotenv: ^5.2.1
+
+  # Cloud backend
+  supabase_flutter: ^2.8.0
+
   # Navigation
   go_router: ^14.6.2
 
@@ -32,6 +38,7 @@ dependencies:
   local_auth: ^2.3.0
 
   # Utilities
+  http: ^1.2.2
   uuid: ^4.5.1
   path_provider: ^2.1.5
   path: ^1.9.0
@@ -63,4 +70,5 @@ flutter:
 
   assets:
     - assets/images/
+    - .env
     

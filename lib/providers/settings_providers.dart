@@ -13,8 +13,7 @@ final sharedPreferencesProvider =
 // ── Theme mode ────────────────────────────────────────────────────────────────
 
 class _ThemeModeNotifier extends StateNotifier<ThemeMode> {
-  _ThemeModeNotifier(this._prefs)
-      : super(_load(_prefs));
+  _ThemeModeNotifier(this._prefs) : super(_load(_prefs));
 
   final SharedPreferences _prefs;
 
@@ -58,9 +57,42 @@ class _LocaleNotifier extends StateNotifier<Locale> {
   }
 }
 
-final appLocaleProvider =
-    StateNotifierProvider<_LocaleNotifier, Locale>((ref) {
+final appLocaleProvider = StateNotifierProvider<_LocaleNotifier, Locale>((ref) {
   return _LocaleNotifier(ref.watch(sharedPreferencesProvider));
+});
+
+// ── Pi LAN endpoint ──────────────────────────────────────────────────────────
+
+class _PiBaseUrlNotifier extends StateNotifier<String> {
+  _PiBaseUrlNotifier(this._prefs)
+      : super(_prefs.getString(kPrefPiBaseUrl) ?? '');
+
+  final SharedPreferences _prefs;
+
+  String _normalize(String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) return '';
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      return trimmed;
+    }
+    return 'http://$trimmed';
+  }
+
+  void set(String value) {
+    final normalized = _normalize(value);
+    state = normalized;
+    _prefs.setString(kPrefPiBaseUrl, normalized);
+  }
+
+  void clear() {
+    state = '';
+    _prefs.remove(kPrefPiBaseUrl);
+  }
+}
+
+final piBaseUrlProvider =
+    StateNotifierProvider<_PiBaseUrlNotifier, String>((ref) {
+  return _PiBaseUrlNotifier(ref.watch(sharedPreferencesProvider));
 });
 
 // ── App lock toggle ───────────────────────────────────────────────────────────

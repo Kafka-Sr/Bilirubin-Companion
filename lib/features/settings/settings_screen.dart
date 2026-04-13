@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bilirubin/core/l10n/app_localizations.dart';
+import 'package:bilirubin/models/pi_beacon.dart';
 import 'package:bilirubin/features/shared/pin_lock_screen.dart';
+import 'package:bilirubin/providers/pi_discovery_providers.dart';
 import 'package:bilirubin/providers/settings_providers.dart';
 import 'package:bilirubin/security/app_lock_service.dart';
 
@@ -24,6 +26,7 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: const [
+          _PiLanSection(),
           _WifiSection(),
           _BleSection(),
           _LanguageSection(),
@@ -31,6 +34,118 @@ class SettingsScreen extends ConsumerWidget {
           _AppLockSection(),
         ],
       ),
+    );
+  }
+}
+
+// ── Raspberry Pi LAN ─────────────────────────────────────────────────────────
+
+class _PiLanSection extends ConsumerStatefulWidget {
+  const _PiLanSection();
+
+  @override
+  ConsumerState<_PiLanSection> createState() => _PiLanSectionState();
+}
+
+class _PiLanSectionState extends ConsumerState<_PiLanSection> {
+  late final TextEditingController _baseUrlCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _baseUrlCtrl = TextEditingController(text: ref.read(piBaseUrlProvider));
+  }
+
+  @override
+  void dispose() {
+    _baseUrlCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final beaconsAsync = ref.watch(piBeaconListProvider);
+    final beacons = beaconsAsync.valueOrNull ?? const <PiBeacon>[];
+
+    return _Section(
+      title: 'Raspberry Pi LAN',
+      icon: Icons.router_outlined,
+      children: [
+        if (beacons.isNotEmpty) ...[
+          _BeaconList(
+            beacons: beacons,
+            onUseBeacon: (beacon) {
+              _baseUrlCtrl.text = beacon.baseUrl;
+              ref.read(piBaseUrlProvider.notifier).set(beacon.baseUrl);
+            },
+          ),
+          const SizedBox(height: 12),
+        ],
+        TextField(
+          controller: _baseUrlCtrl,
+          keyboardType: TextInputType.url,
+          decoration: const InputDecoration(
+            labelText: 'Pi address or URL',
+            hintText: '192.168.1.50:8080 or http://raspi.local:8080',
+          ),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            FilledButton.icon(
+              icon: const Icon(Icons.save_outlined),
+              label: const Text('Save Pi address'),
+              onPressed: () {
+                ref.read(piBaseUrlProvider.notifier).set(_baseUrlCtrl.text);
+              },
+            ),
+            const SizedBox(width: 12),
+            TextButton(
+              onPressed: () {
+                _baseUrlCtrl.clear();
+                ref.read(piBaseUrlProvider.notifier).clear();
+              },
+              child: const Text('Clear'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'If the phone and Pi are on the same Wi-Fi network, the app can discover the Pi automatically by beacon. Supabase still stores the synced history.',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.outline,
+              ),
+        ),
+      ],
+    );
+  }
+}
+
+class _BeaconList extends StatelessWidget {
+  const _BeaconList({
+    required this.beacons,
+    required this.onUseBeacon,
+  });
+
+  final List<PiBeacon> beacons;
+  final ValueChanged<PiBeacon> onUseBeacon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (final beacon in beacons)
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.radar_outlined),
+            title: Text(beacon.displayName),
+            subtitle: Text('${beacon.baseUrl} • ${beacon.deviceId}'),
+            trailing: TextButton(
+              onPressed: () => onUseBeacon(beacon),
+              child: const Text('Use'),
+            ),
+          ),
+      ],
     );
   }
 }
@@ -248,8 +363,7 @@ class _Section extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(icon,
-                      color: theme.colorScheme.primary, size: 20),
+                  Icon(icon, color: theme.colorScheme.primary, size: 20),
                   const SizedBox(width: 8),
                   Text(title,
                       style: theme.textTheme.titleMedium?.copyWith(

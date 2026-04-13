@@ -7,6 +7,7 @@ import 'package:bilirubin/database/database.dart' hide Baby;
 import 'package:bilirubin/device/device_repository.dart';
 import 'package:bilirubin/models/measurement.dart' as domain;
 import 'package:bilirubin/models/baby.dart';
+import 'package:bilirubin/repositories/local_sync_outbox.dart';
 import 'package:bilirubin/security/encryption_service.dart';
 import 'package:bilirubin/utils/input_validators.dart';
 
@@ -18,10 +19,15 @@ import 'package:bilirubin/utils/input_validators.dart';
 ///   • Encrypt and persist image bytes if present.
 ///   • Upsert into the database (deduplication by [measurementId]).
 class MeasurementRepository {
-  MeasurementRepository(this._db, this._encryption);
+  MeasurementRepository(
+    this._db,
+    this._encryption, {
+    LocalSyncOutbox? outbox,
+  }) : _outbox = outbox;
 
   final AppDatabase _db;
   final EncryptionService _encryption;
+  final LocalSyncOutbox? _outbox;
 
   // ── Write ──────────────────────────────────────────────────────────────────
 
@@ -55,6 +61,19 @@ class MeasurementRepository {
       deviceId: Value(event.deviceId),
       modelVersion: Value(event.modelVersion),
     ));
+
+    await _queue('upsert', {
+      'measurementId': event.measurementId,
+      'babyId': baby.id,
+      'capturedAt': event.capturedAt.toIso8601String(),
+      'receivedAt': receivedAt.toIso8601String(),
+      'ageHours': ageHours,
+      'bilirubinMgDl': event.bilirubinMgDl,
+      'hasImage': imageRef != null,
+      'encryptedImageRef': imageRef,
+      'deviceId': event.deviceId,
+      'modelVersion': event.modelVersion,
+    });
   }
 
   // ── Read ───────────────────────────────────────────────────────────────────
@@ -91,6 +110,7 @@ class MeasurementRepository {
       if (file.existsSync()) await file.delete();
     }
     await _db.measurementsDao.deleteMeasurement(measurementId);
+    await _queue('delete', {'measurementId': measurementId});
   }
 
   // ── Private helpers ────────────────────────────────────────────────────────
@@ -127,6 +147,21 @@ class MeasurementRepository {
         deviceId: row.deviceId,
         modelVersion: row.modelVersion,
       );
+
+  Future<void> _queue(String action, Map<String, dynamic> payload) async {
+    final outbox = _outbox;
+    if (outbox == null) return;
+    try {
+      await outbox.enqueue(
+        table: 'measurements',
+        action: action,
+        entityId: '${payload['measurementId'] ?? 'unknown'}',
+        payload: payload,
+      );
+    } catch (_) {
+      // Temporary staging must not block local capture.
+    }
+  }
 }
 
 /// Clamps a bilirubin value for safe display without crashing charts.
