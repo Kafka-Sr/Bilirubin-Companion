@@ -2,10 +2,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bilirubin/models/baby.dart';
 import 'package:bilirubin/providers/database_provider.dart';
 import 'package:bilirubin/repositories/baby_repository.dart';
+import 'package:bilirubin/providers/sync_queue_providers.dart';
 
 /// [BabyRepository] instance, derived from the singleton database.
 final babyRepositoryProvider = Provider<BabyRepository>((ref) {
-  return BabyRepository(ref.watch(appDatabaseProvider));
+  return BabyRepository(
+    ref.watch(appDatabaseProvider),
+    outbox: ref.watch(localSyncOutboxProvider),
+  );
 });
 
 /// Stream of all non-archived babies, ordered by name.

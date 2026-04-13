@@ -1,24 +1,34 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bilirubin/device/device_repository.dart';
 import 'package:bilirubin/device/fake_device_repository.dart';
+import 'package:bilirubin/device/pi_device_repository.dart';
 import 'package:bilirubin/models/device_connection_state.dart';
 import 'package:bilirubin/models/device_info.dart';
+import 'package:bilirubin/providers/pi_discovery_providers.dart';
 import 'package:bilirubin/providers/baby_providers.dart';
 import 'package:bilirubin/providers/measurement_providers.dart';
+import 'package:bilirubin/providers/settings_providers.dart';
 
 /// The active [DeviceRepository] implementation (fake in v1).
 ///
 /// Swap [FakeDeviceRepository] for [WifiDeviceRepository] or
 /// [BleDeviceRepository] in a future release.
 final deviceRepositoryProvider = Provider<DeviceRepository>((ref) {
-  final repo = FakeDeviceRepository();
+  final discoveredBeacons = ref.watch(piBeaconListProvider).valueOrNull ?? const [];
+  final discoveredBaseUrl = discoveredBeacons.isNotEmpty
+      ? discoveredBeacons.first.baseUrl
+      : '';
+  final piBaseUrl = ref.watch(piBaseUrlProvider);
+  final baseUrl = discoveredBaseUrl.isNotEmpty ? discoveredBaseUrl : piBaseUrl;
+  final repo = baseUrl.isNotEmpty
+      ? PiDeviceRepository(baseUrl: baseUrl)
+      : FakeDeviceRepository();
   ref.onDispose(repo.dispose);
   return repo;
 });
 
 /// Live stream of device connection states.
-final connectionStateProvider =
-    StreamProvider<DeviceConnectionState>((ref) {
+final connectionStateProvider = StreamProvider<DeviceConnectionState>((ref) {
   return ref.watch(deviceRepositoryProvider).connectionState;
 });
 

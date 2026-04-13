@@ -52,6 +52,11 @@ const String kAppLockEnabledAlias = 'bilirubin_lock_enabled_v1';
 // ── Shared preferences keys ───────────────────────────────────────────────────
 const String kPrefThemeMode = 'theme_mode';
 const String kPrefLocale = 'locale';
+const String kPrefPiBaseUrl = 'pi_base_url';
+
+// ── Raspberry Pi beacon discovery ────────────────────────────────────────────
+const String kPiBeaconType = 'bilirubin-pi-beacon';
+const int kPiBeaconPort = 4040;
 
 // ── Fake device ───────────────────────────────────────────────────────────────
 const String kFakeDeviceId = 'FAKE-001';

@@ -45,5 +45,7 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>This app discovers the Raspberry Pi on your local network for direct device connection.</string>
 </dict>
 </plist>
