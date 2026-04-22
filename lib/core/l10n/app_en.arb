@@ -23,20 +23,23 @@
   "deviceTransportFake": "Simulator",
 
   "bhutaniChartTitle": "Bhutani Nomogram",
-  "showPreviousBilirubin": "Show Previous Bilirubin",
+  "showPreviousBilirubin": "Show Previous Readings",
+  "showReadingsOutside168h": "Show Readings >168 h",
+  "bhutaniOutsideRangeNotice": "Reminder: This Bhutani nomogram only displays bilirubin readings from ages 0 to 168 hours. Readings beyond this age range are in purple dots.",
+  "bhutaniCurrentBeyond168h": "The baby's age is currently beyond 168 hours.",
+  "axisLabelTotalSerumBilirubin": "Total Serum Bilirubin (mg/dL)",
+  "axisLabelAgeHours": "Age (h)",
 
   "zoneLow": "Low Risk",
-  "zoneIntermediate": "Intermediate Risk",
+  "zoneLowIntermediate": "Low Intermediate Risk",
   "zoneHighIntermediate": "High Intermediate Risk",
   "zoneHigh": "High Risk",
-  "zoneVeryHigh": "Very High Risk",
 
   "recommendationHeader": "Recommendation",
-  "recommendationLow": "Bilirubin levels are within the safe range. Continue routine monitoring. No immediate action required.",
-  "recommendationIntermediate": "Bilirubin is in the intermediate zone. Repeat measurement in 8–12 hours and monitor closely.",
-  "recommendationHighIntermediate": "Bilirubin is in the high-intermediate zone. Repeat measurement in 4–8 hours. Consider initiating phototherapy per AAP 2022 guidelines.",
-  "recommendationHigh": "Bilirubin is in the high-risk zone. Consider phototherapy immediately. Consult a neonatologist.",
-  "recommendationVeryHigh": "Bilirubin is critically elevated. Immediate intervention required. Escalate to a neonatologist urgently.",
+  "recommendationLow": "Bilirubin levels are within the safe range (below 40th percentile). Continue routine monitoring. No immediate action required.",
+  "recommendationLowIntermediate": "Bilirubin is in the low intermediate zone (40th–75th percentile). Repeat measurement in 8–12 hours and monitor closely.",
+  "recommendationHighIntermediate": "Bilirubin is in the high intermediate zone (75th–95th percentile). Repeat measurement in 4–8 hours. Consider initiating phototherapy per AAP 2022 guidelines.",
+  "recommendationHigh": "Bilirubin is critically elevated (above 95th percentile). Immediate intervention required. Escalate to a neonatologist urgently.",
 
   "metadataTitle": "Baby Information",
   "metadataName": "Name",
@@ -81,6 +84,14 @@
   "validationNameTooLong": "Name must be 100 characters or fewer.",
   "validationNameInvalid": "Name contains invalid characters.",
 
+  "settingsPiLanTitle": "Raspberry Pi LAN",
+  "settingsPiAddressLabel": "Pi address or URL",
+  "settingsPiAddressHint": "192.168.1.50:8080 or http://raspi.local:8080",
+  "settingsPiSave": "Save Pi address",
+  "settingsPiClear": "Clear",
+  "settingsPiBeaconUse": "Use",
+  "settingsPiBeaconDescription": "If the phone and Pi are on the same Wi-Fi network, the app can discover the Pi automatically by beacon. Supabase still stores the synced history.",
+
   "settingsWifi": "Wi-Fi Configuration",
   "settingsWifiSsid": "Network name (SSID)",
   "settingsWifiPassword": "Password",
@@ -120,10 +131,9 @@
   "languageGerman": "German",
 
   "zoneLowFull": "Low Risk Zone",
-  "zoneIntermediateFull": "Intermediate Risk Zone",
+  "zoneLowIntermediateFull": "Low Intermediate Risk Zone",
   "zoneHighIntermediateFull": "High Intermediate Risk Zone",
   "zoneHighFull": "High Risk Zone",
-  "zoneVeryHighFull": "Very High Risk Zone",
 
   "deviceConnecting": "Connecting\u2026",
   "deviceConnectedLabel": "Connected:",
@@ -138,6 +148,7 @@
       "count": { "type": "int" }
     }
   },
+  "archivedBabies": "Archived Babies",
   "archiveBabyAction": "Archive Baby",
   "archiveBabyContent": "Archive \"{name}\"? The record will be preserved and can be restored later.",
   "@archiveBabyContent": {
@@ -155,5 +166,71 @@
   },
   "deleteForever": "Delete Forever",
   "restoreAction": "Restore",
-  "permanentlyDeleteTooltip": "Permanently delete"
+  "permanentlyDeleteTooltip": "Permanently delete",
+
+  "signIn": "Sign In",
+  "signOut": "Sign Out",
+  "signUp": "Sign Up",
+  "createAccount": "Create Account",
+  "emailLabel": "Email",
+  "passwordLabel": "Password",
+  "confirmPasswordLabel": "Confirm Password",
+  "signInSubtitle": "Sign in to your hospital account",
+  "signUpPrompt": "Don't have an account? Sign up",
+  "accountCreatedMessage": "Account created. Check your email to confirm, then sign in.",
+  "unexpectedError": "An unexpected error occurred.",
+  "accountSection": "Account",
+
+  "adminPanel": "Admin Panel",
+  "staffManagement": "Staff Management",
+  "staffManagementSubtitle": "Add or remove nurses and admins",
+  "parentAccess": "Parent Access",
+  "parentAccessSubtitle": "Link parent accounts to babies",
+  "patientTransfers": "Patient Transfers",
+  "patientTransfersSubtitle": "Initiate or accept transfers between hospitals",
+  "addStaff": "Add Staff",
+  "addStaffTitle": "Add Staff Member",
+  "removeStaffTitle": "Remove Staff Member",
+  "removeStaffContent": "Remove {email} from the hospital? They will lose access immediately.",
+  "@removeStaffContent": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "removeFromHospital": "Remove from hospital",
+  "roleNurse": "Nurse",
+  "roleAdmin": "Admin",
+  "temporaryPassword": "Temporary Password",
+  "noStaffYet": "No staff yet.",
+  "you": "You",
+
+  "parentSearchDescription": "Search for a parent by their email address, then link them to a baby.",
+  "parentEmailLabel": "Parent email",
+  "searchAction": "Search",
+  "selectBabyToLink": "Select baby to link:",
+  "linkParentToBaby": "Link Parent to Baby",
+  "linkedSuccess": "Successfully linked.",
+  "parentFound": "Parent found: {email}",
+  "@parentFound": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+
+  "initiateTransfer": "Initiate Transfer",
+  "sendRequest": "Send Request",
+  "acceptAction": "Accept",
+  "rejectAction": "Reject",
+  "cancelRequest": "Cancel Request",
+  "noTransferRequests": "No transfer requests.",
+  "destinationHospitalCode": "Destination hospital code",
+
+  "waitingForHospital": "Waiting for hospital",
+  "waitingForHospitalBody": "Your account has been created. Please ask the hospital staff to link your account to your baby's record.",
+  "validationPasswordLength": "Password must be at least 8 characters.",
+
+  "loggedInAs": "Logged in as",
+  "hospitalLabel": "Hospital",
+
+  "contactAdminHelp": "Need help? Contact your hospital's administrator."
 }

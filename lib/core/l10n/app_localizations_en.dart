@@ -50,13 +50,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bhutaniChartTitle => 'Bhutani Nomogram';
 
   @override
-  String get showPreviousBilirubin => 'Show Previous Bilirubin';
+  String get showPreviousBilirubin => 'Show Previous Readings';
+
+  @override
+  String get showReadingsOutside168h => 'Show Readings >168 h';
+
+  @override
+  String get bhutaniOutsideRangeNotice =>
+      'Reminder: This Bhutani nomogram only displays bilirubin readings from ages 0 to 168 hours. Readings beyond this age range are in purple dots.';
+
+  @override
+  String get bhutaniCurrentBeyond168h =>
+      'The baby\'s age is currently beyond 168 hours.';
+
+  @override
+  String get axisLabelTotalSerumBilirubin => 'Total Serum Bilirubin (mg/dL)';
+
+  @override
+  String get axisLabelAgeHours => 'Age (h)';
 
   @override
   String get zoneLow => 'Low Risk';
 
   @override
-  String get zoneIntermediate => 'Intermediate Risk';
+  String get zoneLowIntermediate => 'Low Intermediate Risk';
 
   @override
   String get zoneHighIntermediate => 'High Intermediate Risk';
@@ -65,30 +82,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zoneHigh => 'High Risk';
 
   @override
-  String get zoneVeryHigh => 'Very High Risk';
-
-  @override
   String get recommendationHeader => 'Recommendation';
 
   @override
   String get recommendationLow =>
-      'Bilirubin levels are within the safe range. Continue routine monitoring. No immediate action required.';
+      'Bilirubin levels are within the safe range (below 40th percentile). Continue routine monitoring. No immediate action required.';
 
   @override
-  String get recommendationIntermediate =>
-      'Bilirubin is in the intermediate zone. Repeat measurement in 8–12 hours and monitor closely.';
+  String get recommendationLowIntermediate =>
+      'Bilirubin is in the low intermediate zone (40th–75th percentile). Repeat measurement in 8–12 hours and monitor closely.';
 
   @override
   String get recommendationHighIntermediate =>
-      'Bilirubin is in the high-intermediate zone. Repeat measurement in 4–8 hours. Consider initiating phototherapy per AAP 2022 guidelines.';
+      'Bilirubin is in the high intermediate zone (75th–95th percentile). Repeat measurement in 4–8 hours. Consider initiating phototherapy per AAP 2022 guidelines.';
 
   @override
   String get recommendationHigh =>
-      'Bilirubin is in the high-risk zone. Consider phototherapy immediately. Consult a neonatologist.';
-
-  @override
-  String get recommendationVeryHigh =>
-      'Bilirubin is critically elevated. Immediate intervention required. Escalate to a neonatologist urgently.';
+      'Bilirubin is critically elevated (above 95th percentile). Immediate intervention required. Escalate to a neonatologist urgently.';
 
   @override
   String get metadataTitle => 'Baby Information';
@@ -167,6 +177,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get validationNameInvalid => 'Name contains invalid characters.';
+
+  @override
+  String get settingsPiLanTitle => 'Raspberry Pi LAN';
+
+  @override
+  String get settingsPiAddressLabel => 'Pi address or URL';
+
+  @override
+  String get settingsPiAddressHint =>
+      '192.168.1.50:8080 or http://raspi.local:8080';
+
+  @override
+  String get settingsPiSave => 'Save Pi address';
+
+  @override
+  String get settingsPiClear => 'Clear';
+
+  @override
+  String get settingsPiBeaconUse => 'Use';
+
+  @override
+  String get settingsPiBeaconDescription =>
+      'If the phone and Pi are on the same Wi-Fi network, the app can discover the Pi automatically by beacon. Supabase still stores the synced history.';
 
   @override
   String get settingsWifi => 'Wi-Fi Configuration';
@@ -263,16 +296,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zoneLowFull => 'Low Risk Zone';
 
   @override
-  String get zoneIntermediateFull => 'Intermediate Risk Zone';
+  String get zoneLowIntermediateFull => 'Low Intermediate Risk Zone';
 
   @override
   String get zoneHighIntermediateFull => 'High Intermediate Risk Zone';
 
   @override
   String get zoneHighFull => 'High Risk Zone';
-
-  @override
-  String get zoneVeryHighFull => 'Very High Risk Zone';
 
   @override
   String get deviceConnecting => 'Connecting…';
@@ -296,6 +326,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String archivedCount(int count) {
     return 'Archived ($count)';
   }
+
+  @override
+  String get archivedBabies => 'Archived Babies';
 
   @override
   String get archiveBabyAction => 'Archive Baby';
@@ -324,4 +357,161 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get permanentlyDeleteTooltip => 'Permanently delete';
+
+  @override
+  String get signIn => 'Sign In';
+
+  @override
+  String get signOut => 'Sign Out';
+
+  @override
+  String get signUp => 'Sign Up';
+
+  @override
+  String get createAccount => 'Create Account';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get passwordLabel => 'Password';
+
+  @override
+  String get confirmPasswordLabel => 'Confirm Password';
+
+  @override
+  String get signInSubtitle => 'Sign in to your hospital account';
+
+  @override
+  String get signUpPrompt => 'Don\'t have an account? Sign up';
+
+  @override
+  String get accountCreatedMessage =>
+      'Account created. Check your email to confirm, then sign in.';
+
+  @override
+  String get unexpectedError => 'An unexpected error occurred.';
+
+  @override
+  String get accountSection => 'Account';
+
+  @override
+  String get adminPanel => 'Admin Panel';
+
+  @override
+  String get staffManagement => 'Staff Management';
+
+  @override
+  String get staffManagementSubtitle => 'Add or remove nurses and admins';
+
+  @override
+  String get parentAccess => 'Parent Access';
+
+  @override
+  String get parentAccessSubtitle => 'Link parent accounts to babies';
+
+  @override
+  String get patientTransfers => 'Patient Transfers';
+
+  @override
+  String get patientTransfersSubtitle =>
+      'Initiate or accept transfers between hospitals';
+
+  @override
+  String get addStaff => 'Add Staff';
+
+  @override
+  String get addStaffTitle => 'Add Staff Member';
+
+  @override
+  String get removeStaffTitle => 'Remove Staff Member';
+
+  @override
+  String removeStaffContent(String email) {
+    return 'Remove $email from the hospital? They will lose access immediately.';
+  }
+
+  @override
+  String get removeFromHospital => 'Remove from hospital';
+
+  @override
+  String get roleNurse => 'Nurse';
+
+  @override
+  String get roleAdmin => 'Admin';
+
+  @override
+  String get temporaryPassword => 'Temporary Password';
+
+  @override
+  String get noStaffYet => 'No staff yet.';
+
+  @override
+  String get you => 'You';
+
+  @override
+  String get parentSearchDescription =>
+      'Search for a parent by their email address, then link them to a baby.';
+
+  @override
+  String get parentEmailLabel => 'Parent email';
+
+  @override
+  String get searchAction => 'Search';
+
+  @override
+  String get selectBabyToLink => 'Select baby to link:';
+
+  @override
+  String get linkParentToBaby => 'Link Parent to Baby';
+
+  @override
+  String get linkedSuccess => 'Successfully linked.';
+
+  @override
+  String parentFound(String email) {
+    return 'Parent found: $email';
+  }
+
+  @override
+  String get initiateTransfer => 'Initiate Transfer';
+
+  @override
+  String get sendRequest => 'Send Request';
+
+  @override
+  String get acceptAction => 'Accept';
+
+  @override
+  String get rejectAction => 'Reject';
+
+  @override
+  String get cancelRequest => 'Cancel Request';
+
+  @override
+  String get noTransferRequests => 'No transfer requests.';
+
+  @override
+  String get destinationHospitalCode => 'Destination hospital code';
+
+  @override
+  String get waitingForHospital => 'Waiting for hospital';
+
+  @override
+  String get waitingForHospitalBody =>
+      'Your account has been created. Please ask the hospital staff to link your account to your baby\'s record.';
+
+  @override
+  String get validationPasswordLength =>
+      'Password must be at least 8 characters.';
+
+  @override
+  String get loggedInAs => 'Logged in as';
+
+  @override
+  String get hospitalLabel => 'Hospital';
+
+  @override
+  String get contactAdminHelp =>
+      'Need help? Contact your hospital\'s administrator.';
 }

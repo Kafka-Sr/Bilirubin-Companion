@@ -40,6 +40,9 @@ final deviceInfoProvider = StreamProvider<DeviceInfo?>((ref) {
 /// Whether the "Show Previous Bilirubin" toggle is on.
 final showHistoryProvider = StateProvider<bool>((ref) => false);
 
+/// Whether the "Show Readings Outside 168 h" toggle is on.
+final showOutsideRangeProvider = StateProvider<bool>((ref) => false);
+
 /// Bridge: listens to incoming device measurements and persists them
 /// for the currently selected baby.
 ///

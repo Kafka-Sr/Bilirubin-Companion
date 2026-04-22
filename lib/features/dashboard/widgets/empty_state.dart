@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:bilirubin/core/l10n/app_localizations.dart';
+import 'package:bilirubin/features/dashboard/widgets/baby_selector.dart';
 import 'package:bilirubin/features/shared/baby_edit_modal.dart';
+import 'package:bilirubin/providers/baby_providers.dart';
 
 /// Empty state widget with two variants: no babies registered, or no
 /// measurements yet for the selected baby.
-class EmptyState extends StatelessWidget {
+class EmptyState extends ConsumerWidget {
   const EmptyState.noBabies({super.key}) : _variant = _Variant.noBabies;
   const EmptyState.noMeasurements({super.key})
       : _variant = _Variant.noMeasurements;
@@ -12,9 +16,14 @@ class EmptyState extends StatelessWidget {
   final _Variant _variant;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+
+    final archived = _variant == _Variant.noBabies
+        ? (ref.watch(archivedBabiesListProvider).valueOrNull ?? [])
+        : const [];
+    final hasArchived = archived.isNotEmpty;
 
     return Center(
       child: Padding(
@@ -49,10 +58,33 @@ class EmptyState extends StatelessWidget {
             ],
             if (_variant == _Variant.noBabies) ...[
               const SizedBox(height: 24),
-              FilledButton.icon(
-                icon: const Icon(Icons.add),
-                label: Text(l10n.noBabiesCta),
-                onPressed: () => showBabyEditModal(context),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  icon: const Icon(Icons.add),
+                  label: Text(l10n.noBabiesCta),
+                  onPressed: () => showBabyEditModal(context),
+                ),
+              ),
+              if (hasArchived) ...[
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    icon: const Icon(Icons.inventory_2_outlined),
+                    label: Text(l10n.archivedBabies),
+                    onPressed: () => openArchivedBabiesSheet(context),
+                  ),
+                ),
+              ],
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  icon: const Icon(Icons.settings_outlined),
+                  label: Text(l10n.settingsTitle),
+                  onPressed: () => context.go('/settings'),
+                ),
               ),
             ],
           ],

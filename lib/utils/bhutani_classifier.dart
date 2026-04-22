@@ -6,50 +6,49 @@ import 'package:bilirubin/core/constants.dart';
 
 // ── Boundary curves ───────────────────────────────────────────────────────────
 // Each list is a piecewise-linear curve of (ageHours, bilirubinMgDl) anchors.
-// Values represent the UPPER threshold of the named zone.
+// Values represent the LOWER threshold of the zone above the named percentile.
+// Curves plateau after ~96 h (dashed region in the Bhutani nomogram image).
 
-/// 95th percentile curve – upper bound of the "high" zone / lower bound of "veryHigh".
+/// 95th percentile curve – above this line = High Risk Zone.
 const List<(double, double)> kBoundaryVeryHigh = [
   (0, 0),
-  (12, 12.0),
-  (24, 15.0),
-  (48, 18.0),
-  (72, 20.0),
-  (96, 21.5),
-  (120, 22.0),
+  (12, 6.0),
+  (24, 10.5),
+  (36, 13.0),
+  (48, 15.0),
+  (60, 16.5),
+  (72, 17.5),
+  (96, 18.0),
+  (120, 18.0),
+  (168, 18.0),
 ];
 
-/// 75th percentile curve – upper bound of "highIntermediate" / lower bound of "high".
+/// 75th percentile curve – above this line = High Intermediate Risk Zone.
 const List<(double, double)> kBoundaryHigh = [
   (0, 0),
-  (12, 10.0),
-  (24, 13.0),
-  (48, 15.5),
-  (72, 17.5),
-  (96, 19.0),
-  (120, 19.5),
+  (12, 4.5),
+  (24, 8.5),
+  (36, 11.0),
+  (48, 12.5),
+  (60, 13.5),
+  (72, 14.5),
+  (96, 15.0),
+  (120, 15.0),
+  (168, 15.0),
 ];
 
-/// 40th percentile curve – upper bound of "intermediate" / lower bound of "highIntermediate".
+/// 40th percentile curve – above this line = Low Intermediate Risk Zone.
 const List<(double, double)> kBoundaryHighIntermediate = [
   (0, 0),
-  (12, 8.0),
-  (24, 11.0),
-  (48, 13.5),
-  (72, 15.0),
-  (96, 16.0),
-  (120, 16.5),
-];
-
-/// 10th percentile curve – upper bound of "low" / lower bound of "intermediate".
-const List<(double, double)> kBoundaryLow = [
-  (0, 0),
-  (12, 5.0),
-  (24, 8.0),
-  (48, 11.0),
-  (72, 12.5),
-  (96, 13.5),
-  (120, 14.0),
+  (12, 3.5),
+  (24, 6.5),
+  (36, 8.5),
+  (48, 9.5),
+  (60, 10.5),
+  (72, 12.0),
+  (96, 12.5),
+  (120, 12.5),
+  (168, 12.5),
 ];
 
 // ── Public API ────────────────────────────────────────────────────────────────
@@ -73,7 +72,7 @@ double interpolateBoundary(
   return curve.last.$2;
 }
 
-/// Classifies a measurement point into a [BhutaniZone].
+/// Classifies a measurement point into one of the four [BhutaniZone]s.
 ///
 /// Returns `null` if [ageHours] or [bilirubinMgDl] are outside plausible ranges.
 BhutaniZone? classify(double ageHours, double bilirubinMgDl) {
@@ -81,16 +80,13 @@ BhutaniZone? classify(double ageHours, double bilirubinMgDl) {
     return null;
   }
   if (bilirubinMgDl >= interpolateBoundary(kBoundaryVeryHigh, ageHours)) {
-    return BhutaniZone.veryHigh;
-  }
-  if (bilirubinMgDl >= interpolateBoundary(kBoundaryHigh, ageHours)) {
     return BhutaniZone.high;
   }
-  if (bilirubinMgDl >= interpolateBoundary(kBoundaryHighIntermediate, ageHours)) {
+  if (bilirubinMgDl >= interpolateBoundary(kBoundaryHigh, ageHours)) {
     return BhutaniZone.highIntermediate;
   }
-  if (bilirubinMgDl >= interpolateBoundary(kBoundaryLow, ageHours)) {
-    return BhutaniZone.intermediate;
+  if (bilirubinMgDl >= interpolateBoundary(kBoundaryHighIntermediate, ageHours)) {
+    return BhutaniZone.lowIntermediate;
   }
   return BhutaniZone.low;
 }
@@ -101,7 +97,7 @@ double effectiveYMax(Iterable<double> bilirubinValues) {
   double maxVal = kNomogramDefaultYMax;
   for (final v in bilirubinValues) {
     if (v > maxVal) {
-      maxVal = (v / 2).ceil() * 2.0 + 2.0;
+      maxVal = (v / 5).ceil() * 5.0 + 5.0;
     }
   }
   return maxVal;

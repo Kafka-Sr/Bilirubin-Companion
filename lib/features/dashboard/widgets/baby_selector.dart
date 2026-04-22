@@ -258,13 +258,33 @@ class _ExportButton extends ConsumerWidget {
   }
 }
 
+/// Opens the baby search sheet pre-switched to the archived view.
+/// Used by the empty state when all babies are archived.
+void openArchivedBabiesSheet(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    builder: (_) => _BabySearchSheet(
+      babies: const [],
+      initialShowArchived: true,
+      onSelect: (_) {},
+    ),
+  );
+}
+
 // ── Baby search sheet ─────────────────────────────────────────────────────────
 
 class _BabySearchSheet extends ConsumerStatefulWidget {
-  const _BabySearchSheet({required this.babies, required this.onSelect});
+  const _BabySearchSheet({
+    required this.babies,
+    required this.onSelect,
+    this.initialShowArchived = false,
+  });
 
   final List<Baby> babies;
   final ValueChanged<int> onSelect;
+  final bool initialShowArchived;
 
   @override
   ConsumerState<_BabySearchSheet> createState() => _BabySearchSheetState();
@@ -272,7 +292,13 @@ class _BabySearchSheet extends ConsumerStatefulWidget {
 
 class _BabySearchSheetState extends ConsumerState<_BabySearchSheet> {
   String _query = '';
-  bool _showArchived = false;
+  late bool _showArchived;
+
+  @override
+  void initState() {
+    super.initState();
+    _showArchived = widget.initialShowArchived;
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -4,40 +4,33 @@ import 'package:bilirubin/utils/bhutani_classifier.dart';
 
 void main() {
   group('interpolateBoundary', () {
-    test('returns first anchor value at minimum hours', () {
-      // At hour 3 (min), the low boundary should be 0 (interpolated from (0,0)→(12,5))
-      // Actually at hour 3, it's between (0,0) and (12,5): t=(3-0)/(12-0)=0.25 → 0+0.25*5 = 1.25
-      final v = interpolateBoundary(kBoundaryLow, 3);
-      expect(v, closeTo(1.25, 0.01));
-    });
-
-    test('returns last anchor value at maximum hours', () {
-      final v = interpolateBoundary(kBoundaryLow, 120);
-      expect(v, 14.0);
+    test('interpolates linearly between anchors', () {
+      // kBoundaryHighIntermediate: (24, 6.5) → (36, 8.5)
+      // At hour 30: t = (30-24)/(36-24) = 0.5, v = 6.5 + 0.5*2.0 = 7.5
+      final v = interpolateBoundary(kBoundaryHighIntermediate, 30);
+      expect(v, closeTo(7.5, 0.01));
     });
 
     test('clamps values below minimum to minimum', () {
-      final atMin = interpolateBoundary(kBoundaryLow, 3);
-      final below = interpolateBoundary(kBoundaryLow, 0);
-      // 0 is clamped to kNomogramMinHours (3)
+      final atMin = interpolateBoundary(kBoundaryHighIntermediate, 3);
+      final below = interpolateBoundary(kBoundaryHighIntermediate, 0);
       expect(below, atMin);
     });
 
-    test('clamps values above maximum to last anchor', () {
-      final atMax = interpolateBoundary(kBoundaryLow, 120);
-      final above = interpolateBoundary(kBoundaryLow, 200);
+    test('clamps values above maximum (168) to plateau value', () {
+      final atMax = interpolateBoundary(kBoundaryVeryHigh, 168);
+      final above = interpolateBoundary(kBoundaryVeryHigh, 200);
       expect(above, atMax);
     });
 
-    test('interpolates linearly between anchors', () {
-      // kBoundaryHighIntermediate: (24, 11.0) → (48, 13.5)
-      // At hour 36: t = (36-24)/(48-24) = 0.5, v = 11.0 + 0.5*(13.5-11.0) = 12.25
-      final v = interpolateBoundary(kBoundaryHighIntermediate, 36);
-      expect(v, closeTo(12.25, 0.01));
+    test('plateau holds at 168 h for all three boundaries', () {
+      expect(interpolateBoundary(kBoundaryVeryHigh, 168), closeTo(18.0, 0.01));
+      expect(interpolateBoundary(kBoundaryHigh, 168), closeTo(15.0, 0.01));
+      expect(interpolateBoundary(kBoundaryHighIntermediate, 168), closeTo(12.5, 0.01));
     });
   });
 
-  group('classify', () {
+  group('classify – four-zone system', () {
     test('returns null for negative bilirubin', () {
       expect(classify(24, -1), isNull);
     });
@@ -47,53 +40,55 @@ void main() {
     });
 
     test('classifies clearly low value as low', () {
-      // At 24h, low boundary ≈ 8.0. A value of 2 mg/dL should be low.
-      expect(classify(24, 2.0), BhutaniZone.low);
+      // At 48h, 40th-percentile boundary ≈ 9.5. A value of 5.0 is low.
+      expect(classify(48, 5.0), BhutaniZone.low);
     });
 
-    test('classifies value just above veryHigh boundary as veryHigh', () {
-      // At 48h, veryHigh boundary = 18.0. Value 19 should be veryHigh.
-      expect(classify(48, 19.0), BhutaniZone.veryHigh);
-    });
-
-    test('classifies value between high and veryHigh as high', () {
-      // At 48h: veryHigh=18, high=15.5. Value 16 → high zone.
+    test('classifies value above 95th percentile as high', () {
+      // At 48h, 95th-percentile boundary = 15.0. Value 16 → high.
       expect(classify(48, 16.0), BhutaniZone.high);
     });
 
-    test('classifies value between highIntermediate and high as highIntermediate', () {
-      // At 48h: high=15.5, highIntermediate=13.5. Value 14.5 → highIntermediate.
-      expect(classify(48, 14.5), BhutaniZone.highIntermediate);
+    test('classifies value between 75th and 95th as highIntermediate', () {
+      // At 48h: 95th=15.0, 75th=12.5. Value 13.5 → highIntermediate.
+      expect(classify(48, 13.5), BhutaniZone.highIntermediate);
     });
 
-    test('classifies value between low and highIntermediate as intermediate', () {
-      // At 48h: highIntermediate=13.5, low=11.0. Value 12 → intermediate.
-      expect(classify(48, 12.0), BhutaniZone.intermediate);
+    test('classifies value between 40th and 75th as lowIntermediate', () {
+      // At 48h: 75th=12.5, 40th=9.5. Value 11.0 → lowIntermediate.
+      expect(classify(48, 11.0), BhutaniZone.lowIntermediate);
     });
 
     test('handles age at 72 hours correctly', () {
-      // At 72h: veryHigh=20, high=17.5, hi=15, low=12.5
-      expect(classify(72, 21.0), BhutaniZone.veryHigh);
+      // At 72h: 95th=17.5, 75th=14.5, 40th=12.0
       expect(classify(72, 18.0), BhutaniZone.high);
       expect(classify(72, 16.0), BhutaniZone.highIntermediate);
-      expect(classify(72, 13.5), BhutaniZone.intermediate);
+      expect(classify(72, 13.0), BhutaniZone.lowIntermediate);
       expect(classify(72, 5.0), BhutaniZone.low);
+    });
+
+    test('handles age beyond 168 h (clamped to plateau)', () {
+      // Beyond 168h is clamped; classification still works using plateau values.
+      // At 200h (clamped to 168): 95th=18.0. Value 20 → high.
+      expect(classify(200, 20.0), BhutaniZone.high);
+      // Value 3 → low.
+      expect(classify(200, 3.0), BhutaniZone.low);
     });
   });
 
   group('effectiveYMax', () {
     test('returns default when all values are below it', () {
-      expect(effectiveYMax([5.0, 10.0, 15.0]), 23.0);
+      expect(effectiveYMax([5.0, 10.0, 15.0]), 25.0);
     });
 
     test('expands when a value exceeds the default', () {
-      final result = effectiveYMax([5.0, 25.0]);
-      // ceil(25/2)*2 + 2 = 28
-      expect(result, greaterThan(23.0));
+      final result = effectiveYMax([5.0, 27.0]);
+      // ceil(27/5)*5 + 5 = 35
+      expect(result, greaterThan(25.0));
     });
 
     test('returns default for empty input', () {
-      expect(effectiveYMax([]), 23.0);
+      expect(effectiveYMax([]), 25.0);
     });
   });
 }

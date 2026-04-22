@@ -35,6 +35,10 @@ abstract final class AppTheme {
       );
 
   static ThemeData _build({required ColorScheme colorScheme}) {
+    final isDark = colorScheme.brightness == Brightness.dark;
+    const lightBlue = Color(0xFF425D91);
+    const darkBlue = Color(0xFFA3C9FE);
+
     final base = ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
@@ -42,6 +46,12 @@ abstract final class AppTheme {
     );
     return base.copyWith(
       textTheme: base.textTheme.apply(fontFamily: 'PlusJakartaSans'),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: isDark ? darkBlue : lightBlue,
+          foregroundColor: isDark ? const Color(0xFF001D36) : Colors.white,
+        ),
+      ),
       cardTheme: CardThemeData(
         elevation: 1,
         shape: RoundedRectangleBorder(

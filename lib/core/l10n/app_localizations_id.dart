@@ -51,13 +51,30 @@ class AppLocalizationsId extends AppLocalizations {
   String get bhutaniChartTitle => 'Nomogram Bhutani';
 
   @override
-  String get showPreviousBilirubin => 'Tampilkan Bilirubin Sebelumnya';
+  String get showPreviousBilirubin => 'Tampilkan Bacaan Sebelumnya';
+
+  @override
+  String get showReadingsOutside168h => 'Tampilkan Bacaan >168 jam';
+
+  @override
+  String get bhutaniOutsideRangeNotice =>
+      'Pengingat: Nomogram Bhutani ini hanya menampilkan pembacaan bilirubin dari usia 0 hingga 168 jam. Pembacaan di luar rentang usia ini ditampilkan sebagai titik ungu.';
+
+  @override
+  String get bhutaniCurrentBeyond168h =>
+      'Usia bayi saat ini sudah lebih dari 168 jam.';
+
+  @override
+  String get axisLabelTotalSerumBilirubin => 'Total Bilirubin Serum (mg/dL)';
+
+  @override
+  String get axisLabelAgeHours => 'Usia (jam)';
 
   @override
   String get zoneLow => 'Risiko Rendah';
 
   @override
-  String get zoneIntermediate => 'Risiko Menengah';
+  String get zoneLowIntermediate => 'Risiko Rendah Menengah';
 
   @override
   String get zoneHighIntermediate => 'Risiko Menengah Tinggi';
@@ -66,30 +83,23 @@ class AppLocalizationsId extends AppLocalizations {
   String get zoneHigh => 'Risiko Tinggi';
 
   @override
-  String get zoneVeryHigh => 'Risiko Sangat Tinggi';
-
-  @override
   String get recommendationHeader => 'Rekomendasi';
 
   @override
   String get recommendationLow =>
-      'Kadar bilirubin dalam batas aman. Terus lakukan pemantauan rutin. Tidak diperlukan tindakan segera.';
+      'Kadar bilirubin dalam batas aman (di bawah persentil ke-40). Terus lakukan pemantauan rutin. Tidak diperlukan tindakan segera.';
 
   @override
-  String get recommendationIntermediate =>
-      'Bilirubin berada di zona menengah. Ulangi pengukuran dalam 8–12 jam dan pantau dengan cermat.';
+  String get recommendationLowIntermediate =>
+      'Bilirubin berada di zona rendah menengah (persentil ke-40 hingga ke-75). Ulangi pengukuran dalam 8–12 jam dan pantau dengan cermat.';
 
   @override
   String get recommendationHighIntermediate =>
-      'Bilirubin berada di zona menengah tinggi. Ulangi pengukuran dalam 4–8 jam. Pertimbangkan fototerapi sesuai panduan AAP 2022.';
+      'Bilirubin berada di zona menengah tinggi (persentil ke-75 hingga ke-95). Ulangi pengukuran dalam 4–8 jam. Pertimbangkan fototerapi sesuai panduan AAP 2022.';
 
   @override
   String get recommendationHigh =>
-      'Bilirubin berada di zona risiko tinggi. Pertimbangkan fototerapi segera. Konsultasikan dengan dokter spesialis neonatologi.';
-
-  @override
-  String get recommendationVeryHigh =>
-      'Bilirubin berada dalam kondisi kritis. Diperlukan intervensi segera. Segera eskalasi ke dokter neonatologi.';
+      'Bilirubin berada dalam kondisi kritis (di atas persentil ke-95). Diperlukan intervensi segera. Segera eskalasi ke dokter neonatologi.';
 
   @override
   String get metadataTitle => 'Informasi Bayi';
@@ -170,6 +180,29 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get validationNameInvalid =>
       'Nama mengandung karakter yang tidak valid.';
+
+  @override
+  String get settingsPiLanTitle => 'Raspberry Pi LAN';
+
+  @override
+  String get settingsPiAddressLabel => 'Alamat Pi atau URL';
+
+  @override
+  String get settingsPiAddressHint =>
+      '192.168.1.50:8080 atau http://raspi.local:8080';
+
+  @override
+  String get settingsPiSave => 'Simpan alamat Pi';
+
+  @override
+  String get settingsPiClear => 'Hapus';
+
+  @override
+  String get settingsPiBeaconUse => 'Gunakan';
+
+  @override
+  String get settingsPiBeaconDescription =>
+      'Jika ponsel dan Pi terhubung ke jaringan Wi-Fi yang sama, aplikasi dapat menemukan Pi secara otomatis melalui beacon. Supabase tetap menyimpan riwayat yang disinkronkan.';
 
   @override
   String get settingsWifi => 'Konfigurasi Wi-Fi';
@@ -265,16 +298,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get zoneLowFull => 'Zona Risiko Rendah';
 
   @override
-  String get zoneIntermediateFull => 'Zona Risiko Menengah';
+  String get zoneLowIntermediateFull => 'Zona Risiko Rendah Menengah';
 
   @override
   String get zoneHighIntermediateFull => 'Zona Risiko Menengah Tinggi';
 
   @override
   String get zoneHighFull => 'Zona Risiko Tinggi';
-
-  @override
-  String get zoneVeryHighFull => 'Zona Risiko Sangat Tinggi';
 
   @override
   String get deviceConnecting => 'Menghubungkan…';
@@ -298,6 +328,9 @@ class AppLocalizationsId extends AppLocalizations {
   String archivedCount(int count) {
     return 'Diarsipkan ($count)';
   }
+
+  @override
+  String get archivedBabies => 'Bayi Diarsipkan';
 
   @override
   String get archiveBabyAction => 'Arsipkan Bayi';
@@ -326,4 +359,160 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get permanentlyDeleteTooltip => 'Hapus permanen';
+
+  @override
+  String get signIn => 'Masuk';
+
+  @override
+  String get signOut => 'Keluar';
+
+  @override
+  String get signUp => 'Daftar';
+
+  @override
+  String get createAccount => 'Buat Akun';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get passwordLabel => 'Kata Sandi';
+
+  @override
+  String get confirmPasswordLabel => 'Konfirmasi Kata Sandi';
+
+  @override
+  String get signInSubtitle => 'Masuk ke akun rumah sakit Anda';
+
+  @override
+  String get signUpPrompt => 'Belum punya akun? Daftar';
+
+  @override
+  String get accountCreatedMessage =>
+      'Akun berhasil dibuat. Periksa email Anda untuk konfirmasi, lalu masuk.';
+
+  @override
+  String get unexpectedError => 'Terjadi kesalahan yang tidak terduga.';
+
+  @override
+  String get accountSection => 'Akun';
+
+  @override
+  String get adminPanel => 'Panel Admin';
+
+  @override
+  String get staffManagement => 'Manajemen Staf';
+
+  @override
+  String get staffManagementSubtitle => 'Tambah atau hapus perawat dan admin';
+
+  @override
+  String get parentAccess => 'Akses Orang Tua';
+
+  @override
+  String get parentAccessSubtitle => 'Hubungkan akun orang tua ke bayi';
+
+  @override
+  String get patientTransfers => 'Transfer Pasien';
+
+  @override
+  String get patientTransfersSubtitle =>
+      'Inisiasi atau terima transfer antar rumah sakit';
+
+  @override
+  String get addStaff => 'Tambah Staf';
+
+  @override
+  String get addStaffTitle => 'Tambah Anggota Staf';
+
+  @override
+  String get removeStaffTitle => 'Hapus Anggota Staf';
+
+  @override
+  String removeStaffContent(String email) {
+    return 'Hapus $email dari rumah sakit? Mereka akan kehilangan akses segera.';
+  }
+
+  @override
+  String get removeFromHospital => 'Hapus dari rumah sakit';
+
+  @override
+  String get roleNurse => 'Perawat';
+
+  @override
+  String get roleAdmin => 'Admin';
+
+  @override
+  String get temporaryPassword => 'Kata Sandi Sementara';
+
+  @override
+  String get noStaffYet => 'Belum ada staf.';
+
+  @override
+  String get you => 'Anda';
+
+  @override
+  String get parentSearchDescription =>
+      'Cari orang tua berdasarkan alamat email mereka, lalu hubungkan ke bayi.';
+
+  @override
+  String get parentEmailLabel => 'Email orang tua';
+
+  @override
+  String get searchAction => 'Cari';
+
+  @override
+  String get selectBabyToLink => 'Pilih bayi untuk dihubungkan:';
+
+  @override
+  String get linkParentToBaby => 'Hubungkan Orang Tua ke Bayi';
+
+  @override
+  String get linkedSuccess => 'Berhasil dihubungkan.';
+
+  @override
+  String parentFound(String email) {
+    return 'Orang tua ditemukan: $email';
+  }
+
+  @override
+  String get initiateTransfer => 'Inisiasi Transfer';
+
+  @override
+  String get sendRequest => 'Kirim Permintaan';
+
+  @override
+  String get acceptAction => 'Terima';
+
+  @override
+  String get rejectAction => 'Tolak';
+
+  @override
+  String get cancelRequest => 'Batalkan Permintaan';
+
+  @override
+  String get noTransferRequests => 'Tidak ada permintaan transfer.';
+
+  @override
+  String get destinationHospitalCode => 'Kode rumah sakit tujuan';
+
+  @override
+  String get waitingForHospital => 'Menunggu rumah sakit';
+
+  @override
+  String get waitingForHospitalBody =>
+      'Akun Anda telah dibuat. Silakan minta staf rumah sakit untuk menghubungkan akun Anda ke data bayi.';
+
+  @override
+  String get validationPasswordLength => 'Kata sandi harus minimal 8 karakter.';
+
+  @override
+  String get loggedInAs => 'Masuk sebagai';
+
+  @override
+  String get hospitalLabel => 'Rumah Sakit';
+
+  @override
+  String get contactAdminHelp =>
+      'Butuh bantuan? Hubungi administrator rumah sakit Anda.';
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:bilirubin/core/l10n/app_localizations.dart';
 import 'package:bilirubin/features/dashboard/widgets/baby_metadata_section.dart';
 import 'package:bilirubin/features/dashboard/widgets/baby_selector.dart';
@@ -10,6 +11,7 @@ import 'package:bilirubin/features/dashboard/widgets/image_carousel.dart';
 import 'package:bilirubin/features/dashboard/widgets/latest_result_card.dart';
 import 'package:bilirubin/features/dashboard/widgets/recommendation_card.dart';
 import 'package:bilirubin/providers/baby_providers.dart';
+import 'package:bilirubin/providers/user_profile_provider.dart';
 
 /// Main dashboard screen — composes all dashboard widgets.
 class DashboardScreen extends ConsumerWidget {
@@ -22,7 +24,20 @@ class DashboardScreen extends ConsumerWidget {
     final baby = ref.watch(selectedBabyProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.dashboardTitle)),
+      appBar: AppBar(
+        title: Text(l10n.dashboardTitle),
+        actions: [
+          if (ref.watch(userProfileProvider).valueOrNull?.isAdmin == true)
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: OutlinedButton.icon(
+                onPressed: () => context.go('/admin'),
+                icon: const Icon(Icons.admin_panel_settings_outlined, size: 20),
+                label: Text(l10n.adminPanel),
+              ),
+            ),
+        ],
+      ),
       body: babiesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),

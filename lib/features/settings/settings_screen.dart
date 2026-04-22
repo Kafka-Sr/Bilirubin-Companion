@@ -3,10 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bilirubin/core/l10n/app_localizations.dart';
 import 'package:bilirubin/models/pi_beacon.dart';
-import 'package:bilirubin/features/shared/pin_lock_screen.dart';
 import 'package:bilirubin/providers/pi_discovery_providers.dart';
 import 'package:bilirubin/providers/settings_providers.dart';
-import 'package:bilirubin/security/app_lock_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -31,7 +30,7 @@ class SettingsScreen extends ConsumerWidget {
           _BleSection(),
           _LanguageSection(),
           _ThemeSection(),
-          _AppLockSection(),
+          _LogoutSection(),
         ],
       ),
     );
@@ -64,16 +63,18 @@ class _PiLanSectionState extends ConsumerState<_PiLanSection> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final beaconsAsync = ref.watch(piBeaconListProvider);
     final beacons = beaconsAsync.valueOrNull ?? const <PiBeacon>[];
 
     return _Section(
-      title: 'Raspberry Pi LAN',
+      title: l10n.settingsPiLanTitle,
       icon: Icons.router_outlined,
       children: [
         if (beacons.isNotEmpty) ...[
           _BeaconList(
             beacons: beacons,
+            useLabel: l10n.settingsPiBeaconUse,
             onUseBeacon: (beacon) {
               _baseUrlCtrl.text = beacon.baseUrl;
               ref.read(piBaseUrlProvider.notifier).set(beacon.baseUrl);
@@ -84,9 +85,9 @@ class _PiLanSectionState extends ConsumerState<_PiLanSection> {
         TextField(
           controller: _baseUrlCtrl,
           keyboardType: TextInputType.url,
-          decoration: const InputDecoration(
-            labelText: 'Pi address or URL',
-            hintText: '192.168.1.50:8080 or http://raspi.local:8080',
+          decoration: InputDecoration(
+            labelText: l10n.settingsPiAddressLabel,
+            hintText: l10n.settingsPiAddressHint,
           ),
         ),
         const SizedBox(height: 12),
@@ -94,7 +95,7 @@ class _PiLanSectionState extends ConsumerState<_PiLanSection> {
           children: [
             FilledButton.icon(
               icon: const Icon(Icons.save_outlined),
-              label: const Text('Save Pi address'),
+              label: Text(l10n.settingsPiSave),
               onPressed: () {
                 ref.read(piBaseUrlProvider.notifier).set(_baseUrlCtrl.text);
               },
@@ -105,13 +106,13 @@ class _PiLanSectionState extends ConsumerState<_PiLanSection> {
                 _baseUrlCtrl.clear();
                 ref.read(piBaseUrlProvider.notifier).clear();
               },
-              child: const Text('Clear'),
+              child: Text(l10n.settingsPiClear),
             ),
           ],
         ),
         const SizedBox(height: 8),
         Text(
-          'If the phone and Pi are on the same Wi-Fi network, the app can discover the Pi automatically by beacon. Supabase still stores the synced history.',
+          l10n.settingsPiBeaconDescription,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.outline,
               ),
@@ -124,10 +125,12 @@ class _PiLanSectionState extends ConsumerState<_PiLanSection> {
 class _BeaconList extends StatelessWidget {
   const _BeaconList({
     required this.beacons,
+    required this.useLabel,
     required this.onUseBeacon,
   });
 
   final List<PiBeacon> beacons;
+  final String useLabel;
   final ValueChanged<PiBeacon> onUseBeacon;
 
   @override
@@ -142,7 +145,7 @@ class _BeaconList extends StatelessWidget {
             subtitle: Text('${beacon.baseUrl} • ${beacon.deviceId}'),
             trailing: TextButton(
               onPressed: () => onUseBeacon(beacon),
-              child: const Text('Use'),
+              child: Text(useLabel),
             ),
           ),
       ],
@@ -307,44 +310,27 @@ class _ThemeSection extends ConsumerWidget {
   }
 }
 
-// ── App lock ──────────────────────────────────────────────────────────────────
+// ── Logout ────────────────────────────────────────────────────────────────────
 
-class _AppLockSection extends ConsumerWidget {
-  const _AppLockSection();
+class _LogoutSection extends StatelessWidget {
+  const _LogoutSection();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
-    final enabled = ref.watch(appLockEnabledProvider);
-    final lockService = AppLockService();
-
+  Widget build(BuildContext context) {
     return _Section(
-      title: l10n.settingsAppLock,
-      icon: Icons.lock_outline,
+      title: AppLocalizations.of(context).accountSection,
+      icon: Icons.account_circle_outlined,
       children: [
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(l10n.settingsAppLock),
-          subtitle: Text(l10n.settingsAppLockSubtitle),
-          trailing: Transform.scale(
-            scale: 0.75,
-            alignment: Alignment.centerRight,
-            child: Switch(
-              value: enabled,
-              onChanged: (v) async {
-                if (v) {
-                  final set = await showSetPinSheet(context);
-                  if (set) {
-                    ref.read(appLockEnabledProvider.notifier).state = true;
-                  }
-                } else {
-                  await lockService.disableLock();
-                  ref.read(appLockEnabledProvider.notifier).state = false;
-                }
-              },
-            ),
+        SizedBox(
+          width: double.infinity,
+          child: FilledButton(
+            onPressed: () async {
+              await Supabase.instance.client.auth.signOut();
+              if (context.mounted) context.go('/login');
+            },
+            child: Text(AppLocalizations.of(context).signOut),
           ),
-        )
+        ),
       ],
     );
   }

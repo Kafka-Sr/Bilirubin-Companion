@@ -21,7 +21,7 @@ dependencies:
   flutter_dotenv: ^5.2.1
 
   # Cloud backend
-  supabase_flutter: ^2.8.0
+  supabase_flutter: ^2.12.4
 
   # Navigation
   go_router: ^14.6.2

@@ -34,9 +34,9 @@ class BabyMetadataSection extends StatelessWidget {
                 Text(l10n.metadataTitle,
                     style: theme.textTheme.titleLarge
                         ?.copyWith(fontWeight: FontWeight.bold)),
-                FilledButton.tonal(
+                OutlinedButton(
                   onPressed: () => showBabyEditModal(context, existing: baby),
-                  style: FilledButton.styleFrom(
+                  style: OutlinedButton.styleFrom(
                     shape: const CircleBorder(),
                     padding: EdgeInsets.zero,
                     minimumSize: const Size(48, 48),

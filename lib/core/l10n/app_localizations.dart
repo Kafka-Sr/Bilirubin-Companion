@@ -179,8 +179,38 @@ abstract class AppLocalizations {
   /// No description provided for @showPreviousBilirubin.
   ///
   /// In en, this message translates to:
-  /// **'Show Previous Bilirubin'**
+  /// **'Show Previous Readings'**
   String get showPreviousBilirubin;
+
+  /// No description provided for @showReadingsOutside168h.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Readings >168 h'**
+  String get showReadingsOutside168h;
+
+  /// No description provided for @bhutaniOutsideRangeNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder: This Bhutani nomogram only displays bilirubin readings from ages 0 to 168 hours. Readings beyond this age range are in purple dots.'**
+  String get bhutaniOutsideRangeNotice;
+
+  /// No description provided for @bhutaniCurrentBeyond168h.
+  ///
+  /// In en, this message translates to:
+  /// **'The baby\'s age is currently beyond 168 hours.'**
+  String get bhutaniCurrentBeyond168h;
+
+  /// No description provided for @axisLabelTotalSerumBilirubin.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Serum Bilirubin (mg/dL)'**
+  String get axisLabelTotalSerumBilirubin;
+
+  /// No description provided for @axisLabelAgeHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Age (h)'**
+  String get axisLabelAgeHours;
 
   /// No description provided for @zoneLow.
   ///
@@ -188,11 +218,11 @@ abstract class AppLocalizations {
   /// **'Low Risk'**
   String get zoneLow;
 
-  /// No description provided for @zoneIntermediate.
+  /// No description provided for @zoneLowIntermediate.
   ///
   /// In en, this message translates to:
-  /// **'Intermediate Risk'**
-  String get zoneIntermediate;
+  /// **'Low Intermediate Risk'**
+  String get zoneLowIntermediate;
 
   /// No description provided for @zoneHighIntermediate.
   ///
@@ -206,12 +236,6 @@ abstract class AppLocalizations {
   /// **'High Risk'**
   String get zoneHigh;
 
-  /// No description provided for @zoneVeryHigh.
-  ///
-  /// In en, this message translates to:
-  /// **'Very High Risk'**
-  String get zoneVeryHigh;
-
   /// No description provided for @recommendationHeader.
   ///
   /// In en, this message translates to:
@@ -221,32 +245,26 @@ abstract class AppLocalizations {
   /// No description provided for @recommendationLow.
   ///
   /// In en, this message translates to:
-  /// **'Bilirubin levels are within the safe range. Continue routine monitoring. No immediate action required.'**
+  /// **'Bilirubin levels are within the safe range (below 40th percentile). Continue routine monitoring. No immediate action required.'**
   String get recommendationLow;
 
-  /// No description provided for @recommendationIntermediate.
+  /// No description provided for @recommendationLowIntermediate.
   ///
   /// In en, this message translates to:
-  /// **'Bilirubin is in the intermediate zone. Repeat measurement in 8–12 hours and monitor closely.'**
-  String get recommendationIntermediate;
+  /// **'Bilirubin is in the low intermediate zone (40th–75th percentile). Repeat measurement in 8–12 hours and monitor closely.'**
+  String get recommendationLowIntermediate;
 
   /// No description provided for @recommendationHighIntermediate.
   ///
   /// In en, this message translates to:
-  /// **'Bilirubin is in the high-intermediate zone. Repeat measurement in 4–8 hours. Consider initiating phototherapy per AAP 2022 guidelines.'**
+  /// **'Bilirubin is in the high intermediate zone (75th–95th percentile). Repeat measurement in 4–8 hours. Consider initiating phototherapy per AAP 2022 guidelines.'**
   String get recommendationHighIntermediate;
 
   /// No description provided for @recommendationHigh.
   ///
   /// In en, this message translates to:
-  /// **'Bilirubin is in the high-risk zone. Consider phototherapy immediately. Consult a neonatologist.'**
+  /// **'Bilirubin is critically elevated (above 95th percentile). Immediate intervention required. Escalate to a neonatologist urgently.'**
   String get recommendationHigh;
-
-  /// No description provided for @recommendationVeryHigh.
-  ///
-  /// In en, this message translates to:
-  /// **'Bilirubin is critically elevated. Immediate intervention required. Escalate to a neonatologist urgently.'**
-  String get recommendationVeryHigh;
 
   /// No description provided for @metadataTitle.
   ///
@@ -391,6 +409,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Name contains invalid characters.'**
   String get validationNameInvalid;
+
+  /// No description provided for @settingsPiLanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Raspberry Pi LAN'**
+  String get settingsPiLanTitle;
+
+  /// No description provided for @settingsPiAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Pi address or URL'**
+  String get settingsPiAddressLabel;
+
+  /// No description provided for @settingsPiAddressHint.
+  ///
+  /// In en, this message translates to:
+  /// **'192.168.1.50:8080 or http://raspi.local:8080'**
+  String get settingsPiAddressHint;
+
+  /// No description provided for @settingsPiSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Pi address'**
+  String get settingsPiSave;
+
+  /// No description provided for @settingsPiClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get settingsPiClear;
+
+  /// No description provided for @settingsPiBeaconUse.
+  ///
+  /// In en, this message translates to:
+  /// **'Use'**
+  String get settingsPiBeaconUse;
+
+  /// No description provided for @settingsPiBeaconDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'If the phone and Pi are on the same Wi-Fi network, the app can discover the Pi automatically by beacon. Supabase still stores the synced history.'**
+  String get settingsPiBeaconDescription;
 
   /// No description provided for @settingsWifi.
   ///
@@ -572,11 +632,11 @@ abstract class AppLocalizations {
   /// **'Low Risk Zone'**
   String get zoneLowFull;
 
-  /// No description provided for @zoneIntermediateFull.
+  /// No description provided for @zoneLowIntermediateFull.
   ///
   /// In en, this message translates to:
-  /// **'Intermediate Risk Zone'**
-  String get zoneIntermediateFull;
+  /// **'Low Intermediate Risk Zone'**
+  String get zoneLowIntermediateFull;
 
   /// No description provided for @zoneHighIntermediateFull.
   ///
@@ -589,12 +649,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'High Risk Zone'**
   String get zoneHighFull;
-
-  /// No description provided for @zoneVeryHighFull.
-  ///
-  /// In en, this message translates to:
-  /// **'Very High Risk Zone'**
-  String get zoneVeryHighFull;
 
   /// No description provided for @deviceConnecting.
   ///
@@ -637,6 +691,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Archived ({count})'**
   String archivedCount(int count);
+
+  /// No description provided for @archivedBabies.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived Babies'**
+  String get archivedBabies;
 
   /// No description provided for @archiveBabyAction.
   ///
@@ -685,6 +745,300 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Permanently delete'**
   String get permanentlyDeleteTooltip;
+
+  /// No description provided for @signIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get signIn;
+
+  /// No description provided for @signOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Out'**
+  String get signOut;
+
+  /// No description provided for @signUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Up'**
+  String get signUp;
+
+  /// No description provided for @createAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Account'**
+  String get createAccount;
+
+  /// No description provided for @emailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get emailLabel;
+
+  /// No description provided for @passwordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get passwordLabel;
+
+  /// No description provided for @confirmPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirmPasswordLabel;
+
+  /// No description provided for @signInSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to your hospital account'**
+  String get signInSubtitle;
+
+  /// No description provided for @signUpPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account? Sign up'**
+  String get signUpPrompt;
+
+  /// No description provided for @accountCreatedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Account created. Check your email to confirm, then sign in.'**
+  String get accountCreatedMessage;
+
+  /// No description provided for @unexpectedError.
+  ///
+  /// In en, this message translates to:
+  /// **'An unexpected error occurred.'**
+  String get unexpectedError;
+
+  /// No description provided for @accountSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get accountSection;
+
+  /// No description provided for @adminPanel.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Panel'**
+  String get adminPanel;
+
+  /// No description provided for @staffManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Management'**
+  String get staffManagement;
+
+  /// No description provided for @staffManagementSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add or remove nurses and admins'**
+  String get staffManagementSubtitle;
+
+  /// No description provided for @parentAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent Access'**
+  String get parentAccess;
+
+  /// No description provided for @parentAccessSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Link parent accounts to babies'**
+  String get parentAccessSubtitle;
+
+  /// No description provided for @patientTransfers.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient Transfers'**
+  String get patientTransfers;
+
+  /// No description provided for @patientTransfersSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Initiate or accept transfers between hospitals'**
+  String get patientTransfersSubtitle;
+
+  /// No description provided for @addStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Staff'**
+  String get addStaff;
+
+  /// No description provided for @addStaffTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Staff Member'**
+  String get addStaffTitle;
+
+  /// No description provided for @removeStaffTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Staff Member'**
+  String get removeStaffTitle;
+
+  /// No description provided for @removeStaffContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {email} from the hospital? They will lose access immediately.'**
+  String removeStaffContent(String email);
+
+  /// No description provided for @removeFromHospital.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from hospital'**
+  String get removeFromHospital;
+
+  /// No description provided for @roleNurse.
+  ///
+  /// In en, this message translates to:
+  /// **'Nurse'**
+  String get roleNurse;
+
+  /// No description provided for @roleAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get roleAdmin;
+
+  /// No description provided for @temporaryPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Temporary Password'**
+  String get temporaryPassword;
+
+  /// No description provided for @noStaffYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No staff yet.'**
+  String get noStaffYet;
+
+  /// No description provided for @you.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get you;
+
+  /// No description provided for @parentSearchDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for a parent by their email address, then link them to a baby.'**
+  String get parentSearchDescription;
+
+  /// No description provided for @parentEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent email'**
+  String get parentEmailLabel;
+
+  /// No description provided for @searchAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get searchAction;
+
+  /// No description provided for @selectBabyToLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Select baby to link:'**
+  String get selectBabyToLink;
+
+  /// No description provided for @linkParentToBaby.
+  ///
+  /// In en, this message translates to:
+  /// **'Link Parent to Baby'**
+  String get linkParentToBaby;
+
+  /// No description provided for @linkedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Successfully linked.'**
+  String get linkedSuccess;
+
+  /// No description provided for @parentFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent found: {email}'**
+  String parentFound(String email);
+
+  /// No description provided for @initiateTransfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Initiate Transfer'**
+  String get initiateTransfer;
+
+  /// No description provided for @sendRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Request'**
+  String get sendRequest;
+
+  /// No description provided for @acceptAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get acceptAction;
+
+  /// No description provided for @rejectAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get rejectAction;
+
+  /// No description provided for @cancelRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Request'**
+  String get cancelRequest;
+
+  /// No description provided for @noTransferRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No transfer requests.'**
+  String get noTransferRequests;
+
+  /// No description provided for @destinationHospitalCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Destination hospital code'**
+  String get destinationHospitalCode;
+
+  /// No description provided for @waitingForHospital.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for hospital'**
+  String get waitingForHospital;
+
+  /// No description provided for @waitingForHospitalBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has been created. Please ask the hospital staff to link your account to your baby\'s record.'**
+  String get waitingForHospitalBody;
+
+  /// No description provided for @validationPasswordLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 8 characters.'**
+  String get validationPasswordLength;
+
+  /// No description provided for @loggedInAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged in as'**
+  String get loggedInAs;
+
+  /// No description provided for @hospitalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Hospital'**
+  String get hospitalLabel;
+
+  /// No description provided for @contactAdminHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Need help? Contact your hospital\'s administrator.'**
+  String get contactAdminHelp;
 }
 
 class _AppLocalizationsDelegate
