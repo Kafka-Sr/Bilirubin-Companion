@@ -33,6 +33,25 @@ final latestMeasurementProvider = Provider<Measurement?>((ref) {
   return ref.watch(measurementsProvider(baby.id)).valueOrNull?.firstOrNull;
 });
 
+/// The measurement ID selected via the image carousel. Null = show latest.
+final selectedCarouselMeasurementIdProvider =
+    StateProvider<String?>((ref) => null);
+
+/// The measurement currently highlighted by the carousel, or the latest if
+/// no carousel selection is active.
+final activeMeasurementProvider = Provider<Measurement?>((ref) {
+  final selectedId = ref.watch(selectedCarouselMeasurementIdProvider);
+  final baby = ref.watch(selectedBabyProvider);
+  if (baby == null) return null;
+  final all = ref.watch(measurementsProvider(baby.id)).valueOrNull;
+  if (all == null || all.isEmpty) return null;
+  if (selectedId == null) return all.firstOrNull;
+  return all.firstWhere(
+    (m) => m.measurementId == selectedId,
+    orElse: () => all.first,
+  );
+});
+
 extension<T> on List<T> {
   T? get firstOrNull => isEmpty ? null : first;
 }

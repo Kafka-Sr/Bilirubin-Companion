@@ -16,6 +16,12 @@ class BabyRepository {
   Stream<List<domain.Baby>> watchAllActive() =>
       _db.babiesDao.watchAllActive().map((rows) => rows.map(_toModel).toList());
 
+  Future<List<domain.Baby>> getAll() async {
+    final active = await _db.babiesDao.watchAllActive().first;
+    final archived = await _db.babiesDao.watchAllArchived().first;
+    return [...active, ...archived].map(_toModel).toList();
+  }
+
   Future<domain.Baby?> getById(int id) async {
     final row = await _db.babiesDao.getBabyById(id);
     return row == null ? null : _toModel(row);

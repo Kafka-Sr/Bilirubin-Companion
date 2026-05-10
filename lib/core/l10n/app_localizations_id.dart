@@ -440,6 +440,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get roleNurse => 'Perawat';
 
   @override
+  String get roleStaff => 'Staf';
+
+  @override
   String get roleAdmin => 'Admin';
 
   @override
@@ -507,6 +510,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get validationPasswordLength => 'Kata sandi harus minimal 8 karakter.';
 
   @override
+  String get previousReadings => 'Bacaan Sebelumnya';
+
+  @override
   String get loggedInAs => 'Masuk sebagai';
 
   @override
@@ -515,4 +521,7 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get contactAdminHelp =>
       'Butuh bantuan? Hubungi administrator rumah sakit Anda.';
+
+  @override
+  String get simulationMode => 'Mode Simulasi';
 }

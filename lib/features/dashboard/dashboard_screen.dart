@@ -11,6 +11,7 @@ import 'package:bilirubin/features/dashboard/widgets/image_carousel.dart';
 import 'package:bilirubin/features/dashboard/widgets/latest_result_card.dart';
 import 'package:bilirubin/features/dashboard/widgets/recommendation_card.dart';
 import 'package:bilirubin/providers/baby_providers.dart';
+import 'package:bilirubin/providers/cloud_sync_providers.dart';
 import 'package:bilirubin/providers/user_profile_provider.dart';
 
 /// Main dashboard screen — composes all dashboard widgets.
@@ -47,9 +48,8 @@ class DashboardScreen extends ConsumerWidget {
           }
 
           return RefreshIndicator(
-            onRefresh: () async {
-              // Re-read stream — no-op but satisfies the gesture.
-            },
+            onRefresh: () =>
+                ref.read(syncNotifierProvider.notifier).push(),
             child: CustomScrollView(
               slivers: [
                 SliverToBoxAdapter(

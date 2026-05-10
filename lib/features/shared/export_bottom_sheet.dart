@@ -233,19 +233,6 @@ class _ExportSheetState extends State<_ExportSheet> {
             decoration: InputDecoration(
               suffixText: _extension,
               suffixStyle: TextStyle(color: colorScheme.outline),
-              filled: true,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(99),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(99),
-                borderSide: BorderSide.none,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(99),
-                borderSide: BorderSide.none,
-              ),
             ),
           ),
           const SizedBox(height: 16),
@@ -262,21 +249,7 @@ class _ExportSheetState extends State<_ExportSheet> {
                 Expanded(
                   child: TextField(
                     controller: _locationCtrl,
-                    decoration: InputDecoration(
-                      filled: true,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(99),
-                        borderSide: BorderSide.none,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(99),
-                        borderSide: BorderSide.none,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(99),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
+                    decoration: const InputDecoration(),
                   ),
                 ),
                 const SizedBox(width: 8),

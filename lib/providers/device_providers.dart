@@ -9,11 +9,17 @@ import 'package:bilirubin/providers/baby_providers.dart';
 import 'package:bilirubin/providers/measurement_providers.dart';
 import 'package:bilirubin/providers/settings_providers.dart';
 
-/// The active [DeviceRepository] implementation (fake in v1).
+/// The active [DeviceRepository] implementation.
 ///
-/// Swap [FakeDeviceRepository] for [WifiDeviceRepository] or
-/// [BleDeviceRepository] in a future release.
+/// Priority: simulation mode flag → UDP beacon → manual Pi URL → fake (fallback).
 final deviceRepositoryProvider = Provider<DeviceRepository>((ref) {
+  final simulationMode = ref.watch(simulationModeProvider);
+  if (simulationMode) {
+    final repo = FakeDeviceRepository();
+    ref.onDispose(repo.dispose);
+    return repo;
+  }
+
   final discoveredBeacons = ref.watch(piBeaconListProvider).valueOrNull ?? const [];
   final discoveredBaseUrl = discoveredBeacons.isNotEmpty
       ? discoveredBeacons.first.baseUrl

@@ -438,6 +438,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get roleNurse => 'Nurse';
 
   @override
+  String get roleStaff => 'Staff';
+
+  @override
   String get roleAdmin => 'Admin';
 
   @override
@@ -506,6 +509,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Password must be at least 8 characters.';
 
   @override
+  String get previousReadings => 'Previous Readings';
+
+  @override
   String get loggedInAs => 'Logged in as';
 
   @override
@@ -514,4 +520,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get contactAdminHelp =>
       'Need help? Contact your hospital\'s administrator.';
+
+  @override
+  String get simulationMode => 'Simulation Mode';
 }

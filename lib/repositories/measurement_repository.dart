@@ -96,6 +96,39 @@ class MeasurementRepository {
     return _encryption.decrypt(blob);
   }
 
+  /// Inserts a measurement row sourced from Supabase without re-queuing it.
+  ///
+  /// Skips the row silently if it already exists locally (preserving any local
+  /// image data) or if the bilirubin value is out of acceptable bounds.
+  /// Images are not synced from the cloud — [hasImage] is always set to false.
+  Future<void> upsertFromCloud(Map<String, dynamic> row, int babyId) async {
+    final bilirubinRaw = (row['bilirubin_mg_dl'] as num?)?.toDouble();
+    if (bilirubinRaw == null || !isBilirubinAcceptable(bilirubinRaw)) return;
+
+    final capturedAt =
+        DateTime.tryParse(row['captured_at'] as String? ?? '');
+    if (capturedAt == null) return;
+
+    final receivedAt =
+        DateTime.tryParse(row['received_at'] as String? ?? '') ?? capturedAt;
+    final ageHours = (row['age_hours'] as num?)?.toDouble() ?? 0.0;
+
+    await _db.measurementsDao.insertFromCloudIfAbsent(
+      MeasurementsCompanion.insert(
+        measurementId: row['measurement_id'] as String,
+        babyId: babyId,
+        capturedAt: capturedAt,
+        receivedAt: receivedAt,
+        ageHours: ageHours,
+        bilirubinMgDl: bilirubinRaw,
+        hasImage: const Value(false),
+        deviceId: Value(row['device_id'] as String?),
+        modelVersion: Value(row['model_version'] as String?),
+      ),
+    );
+    // No outbox enqueue — record is already in Supabase.
+  }
+
   // ── Delete ─────────────────────────────────────────────────────────────────
 
   Future<void> delete(String measurementId) async {

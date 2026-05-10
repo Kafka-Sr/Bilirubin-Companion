@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:bilirubin/core/l10n/app_localizations.dart';
 import 'package:bilirubin/providers/baby_providers.dart';
+import 'package:bilirubin/providers/user_profile_provider.dart';
+import 'package:bilirubin/utils/error_utils.dart';
 
 class ParentLinkingScreen extends ConsumerStatefulWidget {
   const ParentLinkingScreen({super.key});
@@ -46,7 +48,7 @@ class _ParentLinkingScreenState extends ConsumerState<ParentLinkingScreen> {
             email: res.data['email'] as String,
           ));
     } catch (e) {
-      setState(() => _searchError = e.toString());
+      setState(() => _searchError = friendlyError(e));
     } finally {
       setState(() => _searching = false);
     }
@@ -77,6 +79,7 @@ class _ParentLinkingScreenState extends ConsumerState<ParentLinkingScreen> {
                   decoration: InputDecoration(
                     labelText: l10n.parentEmailLabel,
                     prefixIcon: const Icon(Icons.email_outlined),
+                    errorText: _searchError,
                   ),
                   onSubmitted: (_) => _search(),
                 ),
@@ -93,14 +96,6 @@ class _ParentLinkingScreenState extends ConsumerState<ParentLinkingScreen> {
               ),
             ],
           ),
-          if (_searchError != null) ...[
-            const SizedBox(height: 12),
-            Text(
-              _searchError!,
-              style: TextStyle(
-                  color: Theme.of(context).colorScheme.error, fontSize: 13),
-            ),
-          ],
           if (_foundParent != null) ...[
             const SizedBox(height: 24),
             _LinkCard(parent: _foundParent!),
@@ -140,14 +135,20 @@ class _LinkCardState extends ConsumerState<_LinkCard> {
       _error = null;
     });
     try {
+      final profile = await ref.read(userProfileProvider.future);
+      if (profile?.hospitalId == null) {
+        setState(() => _error = 'Hospital not found for your account.');
+        return;
+      }
       await Supabase.instance.client.from('parent_baby_access').insert({
         'parent_user_id': widget.parent.userId,
-        'baby_id': _selectedBabyId,
+        'hospital_id': profile!.hospitalId,
+        'baby_local_id': _selectedBabyId,
         'granted_by': Supabase.instance.client.auth.currentUser!.id,
       });
       setState(() => _linked = true);
     } catch (e) {
-      setState(() => _error = e.toString());
+      setState(() => _error = friendlyError(e));
     } finally {
       setState(() => _linking = false);
     }

@@ -199,6 +199,7 @@
   },
   "removeFromHospital": "Remove from hospital",
   "roleNurse": "Nurse",
+  "roleStaff": "Staff",
   "roleAdmin": "Admin",
   "temporaryPassword": "Temporary Password",
   "noStaffYet": "No staff yet.",
@@ -229,8 +230,11 @@
   "waitingForHospitalBody": "Your account has been created. Please ask the hospital staff to link your account to your baby's record.",
   "validationPasswordLength": "Password must be at least 8 characters.",
 
+  "previousReadings": "Previous Readings",
   "loggedInAs": "Logged in as",
   "hospitalLabel": "Hospital",
 
-  "contactAdminHelp": "Need help? Contact your hospital's administrator."
+  "contactAdminHelp": "Need help? Contact your hospital's administrator.",
+
+  "simulationMode": "Simulation Mode"
 }

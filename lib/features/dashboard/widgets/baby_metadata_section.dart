@@ -90,24 +90,26 @@ class _MetadataField extends StatelessWidget {
               ),
         ),
         const SizedBox(height: 6),
-        TextFormField(
-          key: ValueKey(value),
-          initialValue: value,
-          readOnly: true,
-          style: Theme.of(context).textTheme.bodyLarge,
-          decoration: InputDecoration(
-            isDense: true,
-            filled: true,
-            fillColor: colorScheme.surface,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
+        IgnorePointer(
+          child: TextFormField(
+            key: ValueKey(value),
+            initialValue: value,
+            readOnly: true,
+            style: Theme.of(context).textTheme.bodyLarge,
+            decoration: InputDecoration(
+              isDense: true,
+              filled: true,
+              fillColor: colorScheme.surface,
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
             ),
           ),
         ),

@@ -53,4 +53,39 @@ class CloudSyncRepository {
   }) async {
     await _requiredClient.from(table).delete().eq(column, value);
   }
+
+  /// Fetches measurements from Supabase for a specific baby.
+  ///
+  /// Only returns rows that have a [babyLocalId] assigned (i.e. the app has
+  /// previously associated them with a baby). Optionally filters to records
+  /// captured after [capturedAfter] to limit payload size.
+  Future<List<Map<String, dynamic>>> fetchMeasurements({
+    required String hospitalId,
+    required int babyLocalId,
+    DateTime? capturedAfter,
+  }) async {
+    var query = _requiredClient
+        .from('measurements')
+        .select()
+        .eq('hospital_id', hospitalId)
+        .eq('baby_local_id', babyLocalId);
+
+    if (capturedAfter != null) {
+      query = query.gt('captured_at', capturedAfter.toIso8601String());
+    }
+
+    final rows = await query.order('captured_at');
+    return (rows as List).cast<Map<String, dynamic>>();
+  }
+
+  Future<void> deleteWhere({
+    required String table,
+    required Map<String, Object> filters,
+  }) async {
+    var q = _requiredClient.from(table).delete();
+    for (final entry in filters.entries) {
+      q = q.eq(entry.key, entry.value);
+    }
+    await q;
+  }
 }

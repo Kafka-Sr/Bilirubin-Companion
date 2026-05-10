@@ -7,10 +7,11 @@ import 'package:bilirubin/models/baby.dart';
 import 'package:bilirubin/providers/baby_providers.dart';
 import 'package:bilirubin/providers/database_provider.dart';
 import 'package:bilirubin/providers/measurement_providers.dart';
+import 'package:bilirubin/providers/settings_providers.dart';
 import 'package:bilirubin/repositories/audit_repository.dart';
 import 'package:bilirubin/repositories/baby_repository.dart';
 
-enum _BabyMenuAction { add, archive }
+enum _BabyMenuAction { add, archive, toggleSimulation }
 
 /// Top-bar widget with a baby name pill, overflow menu, and export button.
 class BabySelector extends ConsumerWidget {
@@ -132,6 +133,7 @@ class _OverflowMenu extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
     final hasSelection = selectedBaby != null;
+    final simMode = ref.watch(simulationModeProvider);
 
     return ClipOval(
       child: PopupMenuButton<_BabyMenuAction>(
@@ -150,6 +152,27 @@ class _OverflowMenu extends ConsumerWidget {
             child: Text(
               l10n.archiveBabyAction,
               style: hasSelection ? null : TextStyle(color: colorScheme.onSurface.withValues(alpha: 0.38)),
+            ),
+          ),
+          const PopupMenuDivider(),
+          PopupMenuItem(
+            value: _BabyMenuAction.toggleSimulation,
+            child: Row(
+              children: [
+                Icon(
+                  simMode ? Icons.science : Icons.science_outlined,
+                  size: 20,
+                  color: simMode ? colorScheme.primary : null,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  AppLocalizations.of(ctx).simulationMode,
+                  style: simMode ? TextStyle(color: colorScheme.primary) : null,
+                ),
+                const Spacer(),
+                if (simMode)
+                  Icon(Icons.check, size: 18, color: colorScheme.primary),
+              ],
             ),
           ),
         ];
@@ -174,6 +197,8 @@ class _OverflowMenu extends ConsumerWidget {
         if (selectedBaby != null) {
           await _confirmArchive(context, ref, selectedBaby!);
         }
+      case _BabyMenuAction.toggleSimulation:
+        ref.read(simulationModeProvider.notifier).toggle();
     }
   }
 
@@ -333,19 +358,6 @@ class _BabySearchSheetState extends ConsumerState<_BabySearchSheet> {
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.search),
                 hintText: AppLocalizations.of(context).searchBabiesHint,
-                filled: true,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(99),
-                  borderSide: BorderSide.none,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(99),
-                  borderSide: BorderSide.none,
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(99),
-                  borderSide: BorderSide.none,
-                ),
               ),
               onChanged: (v) => setState(() => _query = v),
             ),

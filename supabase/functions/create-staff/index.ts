@@ -12,8 +12,8 @@ serve(async (req) => {
   try {
     const { email, password, role } = await req.json()
 
-    if (!['admin', 'nurse', 'parent'].includes(role)) {
-      return json({ error: 'Role must be admin, nurse, or parent' }, 400)
+    if (!['admin', 'staff'].includes(role)) {
+      return json({ error: 'Role must be admin or staff' }, 400)
     }
 
     const authHeader = req.headers.get('Authorization')

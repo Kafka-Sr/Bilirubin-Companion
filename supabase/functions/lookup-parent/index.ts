@@ -30,7 +30,7 @@ serve(async (req) => {
       .eq('user_id', caller.id)
       .single()
 
-    if (!['admin', 'nurse'].includes(callerProfile?.role)) {
+    if (!['admin', 'staff', 'nurse'].includes(callerProfile?.role)) {
       return json({ error: 'Unauthorized' }, 403)
     }
 

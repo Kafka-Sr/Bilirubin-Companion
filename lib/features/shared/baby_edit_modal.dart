@@ -58,35 +58,6 @@ class _BabyEditSheetState extends ConsumerState<_BabyEditSheet> {
     super.dispose();
   }
 
-  static InputDecoration _pillDecoration({
-    Widget? suffixIcon,
-    String? errorText,
-  }) =>
-      InputDecoration(
-        errorText: errorText,
-        suffixIcon: suffixIcon,
-        filled: true,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(99),
-          borderSide: BorderSide.none,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(99),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(99),
-          borderSide: BorderSide.none,
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(99),
-          borderSide: const BorderSide(color: Colors.red),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(99),
-          borderSide: const BorderSide(color: Colors.red),
-        ),
-      );
 
   static Widget _fieldLabel(BuildContext context, String text) => Text(
         text,
@@ -137,7 +108,7 @@ class _BabyEditSheetState extends ConsumerState<_BabyEditSheet> {
             const SizedBox(height: 6),
             TextFormField(
               controller: _nameCtrl,
-              decoration: _pillDecoration(),
+              decoration: const InputDecoration(),
               textCapitalization: TextCapitalization.words,
               maxLength: 100,
               validator: (_) => validateName(_nameCtrl.text),
@@ -149,7 +120,7 @@ class _BabyEditSheetState extends ConsumerState<_BabyEditSheet> {
             const SizedBox(height: 6),
             TextFormField(
               controller: _weightCtrl,
-              decoration: _pillDecoration(),
+              decoration: const InputDecoration(),
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: true),
               validator: (_) => validateWeightString(_weightCtrl.text),
@@ -277,19 +248,6 @@ class _DobField extends StatelessWidget {
               decoration: InputDecoration(
                 errorText: state.errorText,
                 suffixIcon: const Icon(Icons.calendar_today_outlined),
-                filled: true,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(99),
-                  borderSide: BorderSide.none,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(99),
-                  borderSide: BorderSide.none,
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(99),
-                  borderSide: BorderSide.none,
-                ),
               ),
               child: Text(
                 selected != null

@@ -19,10 +19,7 @@ class StaffMember {
 
   factory StaffMember.fromMap(Map<String, dynamic> m) => StaffMember(
         userId: m['user_id'] as String,
-        role: UserRole.values.firstWhere(
-          (r) => r.name == m['role'],
-          orElse: () => UserRole.nurse,
-        ),
+        role: parseUserRole(m['role'] as String? ?? ''),
         email: m['email'] as String? ?? '(no email)',
         hospitalId: m['hospital_id'] as String,
       );
@@ -36,7 +33,7 @@ final staffListProvider = FutureProvider.autoDispose<List<StaffMember>>((ref) as
       .from('user_profiles')
       .select()
       .eq('hospital_id', profile.hospitalId!)
-      .inFilter('role', ['admin', 'nurse'])
+      .inFilter('role', ['admin', 'staff', 'nurse'])
       .order('role')
       .order('email');
 

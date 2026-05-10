@@ -55,6 +55,20 @@ class _ImageCarouselState extends ConsumerState<ImageCarousel> {
   int _currentPage = 0;
 
   @override
+  void didUpdateWidget(ImageCarousel old) {
+    super.didUpdateWidget(old);
+    if (old.babyId != widget.babyId) {
+      // Baby switched — reset to "show latest" state.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ref.read(selectedCarouselMeasurementIdProvider.notifier).state = null;
+        }
+      });
+      _currentPage = 0;
+    }
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
@@ -84,7 +98,11 @@ class _ImageCarouselState extends ConsumerState<ImageCarousel> {
           child: PageView.builder(
             controller: _controller,
             itemCount: withImages.length,
-            onPageChanged: (i) => setState(() => _currentPage = i),
+            onPageChanged: (i) {
+              setState(() => _currentPage = i);
+              ref.read(selectedCarouselMeasurementIdProvider.notifier).state =
+                  withImages[i].measurementId;
+            },
             itemBuilder: (_, i) {
               final m = withImages[i];
               return _EncryptedImageTile(

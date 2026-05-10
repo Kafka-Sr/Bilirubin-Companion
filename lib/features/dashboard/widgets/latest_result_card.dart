@@ -15,7 +15,7 @@ class LatestResultCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final m = ref.watch(latestMeasurementProvider);
+    final m = ref.watch(activeMeasurementProvider);
     final zone = ref.watch(currentBhutaniZoneProvider);
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);

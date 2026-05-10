@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-enum UserRole { admin, nurse, parent }
+enum UserRole { admin, staff, parent }
 
 class UserProfile {
   const UserProfile({
@@ -14,19 +14,28 @@ class UserProfile {
   final UserRole role;
   final String? hospitalId; // null for parents
 
-  bool get isStaff => role == UserRole.admin || role == UserRole.nurse;
+  bool get isStaff => role == UserRole.admin || role == UserRole.staff;
   bool get isAdmin => role == UserRole.admin;
   bool get isParent => role == UserRole.parent;
 
   factory UserProfile.fromMap(Map<String, dynamic> map) {
     return UserProfile(
       userId: map['user_id'] as String,
-      role: UserRole.values.firstWhere(
-        (r) => r.name == map['role'],
-        orElse: () => UserRole.parent,
-      ),
+      role: parseUserRole(map['role'] as String? ?? ''),
       hospitalId: map['hospital_id'] as String?,
     );
+  }
+}
+
+UserRole parseUserRole(String raw) {
+  switch (raw) {
+    case 'admin':
+      return UserRole.admin;
+    case 'staff':
+    case 'nurse': // legacy value — treated as staff
+      return UserRole.staff;
+    default:
+      return UserRole.parent;
   }
 }
 

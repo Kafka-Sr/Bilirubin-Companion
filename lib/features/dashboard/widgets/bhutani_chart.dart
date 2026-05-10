@@ -21,6 +21,8 @@ class BhutaniChart extends ConsumerWidget {
     final measurementsAsync = ref.watch(measurementsProvider(babyId));
     final showHistory = ref.watch(showHistoryProvider);
     final showOutsideRange = ref.watch(showOutsideRangeProvider);
+    final selectedMeasurementId =
+        ref.watch(selectedCarouselMeasurementIdProvider);
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
 
@@ -84,6 +86,7 @@ class BhutaniChart extends ConsumerWidget {
                                 showHistory: showHistory,
                                 showOutsideRange: showOutsideRange,
                                 maxY: maxY,
+                                selectedMeasurementId: selectedMeasurementId,
                               ),
                               child: const SizedBox.expand(),
                             ),

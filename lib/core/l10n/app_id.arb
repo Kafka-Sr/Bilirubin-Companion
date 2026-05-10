@@ -153,6 +153,7 @@
   "removeStaffContent": "Hapus {email} dari rumah sakit? Mereka akan kehilangan akses segera.",
   "removeFromHospital": "Hapus dari rumah sakit",
   "roleNurse": "Perawat",
+  "roleStaff": "Staf",
   "roleAdmin": "Admin",
   "temporaryPassword": "Kata Sandi Sementara",
   "noStaffYet": "Belum ada staf.",
@@ -178,8 +179,11 @@
   "waitingForHospitalBody": "Akun Anda telah dibuat. Silakan minta staf rumah sakit untuk menghubungkan akun Anda ke data bayi.",
   "validationPasswordLength": "Kata sandi harus minimal 8 karakter.",
 
+  "previousReadings": "Bacaan Sebelumnya",
   "loggedInAs": "Masuk sebagai",
   "hospitalLabel": "Rumah Sakit",
 
-  "contactAdminHelp": "Butuh bantuan? Hubungi administrator rumah sakit Anda."
+  "contactAdminHelp": "Butuh bantuan? Hubungi administrator rumah sakit Anda.",
+
+  "simulationMode": "Mode Simulasi"
 }

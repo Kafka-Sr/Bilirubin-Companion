@@ -95,6 +95,25 @@ final piBaseUrlProvider =
   return _PiBaseUrlNotifier(ref.watch(sharedPreferencesProvider));
 });
 
+// ── Simulation mode ───────────────────────────────────────────────────────────
+
+class _SimulationModeNotifier extends StateNotifier<bool> {
+  _SimulationModeNotifier(this._prefs)
+      : super(_prefs.getBool(kPrefSimulationMode) ?? false);
+
+  final SharedPreferences _prefs;
+
+  void toggle() {
+    state = !state;
+    _prefs.setBool(kPrefSimulationMode, state);
+  }
+}
+
+final simulationModeProvider =
+    StateNotifierProvider<_SimulationModeNotifier, bool>((ref) {
+  return _SimulationModeNotifier(ref.watch(sharedPreferencesProvider));
+});
+
 // ── App lock toggle ───────────────────────────────────────────────────────────
 
 /// Simple in-memory flag for whether the lock screen should be shown.

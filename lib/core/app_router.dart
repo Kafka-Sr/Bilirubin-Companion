@@ -33,10 +33,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         return await _homeForCurrentUser(ref);
       }
 
-      // Role-based guard: parents cannot access staff routes.
-      if (isLoggedIn && location == '/dashboard') {
+      // Role-based guards.
+      if (isLoggedIn) {
         final profile = await ref.read(userProfileProvider.future);
-        if (profile != null && profile.isParent) return '/parent';
+        if (profile != null) {
+          // Parents must go to /parent; block all staff routes.
+          if (profile.isParent && location != '/parent') return '/parent';
+          // Non-admins cannot access /admin routes.
+          if (!profile.isAdmin && location.startsWith('/admin')) return '/dashboard';
+        }
       }
 
       // App lock check (staff only — parents don't have PIN lock).

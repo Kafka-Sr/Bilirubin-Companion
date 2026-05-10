@@ -55,6 +55,7 @@ const String kAppLockEnabledAlias = 'bilirubin_lock_enabled_v1';
 const String kPrefThemeMode = 'theme_mode';
 const String kPrefLocale = 'locale';
 const String kPrefPiBaseUrl = 'pi_base_url';
+const String kPrefSimulationMode = 'simulation_mode';
 
 // ── Raspberry Pi beacon discovery ────────────────────────────────────────────
 const String kPiBeaconType = 'bilirubin-pi-beacon';

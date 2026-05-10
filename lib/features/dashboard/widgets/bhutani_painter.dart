@@ -16,6 +16,7 @@ class BhutaniPainter extends CustomPainter {
     required this.showHistory,
     required this.showOutsideRange,
     required this.maxY,
+    this.selectedMeasurementId,
   });
 
   final BuildContext context;
@@ -23,6 +24,8 @@ class BhutaniPainter extends CustomPainter {
   final bool showHistory;
   final bool showOutsideRange;
   final double maxY;
+  /// When non-null, highlights this measurement instead of measurements.first.
+  final String? selectedMeasurementId;
 
   // Chart margins (left is larger to allow Y-axis number labels)
   static const double _left = 36;
@@ -238,18 +241,21 @@ class BhutaniPainter extends CustomPainter {
   ) {
     if (measurements.isEmpty) return;
 
-    final latest = measurements.first;
-    final latestIsOutside = _isOutside(latest);
+    // The "active" measurement is whichever the carousel selected, else latest.
+    final active = selectedMeasurementId != null
+        ? measurements.firstWhere(
+            (m) => m.measurementId == selectedMeasurementId,
+            orElse: () => measurements.first,
+          )
+        : measurements.first;
+    final activeIsOutside = _isOutside(active);
 
     // ── History line + dots ─────────────────────────────────────────────────
     if (showHistory && measurements.length > 1) {
       final sorted = measurements.reversed.toList();
 
-      // Build a filtered list for the history line:
-      // include in-range always; include outside-range only when toggle is on,
-      // but NEVER include latest here (it's drawn separately below).
       final historyMeasurements = sorted
-          .where((m) => m != latest)
+          .where((m) => m != active)
           .where((m) => !_isOutside(m) || showOutsideRange)
           .toList();
 
@@ -292,13 +298,12 @@ class BhutaniPainter extends CustomPainter {
       }
     }
 
-    // ── Latest point ─────────────────────────────────────────────────────────
-    // Always shown; purple if outside 168 h range.
-    final dotColor = latestIsOutside ? _purpleColor : colorScheme.error;
-    final lx = pxX(latest.ageHours.clamp(kNomogramMinHours, kNomogramMaxHours));
-    final ly = pxY(latest.bilirubinMgDl.clamp(0, maxY));
+    // ── Active (highlighted) point ────────────────────────────────────────────
+    final dotColor = activeIsOutside ? _purpleColor : colorScheme.error;
+    final lx = pxX(active.ageHours.clamp(kNomogramMinHours, kNomogramMaxHours));
+    final ly = pxY(active.bilirubinMgDl.clamp(0, maxY));
 
-    // Dashed vertical line from chart top to dot
+    // Dashed vertical drop-line
     final dashPaint = Paint()
       ..color = dotColor.withValues(alpha: 0.5)
       ..strokeWidth = 1.2;
@@ -334,5 +339,6 @@ class BhutaniPainter extends CustomPainter {
       old.measurements != measurements ||
       old.showHistory != showHistory ||
       old.showOutsideRange != showOutsideRange ||
-      old.maxY != maxY;
+      old.maxY != maxY ||
+      old.selectedMeasurementId != selectedMeasurementId;
 }

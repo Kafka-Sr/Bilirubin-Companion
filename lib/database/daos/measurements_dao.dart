@@ -30,6 +30,11 @@ class MeasurementsDao extends DatabaseAccessor<AppDatabase>
   Future<void> upsertMeasurement(MeasurementsCompanion companion) =>
       into(measurements).insertOnConflictUpdate(companion);
 
+  /// Inserts a cloud-pulled measurement only if [measurementId] is not already
+  /// present locally. Existing rows (which may carry image refs) are preserved.
+  Future<void> insertFromCloudIfAbsent(MeasurementsCompanion companion) =>
+      into(measurements).insert(companion, onConflict: DoNothing());
+
   /// Deletes a single measurement by its [measurementId].
   Future<int> deleteMeasurement(String measurementId) =>
       (delete(measurements)

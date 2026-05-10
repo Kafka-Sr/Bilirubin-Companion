@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:bilirubin/core/l10n/app_localizations.dart';
 import 'package:bilirubin/providers/admin_providers.dart';
 import 'package:bilirubin/providers/user_profile_provider.dart';
+import 'package:bilirubin/utils/error_utils.dart';
 
 class StaffManagementScreen extends ConsumerWidget {
   const StaffManagementScreen({super.key});
@@ -77,7 +78,7 @@ class _StaffTile extends StatelessWidget {
         ),
         title: Text(member.email),
         subtitle: Text(
-          member.role == UserRole.admin ? l10n.roleAdmin : l10n.roleNurse,
+          member.role == UserRole.admin ? l10n.roleAdmin : l10n.roleStaff,
           style: theme.textTheme.bodySmall,
         ),
         trailing: isSelf
@@ -136,7 +137,7 @@ class _AddStaffDialogState extends State<_AddStaffDialog> {
   final _formKey = GlobalKey<FormState>();
   final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
-  UserRole _role = UserRole.nurse;
+  UserRole _role = UserRole.staff;
   bool _obscure = true;
   bool _loading = false;
   String? _error;
@@ -170,7 +171,7 @@ class _AddStaffDialogState extends State<_AddStaffDialog> {
       widget.onCreated();
       if (mounted) Navigator.pop(context);
     } catch (e) {
-      setState(() => _error = e.toString());
+      setState(() => _error = friendlyError(e));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -218,16 +219,18 @@ class _AddStaffDialogState extends State<_AddStaffDialog> {
                 selected: {_role},
                 onSelectionChanged: (s) => setState(() => _role = s.first),
                 segments: [
-                  ButtonSegment(value: UserRole.nurse, label: Text(l10n.roleNurse)),
+                  ButtonSegment(value: UserRole.staff, label: Text(l10n.roleStaff)),
                   ButtonSegment(value: UserRole.admin, label: Text(l10n.roleAdmin)),
-                  const ButtonSegment(value: UserRole.parent, label: Text('Parent')),
                 ],
               ),
               if (_error != null) ...[
                 const SizedBox(height: 12),
-                Text(_error!,
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.error, fontSize: 12)),
+                Text(
+                  _error!,
+                  style: Theme.of(context).inputDecorationTheme.errorStyle?.copyWith(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                ),
               ],
             ],
           ),

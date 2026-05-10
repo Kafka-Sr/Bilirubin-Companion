@@ -896,6 +896,12 @@ abstract class AppLocalizations {
   /// **'Nurse'**
   String get roleNurse;
 
+  /// No description provided for @roleStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get roleStaff;
+
   /// No description provided for @roleAdmin.
   ///
   /// In en, this message translates to:
@@ -1022,6 +1028,12 @@ abstract class AppLocalizations {
   /// **'Password must be at least 8 characters.'**
   String get validationPasswordLength;
 
+  /// No description provided for @previousReadings.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous Readings'**
+  String get previousReadings;
+
   /// No description provided for @loggedInAs.
   ///
   /// In en, this message translates to:
@@ -1039,6 +1051,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Need help? Contact your hospital\'s administrator.'**
   String get contactAdminHelp;
+
+  /// No description provided for @simulationMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Simulation Mode'**
+  String get simulationMode;
 }
 
 class _AppLocalizationsDelegate

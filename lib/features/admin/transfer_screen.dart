@@ -5,6 +5,7 @@ import 'package:bilirubin/core/l10n/app_localizations.dart';
 import 'package:bilirubin/providers/admin_providers.dart';
 import 'package:bilirubin/providers/baby_providers.dart';
 import 'package:bilirubin/providers/user_profile_provider.dart';
+import 'package:bilirubin/utils/error_utils.dart';
 
 class TransferScreen extends ConsumerWidget {
   const TransferScreen({super.key});
@@ -96,7 +97,7 @@ class _TransferTileState extends ConsumerState<_TransferTile> {
       }
       widget.onChanged();
     } catch (e) {
-      _showError(e.toString());
+      _showError(friendlyError(e));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -115,7 +116,7 @@ class _TransferTileState extends ConsumerState<_TransferTile> {
           .eq('id', widget.transfer.id);
       widget.onChanged();
     } catch (e) {
-      _showError(e.toString());
+      _showError(friendlyError(e));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -130,7 +131,7 @@ class _TransferTileState extends ConsumerState<_TransferTile> {
           .eq('id', widget.transfer.id);
       widget.onChanged();
     } catch (e) {
-      _showError(e.toString());
+      _showError(friendlyError(e));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -290,7 +291,7 @@ class _InitiateTransferDialogState
       widget.onInitiated();
       if (mounted) Navigator.pop(context);
     } catch (e) {
-      setState(() => _error = e.toString());
+      setState(() => _error = friendlyError(e));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -341,16 +342,9 @@ class _InitiateTransferDialogState
               decoration: InputDecoration(
                 labelText: l10n.destinationHospitalCode,
                 hintText: 'e.g. HOSP2',
+                errorText: _error,
               ),
             ),
-            if (_error != null) ...[
-              const SizedBox(height: 12),
-              Text(
-                _error!,
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.error, fontSize: 12),
-              ),
-            ],
           ],
         ),
       ),
