@@ -122,12 +122,7 @@ class DeviceStrip extends ConsumerWidget {
 
   IconData _deviceIcon(DeviceConnectionState? state, DeviceInfo? info) {
     if (state == DeviceConnectionState.connected && info != null) {
-      switch (info.transport) {
-        case DeviceTransport.wifi:
-          return Icons.router_outlined;
-        case DeviceTransport.ble:
-          return Icons.bluetooth;
-      }
+      return Icons.router_outlined;
     }
     return Icons.signal_wifi_off_rounded;
   }
@@ -144,10 +139,7 @@ class DeviceStrip extends ConsumerWidget {
   String _deviceText(
       DeviceConnectionState? state, DeviceInfo? info, AppLocalizations l10n) {
     if (state == DeviceConnectionState.connected && info != null) {
-      final transport = info.transport == DeviceTransport.wifi
-          ? l10n.deviceTransportWifi
-          : l10n.deviceTransportBle;
-      return '${info.displayName} · $transport';
+      return info.displayName;
     }
     if (state == DeviceConnectionState.connecting ||
         state == DeviceConnectionState.scanning) {

@@ -1,14 +1,10 @@
 import 'package:bilirubin/models/device_connection_state.dart';
 
-/// Transport protocol used to communicate with the device.
-enum DeviceTransport { wifi, ble }
-
 /// Runtime information about the paired/connected device.
 class DeviceInfo {
   const DeviceInfo({
     required this.deviceId,
     required this.displayName,
-    required this.transport,
     required this.connectionState,
     this.lastSeen,
     this.firmwareVersion,
@@ -16,7 +12,6 @@ class DeviceInfo {
 
   final String deviceId;
   final String displayName;
-  final DeviceTransport transport;
   final DeviceConnectionState connectionState;
   final DateTime? lastSeen;
   final String? firmwareVersion;
@@ -26,7 +21,6 @@ class DeviceInfo {
   DeviceInfo copyWith({
     String? deviceId,
     String? displayName,
-    DeviceTransport? transport,
     DeviceConnectionState? connectionState,
     DateTime? lastSeen,
     String? firmwareVersion,
@@ -34,7 +28,6 @@ class DeviceInfo {
     return DeviceInfo(
       deviceId: deviceId ?? this.deviceId,
       displayName: displayName ?? this.displayName,
-      transport: transport ?? this.transport,
       connectionState: connectionState ?? this.connectionState,
       lastSeen: lastSeen ?? this.lastSeen,
       firmwareVersion: firmwareVersion ?? this.firmwareVersion,
@@ -43,5 +36,5 @@ class DeviceInfo {
 
   @override
   String toString() =>
-      'DeviceInfo(id: $deviceId, state: $connectionState, transport: $transport)';
+      'DeviceInfo(id: $deviceId, state: $connectionState)';
 }

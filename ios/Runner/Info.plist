@@ -47,7 +47,5 @@
 	<true/>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>This app discovers the Raspberry Pi on your local network for direct device connection.</string>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Used to connect to the bilirubin measurement device via Bluetooth.</string>
 </dict>
 </plist>
