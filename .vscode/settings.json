@@ -1,0 +1,22 @@
+{
+    "sqltools.connections": [
+        {
+            "connectionTimeout": 15,
+            "mssqlOptions": {
+                "appName": "SQLTools",
+                "useUTC": true,
+                "encrypt": true,
+                "trustServerCertificate": false
+            },
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "10.14.81.30",
+            "port": 1433,
+            "askForPassword": true,
+            "driver": "MSSQL",
+            "username": "ASKICTR",
+            "name": "ASKI Database",
+            "database": "master"
+        }
+    ]
+}

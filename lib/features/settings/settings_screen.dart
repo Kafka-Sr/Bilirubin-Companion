@@ -1,9 +1,16 @@
+import 'dart:io';
+
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bilirubin/core/l10n/app_localizations.dart';
+import 'package:bilirubin/database/database.dart';
 import 'package:bilirubin/models/pi_beacon.dart';
 import 'package:bilirubin/features/shared/pin_lock_screen.dart';
+import 'package:bilirubin/providers/ble_providers.dart';
+import 'package:bilirubin/providers/database_provider.dart';
 import 'package:bilirubin/providers/pi_discovery_providers.dart';
 import 'package:bilirubin/providers/settings_providers.dart';
 import 'package:bilirubin/security/app_lock_service.dart';
@@ -64,11 +71,12 @@ class _PiLanSectionState extends ConsumerState<_PiLanSection> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final beaconsAsync = ref.watch(piBeaconListProvider);
     final beacons = beaconsAsync.valueOrNull ?? const <PiBeacon>[];
 
     return _Section(
-      title: 'Raspberry Pi LAN',
+      title: l10n.settingsPiLanTitle,
       icon: Icons.router_outlined,
       children: [
         if (beacons.isNotEmpty) ...[
@@ -84,9 +92,9 @@ class _PiLanSectionState extends ConsumerState<_PiLanSection> {
         TextField(
           controller: _baseUrlCtrl,
           keyboardType: TextInputType.url,
-          decoration: const InputDecoration(
-            labelText: 'Pi address or URL',
-            hintText: '192.168.1.50:8080 or http://raspi.local:8080',
+          decoration: InputDecoration(
+            labelText: l10n.settingsPiAddressLabel,
+            hintText: l10n.settingsPiAddressHint,
           ),
         ),
         const SizedBox(height: 12),
@@ -94,7 +102,7 @@ class _PiLanSectionState extends ConsumerState<_PiLanSection> {
           children: [
             FilledButton.icon(
               icon: const Icon(Icons.save_outlined),
-              label: const Text('Save Pi address'),
+              label: Text(l10n.settingsPiSave),
               onPressed: () {
                 ref.read(piBaseUrlProvider.notifier).set(_baseUrlCtrl.text);
               },
@@ -105,13 +113,13 @@ class _PiLanSectionState extends ConsumerState<_PiLanSection> {
                 _baseUrlCtrl.clear();
                 ref.read(piBaseUrlProvider.notifier).clear();
               },
-              child: const Text('Clear'),
+              child: Text(l10n.settingsPiClear),
             ),
           ],
         ),
         const SizedBox(height: 8),
         Text(
-          'If the phone and Pi are on the same Wi-Fi network, the app can discover the Pi automatically by beacon. Supabase still stores the synced history.',
+          l10n.settingsPiBeaconDescription,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.outline,
               ),
@@ -132,6 +140,7 @@ class _BeaconList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       children: [
         for (final beacon in beacons)
@@ -142,7 +151,7 @@ class _BeaconList extends StatelessWidget {
             subtitle: Text('${beacon.baseUrl} • ${beacon.deviceId}'),
             trailing: TextButton(
               onPressed: () => onUseBeacon(beacon),
-              child: const Text('Use'),
+              child: Text(l10n.settingsPiBeaconUse),
             ),
           ),
       ],
@@ -201,22 +210,131 @@ class _WifiSectionState extends State<_WifiSection> {
 
 // ── BLE ───────────────────────────────────────────────────────────────────────
 
-class _BleSection extends StatelessWidget {
+class _BleSection extends ConsumerStatefulWidget {
   const _BleSection();
+
+  @override
+  ConsumerState<_BleSection> createState() => _BleSectionState();
+}
+
+class _BleSectionState extends ConsumerState<_BleSection> {
+  bool _scanning = false;
+
+  Future<void> _startScan() async {
+    setState(() => _scanning = true);
+    try {
+      // On Android, prompt the user to enable Bluetooth if it's off.
+      if (Platform.isAndroid &&
+          await FlutterBluePlus.adapterState.first !=
+              BluetoothAdapterState.on) {
+        await FlutterBluePlus.turnOn();
+        await FlutterBluePlus.adapterState
+            .where((s) => s == BluetoothAdapterState.on)
+            .first
+            .timeout(const Duration(seconds: 15));
+      }
+      await FlutterBluePlus.startScan(
+        timeout: const Duration(seconds: 15),
+      );
+    } finally {
+      if (mounted) setState(() => _scanning = false);
+    }
+  }
+
+  Future<void> _pair(BuildContext context, ScanResult result) async {
+    final device = result.device;
+    final deviceId = device.remoteId.str;
+    final displayName = device.platformName.isNotEmpty
+        ? device.platformName
+        : deviceId;
+
+    // Persist to local devices table.
+    final db = ref.read(appDatabaseProvider);
+    await db.devicesDao.upsertDevice(DevicesCompanion.insert(
+      deviceId: deviceId,
+      displayName: displayName,
+      transport: 'ble',
+      isPaired: const Value(true),
+      pairedAt: Value(DateTime.now()),
+      lastSeenAt: Value(DateTime.now()),
+    ));
+
+    // Update in-memory state so device_providers picks up the BLE device.
+    ref.read(pairedBleDeviceIdProvider.notifier).pair(deviceId);
+    ref.read(activeBleDeviceProvider.notifier).state = device;
+
+    await FlutterBluePlus.stopScan();
+    if (mounted) setState(() => _scanning = false);
+  }
+
+  Future<void> _unpair() async {
+    ref.read(pairedBleDeviceIdProvider.notifier).unpair();
+    ref.read(activeBleDeviceProvider.notifier).state = null;
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final pairedId = ref.watch(pairedBleDeviceIdProvider);
+    final scanResults = (ref.watch(bleScanResultsProvider).valueOrNull ?? const [])
+        .where((r) => r.device.platformName.isNotEmpty)
+        .toList();
+
     return _Section(
       title: l10n.settingsBle,
       icon: Icons.bluetooth,
       children: [
-        Text(
-          l10n.settingsBleNotAvailable,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.outline,
+        // ── Paired device status ─────────────────────────────────────────────
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                pairedId ?? l10n.settingsBleNoPaired,
+                style: theme.textTheme.bodyMedium,
               ),
+            ),
+            if (pairedId != null)
+              TextButton(
+                onPressed: _unpair,
+                child: Text(l10n.settingsBleUnpair),
+              ),
+          ],
         ),
+        const SizedBox(height: 8),
+
+        // ── Scan button ──────────────────────────────────────────────────────
+        FilledButton.icon(
+          icon: _scanning
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: Colors.white),
+                )
+              : const Icon(Icons.bluetooth_searching, size: 18),
+          label: Text(_scanning
+              ? l10n.settingsBleScanning
+              : l10n.settingsBleStartScan),
+          onPressed: _scanning ? null : _startScan,
+        ),
+
+        // ── Scan results ─────────────────────────────────────────────────────
+        if (scanResults.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          ...scanResults.map((r) => ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.bluetooth),
+                title: Text(r.device.platformName.isNotEmpty
+                    ? r.device.platformName
+                    : r.device.remoteId.str),
+                subtitle: Text('RSSI ${r.rssi} dBm'),
+                trailing: FilledButton.tonal(
+                  onPressed: () => _pair(context, r),
+                  child: Text(l10n.settingsBlePair),
+                ),
+              )),
+        ],
       ],
     );
   }

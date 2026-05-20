@@ -8,33 +8,34 @@ class $BabiesTable extends Babies with TableInfo<$BabiesTable, Baby> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $BabiesTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  static const VerificationMeta _babyIdMeta = const VerificationMeta('babyId');
   @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
+  late final GeneratedColumn<int> babyId = GeneratedColumn<int>(
+      'baby_id', aliasedName, false,
       hasAutoIncrement: true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  static const VerificationMeta _babyNameMeta =
+      const VerificationMeta('babyName');
   @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, false,
+  late final GeneratedColumn<String> babyName = GeneratedColumn<String>(
+      'baby_name', aliasedName, false,
       additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 100),
       type: DriftSqlType.string,
       requiredDuringInsert: true);
-  static const VerificationMeta _dateOfBirthMeta =
-      const VerificationMeta('dateOfBirth');
+  static const VerificationMeta _babyDobMeta =
+      const VerificationMeta('babyDob');
   @override
-  late final GeneratedColumn<DateTime> dateOfBirth = GeneratedColumn<DateTime>(
-      'date_of_birth', aliasedName, false,
+  late final GeneratedColumn<DateTime> babyDob = GeneratedColumn<DateTime>(
+      'baby_dob', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
-  static const VerificationMeta _weightKgMeta =
-      const VerificationMeta('weightKg');
+  static const VerificationMeta _babyWeightMeta =
+      const VerificationMeta('babyWeight');
   @override
-  late final GeneratedColumn<double> weightKg = GeneratedColumn<double>(
-      'weight_kg', aliasedName, false,
+  late final GeneratedColumn<double> babyWeight = GeneratedColumn<double>(
+      'baby_weight', aliasedName, false,
       type: DriftSqlType.double, requiredDuringInsert: true);
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
@@ -64,7 +65,7 @@ class $BabiesTable extends Babies with TableInfo<$BabiesTable, Baby> {
       defaultValue: const Constant(false));
   @override
   List<GeneratedColumn> get $columns =>
-      [id, name, dateOfBirth, weightKg, createdAt, updatedAt, isArchived];
+      [babyId, babyName, babyDob, babyWeight, createdAt, updatedAt, isArchived];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -75,28 +76,29 @@ class $BabiesTable extends Babies with TableInfo<$BabiesTable, Baby> {
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    if (data.containsKey('baby_id')) {
+      context.handle(_babyIdMeta,
+          babyId.isAcceptableOrUnknown(data['baby_id']!, _babyIdMeta));
     }
-    if (data.containsKey('name')) {
+    if (data.containsKey('baby_name')) {
+      context.handle(_babyNameMeta,
+          babyName.isAcceptableOrUnknown(data['baby_name']!, _babyNameMeta));
+    } else if (isInserting) {
+      context.missing(_babyNameMeta);
+    }
+    if (data.containsKey('baby_dob')) {
+      context.handle(_babyDobMeta,
+          babyDob.isAcceptableOrUnknown(data['baby_dob']!, _babyDobMeta));
+    } else if (isInserting) {
+      context.missing(_babyDobMeta);
+    }
+    if (data.containsKey('baby_weight')) {
       context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+          _babyWeightMeta,
+          babyWeight.isAcceptableOrUnknown(
+              data['baby_weight']!, _babyWeightMeta));
     } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    if (data.containsKey('date_of_birth')) {
-      context.handle(
-          _dateOfBirthMeta,
-          dateOfBirth.isAcceptableOrUnknown(
-              data['date_of_birth']!, _dateOfBirthMeta));
-    } else if (isInserting) {
-      context.missing(_dateOfBirthMeta);
-    }
-    if (data.containsKey('weight_kg')) {
-      context.handle(_weightKgMeta,
-          weightKg.isAcceptableOrUnknown(data['weight_kg']!, _weightKgMeta));
-    } else if (isInserting) {
-      context.missing(_weightKgMeta);
+      context.missing(_babyWeightMeta);
     }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
@@ -116,19 +118,19 @@ class $BabiesTable extends Babies with TableInfo<$BabiesTable, Baby> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => {babyId};
   @override
   Baby map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Baby(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      name: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      dateOfBirth: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime, data['${effectivePrefix}date_of_birth'])!,
-      weightKg: attachedDatabase.typeMapping
-          .read(DriftSqlType.double, data['${effectivePrefix}weight_kg'])!,
+      babyId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}baby_id'])!,
+      babyName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}baby_name'])!,
+      babyDob: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}baby_dob'])!,
+      babyWeight: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}baby_weight'])!,
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
       updatedAt: attachedDatabase.typeMapping
@@ -145,28 +147,28 @@ class $BabiesTable extends Babies with TableInfo<$BabiesTable, Baby> {
 }
 
 class Baby extends DataClass implements Insertable<Baby> {
-  final int id;
-  final String name;
-  final DateTime dateOfBirth;
-  final double weightKg;
+  final int babyId;
+  final String babyName;
+  final DateTime babyDob;
+  final double babyWeight;
   final DateTime createdAt;
   final DateTime updatedAt;
   final bool isArchived;
   const Baby(
-      {required this.id,
-      required this.name,
-      required this.dateOfBirth,
-      required this.weightKg,
+      {required this.babyId,
+      required this.babyName,
+      required this.babyDob,
+      required this.babyWeight,
       required this.createdAt,
       required this.updatedAt,
       required this.isArchived});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['name'] = Variable<String>(name);
-    map['date_of_birth'] = Variable<DateTime>(dateOfBirth);
-    map['weight_kg'] = Variable<double>(weightKg);
+    map['baby_id'] = Variable<int>(babyId);
+    map['baby_name'] = Variable<String>(babyName);
+    map['baby_dob'] = Variable<DateTime>(babyDob);
+    map['baby_weight'] = Variable<double>(babyWeight);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     map['is_archived'] = Variable<bool>(isArchived);
@@ -175,10 +177,10 @@ class Baby extends DataClass implements Insertable<Baby> {
 
   BabiesCompanion toCompanion(bool nullToAbsent) {
     return BabiesCompanion(
-      id: Value(id),
-      name: Value(name),
-      dateOfBirth: Value(dateOfBirth),
-      weightKg: Value(weightKg),
+      babyId: Value(babyId),
+      babyName: Value(babyName),
+      babyDob: Value(babyDob),
+      babyWeight: Value(babyWeight),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
       isArchived: Value(isArchived),
@@ -189,10 +191,10 @@ class Baby extends DataClass implements Insertable<Baby> {
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Baby(
-      id: serializer.fromJson<int>(json['id']),
-      name: serializer.fromJson<String>(json['name']),
-      dateOfBirth: serializer.fromJson<DateTime>(json['dateOfBirth']),
-      weightKg: serializer.fromJson<double>(json['weightKg']),
+      babyId: serializer.fromJson<int>(json['babyId']),
+      babyName: serializer.fromJson<String>(json['babyName']),
+      babyDob: serializer.fromJson<DateTime>(json['babyDob']),
+      babyWeight: serializer.fromJson<double>(json['babyWeight']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       isArchived: serializer.fromJson<bool>(json['isArchived']),
@@ -202,10 +204,10 @@ class Baby extends DataClass implements Insertable<Baby> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'name': serializer.toJson<String>(name),
-      'dateOfBirth': serializer.toJson<DateTime>(dateOfBirth),
-      'weightKg': serializer.toJson<double>(weightKg),
+      'babyId': serializer.toJson<int>(babyId),
+      'babyName': serializer.toJson<String>(babyName),
+      'babyDob': serializer.toJson<DateTime>(babyDob),
+      'babyWeight': serializer.toJson<double>(babyWeight),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'isArchived': serializer.toJson<bool>(isArchived),
@@ -213,29 +215,29 @@ class Baby extends DataClass implements Insertable<Baby> {
   }
 
   Baby copyWith(
-          {int? id,
-          String? name,
-          DateTime? dateOfBirth,
-          double? weightKg,
+          {int? babyId,
+          String? babyName,
+          DateTime? babyDob,
+          double? babyWeight,
           DateTime? createdAt,
           DateTime? updatedAt,
           bool? isArchived}) =>
       Baby(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        dateOfBirth: dateOfBirth ?? this.dateOfBirth,
-        weightKg: weightKg ?? this.weightKg,
+        babyId: babyId ?? this.babyId,
+        babyName: babyName ?? this.babyName,
+        babyDob: babyDob ?? this.babyDob,
+        babyWeight: babyWeight ?? this.babyWeight,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
         isArchived: isArchived ?? this.isArchived,
       );
   Baby copyWithCompanion(BabiesCompanion data) {
     return Baby(
-      id: data.id.present ? data.id.value : this.id,
-      name: data.name.present ? data.name.value : this.name,
-      dateOfBirth:
-          data.dateOfBirth.present ? data.dateOfBirth.value : this.dateOfBirth,
-      weightKg: data.weightKg.present ? data.weightKg.value : this.weightKg,
+      babyId: data.babyId.present ? data.babyId.value : this.babyId,
+      babyName: data.babyName.present ? data.babyName.value : this.babyName,
+      babyDob: data.babyDob.present ? data.babyDob.value : this.babyDob,
+      babyWeight:
+          data.babyWeight.present ? data.babyWeight.value : this.babyWeight,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       isArchived:
@@ -246,10 +248,10 @@ class Baby extends DataClass implements Insertable<Baby> {
   @override
   String toString() {
     return (StringBuffer('Baby(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('dateOfBirth: $dateOfBirth, ')
-          ..write('weightKg: $weightKg, ')
+          ..write('babyId: $babyId, ')
+          ..write('babyName: $babyName, ')
+          ..write('babyDob: $babyDob, ')
+          ..write('babyWeight: $babyWeight, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('isArchived: $isArchived')
@@ -259,62 +261,62 @@ class Baby extends DataClass implements Insertable<Baby> {
 
   @override
   int get hashCode => Object.hash(
-      id, name, dateOfBirth, weightKg, createdAt, updatedAt, isArchived);
+      babyId, babyName, babyDob, babyWeight, createdAt, updatedAt, isArchived);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Baby &&
-          other.id == this.id &&
-          other.name == this.name &&
-          other.dateOfBirth == this.dateOfBirth &&
-          other.weightKg == this.weightKg &&
+          other.babyId == this.babyId &&
+          other.babyName == this.babyName &&
+          other.babyDob == this.babyDob &&
+          other.babyWeight == this.babyWeight &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.isArchived == this.isArchived);
 }
 
 class BabiesCompanion extends UpdateCompanion<Baby> {
-  final Value<int> id;
-  final Value<String> name;
-  final Value<DateTime> dateOfBirth;
-  final Value<double> weightKg;
+  final Value<int> babyId;
+  final Value<String> babyName;
+  final Value<DateTime> babyDob;
+  final Value<double> babyWeight;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<bool> isArchived;
   const BabiesCompanion({
-    this.id = const Value.absent(),
-    this.name = const Value.absent(),
-    this.dateOfBirth = const Value.absent(),
-    this.weightKg = const Value.absent(),
+    this.babyId = const Value.absent(),
+    this.babyName = const Value.absent(),
+    this.babyDob = const Value.absent(),
+    this.babyWeight = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.isArchived = const Value.absent(),
   });
   BabiesCompanion.insert({
-    this.id = const Value.absent(),
-    required String name,
-    required DateTime dateOfBirth,
-    required double weightKg,
+    this.babyId = const Value.absent(),
+    required String babyName,
+    required DateTime babyDob,
+    required double babyWeight,
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.isArchived = const Value.absent(),
-  })  : name = Value(name),
-        dateOfBirth = Value(dateOfBirth),
-        weightKg = Value(weightKg);
+  })  : babyName = Value(babyName),
+        babyDob = Value(babyDob),
+        babyWeight = Value(babyWeight);
   static Insertable<Baby> custom({
-    Expression<int>? id,
-    Expression<String>? name,
-    Expression<DateTime>? dateOfBirth,
-    Expression<double>? weightKg,
+    Expression<int>? babyId,
+    Expression<String>? babyName,
+    Expression<DateTime>? babyDob,
+    Expression<double>? babyWeight,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<bool>? isArchived,
   }) {
     return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (name != null) 'name': name,
-      if (dateOfBirth != null) 'date_of_birth': dateOfBirth,
-      if (weightKg != null) 'weight_kg': weightKg,
+      if (babyId != null) 'baby_id': babyId,
+      if (babyName != null) 'baby_name': babyName,
+      if (babyDob != null) 'baby_dob': babyDob,
+      if (babyWeight != null) 'baby_weight': babyWeight,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (isArchived != null) 'is_archived': isArchived,
@@ -322,18 +324,18 @@ class BabiesCompanion extends UpdateCompanion<Baby> {
   }
 
   BabiesCompanion copyWith(
-      {Value<int>? id,
-      Value<String>? name,
-      Value<DateTime>? dateOfBirth,
-      Value<double>? weightKg,
+      {Value<int>? babyId,
+      Value<String>? babyName,
+      Value<DateTime>? babyDob,
+      Value<double>? babyWeight,
       Value<DateTime>? createdAt,
       Value<DateTime>? updatedAt,
       Value<bool>? isArchived}) {
     return BabiesCompanion(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
-      weightKg: weightKg ?? this.weightKg,
+      babyId: babyId ?? this.babyId,
+      babyName: babyName ?? this.babyName,
+      babyDob: babyDob ?? this.babyDob,
+      babyWeight: babyWeight ?? this.babyWeight,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       isArchived: isArchived ?? this.isArchived,
@@ -343,17 +345,17 @@ class BabiesCompanion extends UpdateCompanion<Baby> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
+    if (babyId.present) {
+      map['baby_id'] = Variable<int>(babyId.value);
     }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
+    if (babyName.present) {
+      map['baby_name'] = Variable<String>(babyName.value);
     }
-    if (dateOfBirth.present) {
-      map['date_of_birth'] = Variable<DateTime>(dateOfBirth.value);
+    if (babyDob.present) {
+      map['baby_dob'] = Variable<DateTime>(babyDob.value);
     }
-    if (weightKg.present) {
-      map['weight_kg'] = Variable<double>(weightKg.value);
+    if (babyWeight.present) {
+      map['baby_weight'] = Variable<double>(babyWeight.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
@@ -370,10 +372,10 @@ class BabiesCompanion extends UpdateCompanion<Baby> {
   @override
   String toString() {
     return (StringBuffer('BabiesCompanion(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('dateOfBirth: $dateOfBirth, ')
-          ..write('weightKg: $weightKg, ')
+          ..write('babyId: $babyId, ')
+          ..write('babyName: $babyName, ')
+          ..write('babyDob: $babyDob, ')
+          ..write('babyWeight: $babyWeight, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('isArchived: $isArchived')
@@ -401,7 +403,7 @@ class $MeasurementsTable extends Measurements
       type: DriftSqlType.int,
       requiredDuringInsert: true,
       defaultConstraints:
-          GeneratedColumn.constraintIsAlways('REFERENCES babies (id)'));
+          GeneratedColumn.constraintIsAlways('REFERENCES babies (baby_id)'));
   static const VerificationMeta _capturedAtMeta =
       const VerificationMeta('capturedAt');
   @override
@@ -420,11 +422,11 @@ class $MeasurementsTable extends Measurements
   late final GeneratedColumn<double> ageHours = GeneratedColumn<double>(
       'age_hours', aliasedName, false,
       type: DriftSqlType.double, requiredDuringInsert: true);
-  static const VerificationMeta _bilirubinMgDlMeta =
-      const VerificationMeta('bilirubinMgDl');
+  static const VerificationMeta _bilirubinMgdlMeta =
+      const VerificationMeta('bilirubinMgdl');
   @override
-  late final GeneratedColumn<double> bilirubinMgDl = GeneratedColumn<double>(
-      'bilirubin_mg_dl', aliasedName, false,
+  late final GeneratedColumn<double> bilirubinMgdl = GeneratedColumn<double>(
+      'bilirubin_mgdl', aliasedName, false,
       type: DriftSqlType.double, requiredDuringInsert: true);
   static const VerificationMeta _hasImageMeta =
       const VerificationMeta('hasImage');
@@ -461,7 +463,7 @@ class $MeasurementsTable extends Measurements
         capturedAt,
         receivedAt,
         ageHours,
-        bilirubinMgDl,
+        bilirubinMgdl,
         hasImage,
         encryptedImageRef,
         deviceId,
@@ -513,13 +515,13 @@ class $MeasurementsTable extends Measurements
     } else if (isInserting) {
       context.missing(_ageHoursMeta);
     }
-    if (data.containsKey('bilirubin_mg_dl')) {
+    if (data.containsKey('bilirubin_mgdl')) {
       context.handle(
-          _bilirubinMgDlMeta,
-          bilirubinMgDl.isAcceptableOrUnknown(
-              data['bilirubin_mg_dl']!, _bilirubinMgDlMeta));
+          _bilirubinMgdlMeta,
+          bilirubinMgdl.isAcceptableOrUnknown(
+              data['bilirubin_mgdl']!, _bilirubinMgdlMeta));
     } else if (isInserting) {
-      context.missing(_bilirubinMgDlMeta);
+      context.missing(_bilirubinMgdlMeta);
     }
     if (data.containsKey('has_image')) {
       context.handle(_hasImageMeta,
@@ -560,8 +562,8 @@ class $MeasurementsTable extends Measurements
           .read(DriftSqlType.dateTime, data['${effectivePrefix}received_at'])!,
       ageHours: attachedDatabase.typeMapping
           .read(DriftSqlType.double, data['${effectivePrefix}age_hours'])!,
-      bilirubinMgDl: attachedDatabase.typeMapping.read(
-          DriftSqlType.double, data['${effectivePrefix}bilirubin_mg_dl'])!,
+      bilirubinMgdl: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}bilirubin_mgdl'])!,
       hasImage: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}has_image'])!,
       encryptedImageRef: attachedDatabase.typeMapping.read(
@@ -583,7 +585,7 @@ class Measurement extends DataClass implements Insertable<Measurement> {
   /// UUID from the device — globally unique.
   final String measurementId;
 
-  /// FK → babies.id
+  /// FK → babies.baby_id
   final int babyId;
 
   /// Timestamp from the device clock (may drift).
@@ -596,7 +598,7 @@ class Measurement extends DataClass implements Insertable<Measurement> {
   final double ageHours;
 
   /// Measured bilirubin concentration in mg/dL.
-  final double bilirubinMgDl;
+  final double bilirubinMgdl;
 
   /// True if an encrypted image file exists for this measurement.
   final bool hasImage;
@@ -615,7 +617,7 @@ class Measurement extends DataClass implements Insertable<Measurement> {
       required this.capturedAt,
       required this.receivedAt,
       required this.ageHours,
-      required this.bilirubinMgDl,
+      required this.bilirubinMgdl,
       required this.hasImage,
       this.encryptedImageRef,
       this.deviceId,
@@ -628,7 +630,7 @@ class Measurement extends DataClass implements Insertable<Measurement> {
     map['captured_at'] = Variable<DateTime>(capturedAt);
     map['received_at'] = Variable<DateTime>(receivedAt);
     map['age_hours'] = Variable<double>(ageHours);
-    map['bilirubin_mg_dl'] = Variable<double>(bilirubinMgDl);
+    map['bilirubin_mgdl'] = Variable<double>(bilirubinMgdl);
     map['has_image'] = Variable<bool>(hasImage);
     if (!nullToAbsent || encryptedImageRef != null) {
       map['encrypted_image_ref'] = Variable<String>(encryptedImageRef);
@@ -649,7 +651,7 @@ class Measurement extends DataClass implements Insertable<Measurement> {
       capturedAt: Value(capturedAt),
       receivedAt: Value(receivedAt),
       ageHours: Value(ageHours),
-      bilirubinMgDl: Value(bilirubinMgDl),
+      bilirubinMgdl: Value(bilirubinMgdl),
       hasImage: Value(hasImage),
       encryptedImageRef: encryptedImageRef == null && nullToAbsent
           ? const Value.absent()
@@ -672,7 +674,7 @@ class Measurement extends DataClass implements Insertable<Measurement> {
       capturedAt: serializer.fromJson<DateTime>(json['capturedAt']),
       receivedAt: serializer.fromJson<DateTime>(json['receivedAt']),
       ageHours: serializer.fromJson<double>(json['ageHours']),
-      bilirubinMgDl: serializer.fromJson<double>(json['bilirubinMgDl']),
+      bilirubinMgdl: serializer.fromJson<double>(json['bilirubinMgdl']),
       hasImage: serializer.fromJson<bool>(json['hasImage']),
       encryptedImageRef:
           serializer.fromJson<String?>(json['encryptedImageRef']),
@@ -689,7 +691,7 @@ class Measurement extends DataClass implements Insertable<Measurement> {
       'capturedAt': serializer.toJson<DateTime>(capturedAt),
       'receivedAt': serializer.toJson<DateTime>(receivedAt),
       'ageHours': serializer.toJson<double>(ageHours),
-      'bilirubinMgDl': serializer.toJson<double>(bilirubinMgDl),
+      'bilirubinMgdl': serializer.toJson<double>(bilirubinMgdl),
       'hasImage': serializer.toJson<bool>(hasImage),
       'encryptedImageRef': serializer.toJson<String?>(encryptedImageRef),
       'deviceId': serializer.toJson<String?>(deviceId),
@@ -703,7 +705,7 @@ class Measurement extends DataClass implements Insertable<Measurement> {
           DateTime? capturedAt,
           DateTime? receivedAt,
           double? ageHours,
-          double? bilirubinMgDl,
+          double? bilirubinMgdl,
           bool? hasImage,
           Value<String?> encryptedImageRef = const Value.absent(),
           Value<String?> deviceId = const Value.absent(),
@@ -714,7 +716,7 @@ class Measurement extends DataClass implements Insertable<Measurement> {
         capturedAt: capturedAt ?? this.capturedAt,
         receivedAt: receivedAt ?? this.receivedAt,
         ageHours: ageHours ?? this.ageHours,
-        bilirubinMgDl: bilirubinMgDl ?? this.bilirubinMgDl,
+        bilirubinMgdl: bilirubinMgdl ?? this.bilirubinMgdl,
         hasImage: hasImage ?? this.hasImage,
         encryptedImageRef: encryptedImageRef.present
             ? encryptedImageRef.value
@@ -734,9 +736,9 @@ class Measurement extends DataClass implements Insertable<Measurement> {
       receivedAt:
           data.receivedAt.present ? data.receivedAt.value : this.receivedAt,
       ageHours: data.ageHours.present ? data.ageHours.value : this.ageHours,
-      bilirubinMgDl: data.bilirubinMgDl.present
-          ? data.bilirubinMgDl.value
-          : this.bilirubinMgDl,
+      bilirubinMgdl: data.bilirubinMgdl.present
+          ? data.bilirubinMgdl.value
+          : this.bilirubinMgdl,
       hasImage: data.hasImage.present ? data.hasImage.value : this.hasImage,
       encryptedImageRef: data.encryptedImageRef.present
           ? data.encryptedImageRef.value
@@ -756,7 +758,7 @@ class Measurement extends DataClass implements Insertable<Measurement> {
           ..write('capturedAt: $capturedAt, ')
           ..write('receivedAt: $receivedAt, ')
           ..write('ageHours: $ageHours, ')
-          ..write('bilirubinMgDl: $bilirubinMgDl, ')
+          ..write('bilirubinMgdl: $bilirubinMgdl, ')
           ..write('hasImage: $hasImage, ')
           ..write('encryptedImageRef: $encryptedImageRef, ')
           ..write('deviceId: $deviceId, ')
@@ -772,7 +774,7 @@ class Measurement extends DataClass implements Insertable<Measurement> {
       capturedAt,
       receivedAt,
       ageHours,
-      bilirubinMgDl,
+      bilirubinMgdl,
       hasImage,
       encryptedImageRef,
       deviceId,
@@ -786,7 +788,7 @@ class Measurement extends DataClass implements Insertable<Measurement> {
           other.capturedAt == this.capturedAt &&
           other.receivedAt == this.receivedAt &&
           other.ageHours == this.ageHours &&
-          other.bilirubinMgDl == this.bilirubinMgDl &&
+          other.bilirubinMgdl == this.bilirubinMgdl &&
           other.hasImage == this.hasImage &&
           other.encryptedImageRef == this.encryptedImageRef &&
           other.deviceId == this.deviceId &&
@@ -799,7 +801,7 @@ class MeasurementsCompanion extends UpdateCompanion<Measurement> {
   final Value<DateTime> capturedAt;
   final Value<DateTime> receivedAt;
   final Value<double> ageHours;
-  final Value<double> bilirubinMgDl;
+  final Value<double> bilirubinMgdl;
   final Value<bool> hasImage;
   final Value<String?> encryptedImageRef;
   final Value<String?> deviceId;
@@ -811,7 +813,7 @@ class MeasurementsCompanion extends UpdateCompanion<Measurement> {
     this.capturedAt = const Value.absent(),
     this.receivedAt = const Value.absent(),
     this.ageHours = const Value.absent(),
-    this.bilirubinMgDl = const Value.absent(),
+    this.bilirubinMgdl = const Value.absent(),
     this.hasImage = const Value.absent(),
     this.encryptedImageRef = const Value.absent(),
     this.deviceId = const Value.absent(),
@@ -824,7 +826,7 @@ class MeasurementsCompanion extends UpdateCompanion<Measurement> {
     required DateTime capturedAt,
     required DateTime receivedAt,
     required double ageHours,
-    required double bilirubinMgDl,
+    required double bilirubinMgdl,
     this.hasImage = const Value.absent(),
     this.encryptedImageRef = const Value.absent(),
     this.deviceId = const Value.absent(),
@@ -835,14 +837,14 @@ class MeasurementsCompanion extends UpdateCompanion<Measurement> {
         capturedAt = Value(capturedAt),
         receivedAt = Value(receivedAt),
         ageHours = Value(ageHours),
-        bilirubinMgDl = Value(bilirubinMgDl);
+        bilirubinMgdl = Value(bilirubinMgdl);
   static Insertable<Measurement> custom({
     Expression<String>? measurementId,
     Expression<int>? babyId,
     Expression<DateTime>? capturedAt,
     Expression<DateTime>? receivedAt,
     Expression<double>? ageHours,
-    Expression<double>? bilirubinMgDl,
+    Expression<double>? bilirubinMgdl,
     Expression<bool>? hasImage,
     Expression<String>? encryptedImageRef,
     Expression<String>? deviceId,
@@ -855,7 +857,7 @@ class MeasurementsCompanion extends UpdateCompanion<Measurement> {
       if (capturedAt != null) 'captured_at': capturedAt,
       if (receivedAt != null) 'received_at': receivedAt,
       if (ageHours != null) 'age_hours': ageHours,
-      if (bilirubinMgDl != null) 'bilirubin_mg_dl': bilirubinMgDl,
+      if (bilirubinMgdl != null) 'bilirubin_mgdl': bilirubinMgdl,
       if (hasImage != null) 'has_image': hasImage,
       if (encryptedImageRef != null) 'encrypted_image_ref': encryptedImageRef,
       if (deviceId != null) 'device_id': deviceId,
@@ -870,7 +872,7 @@ class MeasurementsCompanion extends UpdateCompanion<Measurement> {
       Value<DateTime>? capturedAt,
       Value<DateTime>? receivedAt,
       Value<double>? ageHours,
-      Value<double>? bilirubinMgDl,
+      Value<double>? bilirubinMgdl,
       Value<bool>? hasImage,
       Value<String?>? encryptedImageRef,
       Value<String?>? deviceId,
@@ -882,7 +884,7 @@ class MeasurementsCompanion extends UpdateCompanion<Measurement> {
       capturedAt: capturedAt ?? this.capturedAt,
       receivedAt: receivedAt ?? this.receivedAt,
       ageHours: ageHours ?? this.ageHours,
-      bilirubinMgDl: bilirubinMgDl ?? this.bilirubinMgDl,
+      bilirubinMgdl: bilirubinMgdl ?? this.bilirubinMgdl,
       hasImage: hasImage ?? this.hasImage,
       encryptedImageRef: encryptedImageRef ?? this.encryptedImageRef,
       deviceId: deviceId ?? this.deviceId,
@@ -909,8 +911,8 @@ class MeasurementsCompanion extends UpdateCompanion<Measurement> {
     if (ageHours.present) {
       map['age_hours'] = Variable<double>(ageHours.value);
     }
-    if (bilirubinMgDl.present) {
-      map['bilirubin_mg_dl'] = Variable<double>(bilirubinMgDl.value);
+    if (bilirubinMgdl.present) {
+      map['bilirubin_mgdl'] = Variable<double>(bilirubinMgdl.value);
     }
     if (hasImage.present) {
       map['has_image'] = Variable<bool>(hasImage.value);
@@ -938,7 +940,7 @@ class MeasurementsCompanion extends UpdateCompanion<Measurement> {
           ..write('capturedAt: $capturedAt, ')
           ..write('receivedAt: $receivedAt, ')
           ..write('ageHours: $ageHours, ')
-          ..write('bilirubinMgDl: $bilirubinMgDl, ')
+          ..write('bilirubinMgdl: $bilirubinMgdl, ')
           ..write('hasImage: $hasImage, ')
           ..write('encryptedImageRef: $encryptedImageRef, ')
           ..write('deviceId: $deviceId, ')
@@ -1832,19 +1834,19 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 }
 
 typedef $$BabiesTableCreateCompanionBuilder = BabiesCompanion Function({
-  Value<int> id,
-  required String name,
-  required DateTime dateOfBirth,
-  required double weightKg,
+  Value<int> babyId,
+  required String babyName,
+  required DateTime babyDob,
+  required double babyWeight,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
   Value<bool> isArchived,
 });
 typedef $$BabiesTableUpdateCompanionBuilder = BabiesCompanion Function({
-  Value<int> id,
-  Value<String> name,
-  Value<DateTime> dateOfBirth,
-  Value<double> weightKg,
+  Value<int> babyId,
+  Value<String> babyName,
+  Value<DateTime> babyDob,
+  Value<double> babyWeight,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
   Value<bool> isArchived,
@@ -1855,14 +1857,15 @@ final class $$BabiesTableReferences
   $$BabiesTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static MultiTypedResultKey<$MeasurementsTable, List<Measurement>>
-      _measurementsRefsTable(_$AppDatabase db) =>
-          MultiTypedResultKey.fromTable(db.measurements,
-              aliasName:
-                  $_aliasNameGenerator(db.babies.id, db.measurements.babyId));
+      _measurementsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+          db.measurements,
+          aliasName:
+              $_aliasNameGenerator(db.babies.babyId, db.measurements.babyId));
 
   $$MeasurementsTableProcessedTableManager get measurementsRefs {
     final manager = $$MeasurementsTableTableManager($_db, $_db.measurements)
-        .filter((f) => f.babyId.id.sqlEquals($_itemColumn<int>('id')!));
+        .filter(
+            (f) => f.babyId.babyId.sqlEquals($_itemColumn<int>('baby_id')!));
 
     final cache = $_typedResult.readTableOrNull(_measurementsRefsTable($_db));
     return ProcessedTableManager(
@@ -1879,17 +1882,17 @@ class $$BabiesTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
+  ColumnFilters<int> get babyId => $composableBuilder(
+      column: $table.babyId, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get name => $composableBuilder(
-      column: $table.name, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get babyName => $composableBuilder(
+      column: $table.babyName, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get dateOfBirth => $composableBuilder(
-      column: $table.dateOfBirth, builder: (column) => ColumnFilters(column));
+  ColumnFilters<DateTime> get babyDob => $composableBuilder(
+      column: $table.babyDob, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<double> get weightKg => $composableBuilder(
-      column: $table.weightKg, builder: (column) => ColumnFilters(column));
+  ColumnFilters<double> get babyWeight => $composableBuilder(
+      column: $table.babyWeight, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnFilters(column));
@@ -1904,7 +1907,7 @@ class $$BabiesTableFilterComposer
       Expression<bool> Function($$MeasurementsTableFilterComposer f) f) {
     final $$MeasurementsTableFilterComposer composer = $composerBuilder(
         composer: this,
-        getCurrentColumn: (t) => t.id,
+        getCurrentColumn: (t) => t.babyId,
         referencedTable: $db.measurements,
         getReferencedColumn: (t) => t.babyId,
         builder: (joinBuilder,
@@ -1931,17 +1934,17 @@ class $$BabiesTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<int> get babyId => $composableBuilder(
+      column: $table.babyId, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get name => $composableBuilder(
-      column: $table.name, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<String> get babyName => $composableBuilder(
+      column: $table.babyName, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get dateOfBirth => $composableBuilder(
-      column: $table.dateOfBirth, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<DateTime> get babyDob => $composableBuilder(
+      column: $table.babyDob, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<double> get weightKg => $composableBuilder(
-      column: $table.weightKg, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<double> get babyWeight => $composableBuilder(
+      column: $table.babyWeight, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnOrderings(column));
@@ -1962,17 +1965,17 @@ class $$BabiesTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
+  GeneratedColumn<int> get babyId =>
+      $composableBuilder(column: $table.babyId, builder: (column) => column);
 
-  GeneratedColumn<String> get name =>
-      $composableBuilder(column: $table.name, builder: (column) => column);
+  GeneratedColumn<String> get babyName =>
+      $composableBuilder(column: $table.babyName, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get dateOfBirth => $composableBuilder(
-      column: $table.dateOfBirth, builder: (column) => column);
+  GeneratedColumn<DateTime> get babyDob =>
+      $composableBuilder(column: $table.babyDob, builder: (column) => column);
 
-  GeneratedColumn<double> get weightKg =>
-      $composableBuilder(column: $table.weightKg, builder: (column) => column);
+  GeneratedColumn<double> get babyWeight => $composableBuilder(
+      column: $table.babyWeight, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -1987,7 +1990,7 @@ class $$BabiesTableAnnotationComposer
       Expression<T> Function($$MeasurementsTableAnnotationComposer a) f) {
     final $$MeasurementsTableAnnotationComposer composer = $composerBuilder(
         composer: this,
-        getCurrentColumn: (t) => t.id,
+        getCurrentColumn: (t) => t.babyId,
         referencedTable: $db.measurements,
         getReferencedColumn: (t) => t.babyId,
         builder: (joinBuilder,
@@ -2028,37 +2031,37 @@ class $$BabiesTableTableManager extends RootTableManager<
           createComputedFieldComposer: () =>
               $$BabiesTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<String> name = const Value.absent(),
-            Value<DateTime> dateOfBirth = const Value.absent(),
-            Value<double> weightKg = const Value.absent(),
+            Value<int> babyId = const Value.absent(),
+            Value<String> babyName = const Value.absent(),
+            Value<DateTime> babyDob = const Value.absent(),
+            Value<double> babyWeight = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
             Value<bool> isArchived = const Value.absent(),
           }) =>
               BabiesCompanion(
-            id: id,
-            name: name,
-            dateOfBirth: dateOfBirth,
-            weightKg: weightKg,
+            babyId: babyId,
+            babyName: babyName,
+            babyDob: babyDob,
+            babyWeight: babyWeight,
             createdAt: createdAt,
             updatedAt: updatedAt,
             isArchived: isArchived,
           ),
           createCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            required String name,
-            required DateTime dateOfBirth,
-            required double weightKg,
+            Value<int> babyId = const Value.absent(),
+            required String babyName,
+            required DateTime babyDob,
+            required double babyWeight,
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
             Value<bool> isArchived = const Value.absent(),
           }) =>
               BabiesCompanion.insert(
-            id: id,
-            name: name,
-            dateOfBirth: dateOfBirth,
-            weightKg: weightKg,
+            babyId: babyId,
+            babyName: babyName,
+            babyDob: babyDob,
+            babyWeight: babyWeight,
             createdAt: createdAt,
             updatedAt: updatedAt,
             isArchived: isArchived,
@@ -2082,9 +2085,9 @@ class $$BabiesTableTableManager extends RootTableManager<
                         managerFromTypedResult: (p0) =>
                             $$BabiesTableReferences(db, table, p0)
                                 .measurementsRefs,
-                        referencedItemsForCurrentItem: (item,
-                                referencedItems) =>
-                            referencedItems.where((e) => e.babyId == item.id),
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.babyId == item.babyId),
                         typedResults: items)
                 ];
               },
@@ -2112,7 +2115,7 @@ typedef $$MeasurementsTableCreateCompanionBuilder = MeasurementsCompanion
   required DateTime capturedAt,
   required DateTime receivedAt,
   required double ageHours,
-  required double bilirubinMgDl,
+  required double bilirubinMgdl,
   Value<bool> hasImage,
   Value<String?> encryptedImageRef,
   Value<String?> deviceId,
@@ -2126,7 +2129,7 @@ typedef $$MeasurementsTableUpdateCompanionBuilder = MeasurementsCompanion
   Value<DateTime> capturedAt,
   Value<DateTime> receivedAt,
   Value<double> ageHours,
-  Value<double> bilirubinMgDl,
+  Value<double> bilirubinMgdl,
   Value<bool> hasImage,
   Value<String?> encryptedImageRef,
   Value<String?> deviceId,
@@ -2138,14 +2141,14 @@ final class $$MeasurementsTableReferences
     extends BaseReferences<_$AppDatabase, $MeasurementsTable, Measurement> {
   $$MeasurementsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static $BabiesTable _babyIdTable(_$AppDatabase db) => db.babies
-      .createAlias($_aliasNameGenerator(db.measurements.babyId, db.babies.id));
+  static $BabiesTable _babyIdTable(_$AppDatabase db) => db.babies.createAlias(
+      $_aliasNameGenerator(db.measurements.babyId, db.babies.babyId));
 
   $$BabiesTableProcessedTableManager get babyId {
     final $_column = $_itemColumn<int>('baby_id')!;
 
     final manager = $$BabiesTableTableManager($_db, $_db.babies)
-        .filter((f) => f.id.sqlEquals($_column));
+        .filter((f) => f.babyId.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_babyIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
@@ -2174,8 +2177,8 @@ class $$MeasurementsTableFilterComposer
   ColumnFilters<double> get ageHours => $composableBuilder(
       column: $table.ageHours, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<double> get bilirubinMgDl => $composableBuilder(
-      column: $table.bilirubinMgDl, builder: (column) => ColumnFilters(column));
+  ColumnFilters<double> get bilirubinMgdl => $composableBuilder(
+      column: $table.bilirubinMgdl, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<bool> get hasImage => $composableBuilder(
       column: $table.hasImage, builder: (column) => ColumnFilters(column));
@@ -2195,7 +2198,7 @@ class $$MeasurementsTableFilterComposer
         composer: this,
         getCurrentColumn: (t) => t.babyId,
         referencedTable: $db.babies,
-        getReferencedColumn: (t) => t.id,
+        getReferencedColumn: (t) => t.babyId,
         builder: (joinBuilder,
                 {$addJoinBuilderToRootComposer,
                 $removeJoinBuilderFromRootComposer}) =>
@@ -2233,8 +2236,8 @@ class $$MeasurementsTableOrderingComposer
   ColumnOrderings<double> get ageHours => $composableBuilder(
       column: $table.ageHours, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<double> get bilirubinMgDl => $composableBuilder(
-      column: $table.bilirubinMgDl,
+  ColumnOrderings<double> get bilirubinMgdl => $composableBuilder(
+      column: $table.bilirubinMgdl,
       builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<bool> get hasImage => $composableBuilder(
@@ -2256,7 +2259,7 @@ class $$MeasurementsTableOrderingComposer
         composer: this,
         getCurrentColumn: (t) => t.babyId,
         referencedTable: $db.babies,
-        getReferencedColumn: (t) => t.id,
+        getReferencedColumn: (t) => t.babyId,
         builder: (joinBuilder,
                 {$addJoinBuilderToRootComposer,
                 $removeJoinBuilderFromRootComposer}) =>
@@ -2293,8 +2296,8 @@ class $$MeasurementsTableAnnotationComposer
   GeneratedColumn<double> get ageHours =>
       $composableBuilder(column: $table.ageHours, builder: (column) => column);
 
-  GeneratedColumn<double> get bilirubinMgDl => $composableBuilder(
-      column: $table.bilirubinMgDl, builder: (column) => column);
+  GeneratedColumn<double> get bilirubinMgdl => $composableBuilder(
+      column: $table.bilirubinMgdl, builder: (column) => column);
 
   GeneratedColumn<bool> get hasImage =>
       $composableBuilder(column: $table.hasImage, builder: (column) => column);
@@ -2313,7 +2316,7 @@ class $$MeasurementsTableAnnotationComposer
         composer: this,
         getCurrentColumn: (t) => t.babyId,
         referencedTable: $db.babies,
-        getReferencedColumn: (t) => t.id,
+        getReferencedColumn: (t) => t.babyId,
         builder: (joinBuilder,
                 {$addJoinBuilderToRootComposer,
                 $removeJoinBuilderFromRootComposer}) =>
@@ -2357,7 +2360,7 @@ class $$MeasurementsTableTableManager extends RootTableManager<
             Value<DateTime> capturedAt = const Value.absent(),
             Value<DateTime> receivedAt = const Value.absent(),
             Value<double> ageHours = const Value.absent(),
-            Value<double> bilirubinMgDl = const Value.absent(),
+            Value<double> bilirubinMgdl = const Value.absent(),
             Value<bool> hasImage = const Value.absent(),
             Value<String?> encryptedImageRef = const Value.absent(),
             Value<String?> deviceId = const Value.absent(),
@@ -2370,7 +2373,7 @@ class $$MeasurementsTableTableManager extends RootTableManager<
             capturedAt: capturedAt,
             receivedAt: receivedAt,
             ageHours: ageHours,
-            bilirubinMgDl: bilirubinMgDl,
+            bilirubinMgdl: bilirubinMgdl,
             hasImage: hasImage,
             encryptedImageRef: encryptedImageRef,
             deviceId: deviceId,
@@ -2383,7 +2386,7 @@ class $$MeasurementsTableTableManager extends RootTableManager<
             required DateTime capturedAt,
             required DateTime receivedAt,
             required double ageHours,
-            required double bilirubinMgDl,
+            required double bilirubinMgdl,
             Value<bool> hasImage = const Value.absent(),
             Value<String?> encryptedImageRef = const Value.absent(),
             Value<String?> deviceId = const Value.absent(),
@@ -2396,7 +2399,7 @@ class $$MeasurementsTableTableManager extends RootTableManager<
             capturedAt: capturedAt,
             receivedAt: receivedAt,
             ageHours: ageHours,
-            bilirubinMgDl: bilirubinMgDl,
+            bilirubinMgdl: bilirubinMgdl,
             hasImage: hasImage,
             encryptedImageRef: encryptedImageRef,
             deviceId: deviceId,
@@ -2433,7 +2436,7 @@ class $$MeasurementsTableTableManager extends RootTableManager<
                     referencedTable:
                         $$MeasurementsTableReferences._babyIdTable(db),
                     referencedColumn:
-                        $$MeasurementsTableReferences._babyIdTable(db).id,
+                        $$MeasurementsTableReferences._babyIdTable(db).babyId,
                   ) as T;
                 }
 

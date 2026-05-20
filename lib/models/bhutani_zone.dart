@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:bilirubin/core/l10n/app_localizations.dart';
 
-/// The five Bhutani nomogram risk zones for neonatal hyperbilirubinemia.
+/// The four Bhutani nomogram risk zones for neonatal hyperbilirubinemia.
+///
+/// Zones are based on Bhutani et al., Pediatrics 2000;106(1):17-22.
 enum BhutaniZone {
-  /// Bilirubin below the 10th-percentile curve – lowest risk.
+  /// Below the 40th-percentile curve – lowest risk.
   low,
 
-  /// Between 10th and 40th percentile curves.
-  intermediate,
+  /// Between the 40th and 75th percentile curves.
+  lowIntermediate,
 
-  /// Between 40th and 75th percentile curves.
+  /// Between the 75th and 95th percentile curves.
   highIntermediate,
 
-  /// Between 75th and 95th percentile curves.
-  high,
-
   /// Above the 95th-percentile curve – highest risk.
-  veryHigh;
+  high;
 
   /// Display-friendly label (title case). Prefer [localizedLabel] when a
   /// [BuildContext] is available.
@@ -24,14 +23,12 @@ enum BhutaniZone {
     switch (this) {
       case BhutaniZone.low:
         return 'Low Risk';
-      case BhutaniZone.intermediate:
-        return 'Intermediate Risk';
+      case BhutaniZone.lowIntermediate:
+        return 'Low Intermediate Risk';
       case BhutaniZone.highIntermediate:
         return 'High Intermediate Risk';
       case BhutaniZone.high:
         return 'High Risk';
-      case BhutaniZone.veryHigh:
-        return 'Very High Risk';
     }
   }
 
@@ -40,14 +37,12 @@ enum BhutaniZone {
     switch (this) {
       case BhutaniZone.low:
         return l10n.zoneLow;
-      case BhutaniZone.intermediate:
-        return l10n.zoneIntermediate;
+      case BhutaniZone.lowIntermediate:
+        return l10n.zoneLowIntermediate;
       case BhutaniZone.highIntermediate:
         return l10n.zoneHighIntermediate;
       case BhutaniZone.high:
         return l10n.zoneHigh;
-      case BhutaniZone.veryHigh:
-        return l10n.zoneVeryHigh;
     }
   }
 
@@ -56,30 +51,12 @@ enum BhutaniZone {
     switch (this) {
       case BhutaniZone.low:
         return l10n.zoneLowFull;
-      case BhutaniZone.intermediate:
-        return l10n.zoneIntermediateFull;
+      case BhutaniZone.lowIntermediate:
+        return l10n.zoneLowIntermediateFull;
       case BhutaniZone.highIntermediate:
         return l10n.zoneHighIntermediateFull;
       case BhutaniZone.high:
         return l10n.zoneHighFull;
-      case BhutaniZone.veryHigh:
-        return l10n.zoneVeryHighFull;
-    }
-  }
-
-  /// Localization key for the recommendation body text.
-  String get recommendationKey {
-    switch (this) {
-      case BhutaniZone.low:
-        return 'recommendationLow';
-      case BhutaniZone.intermediate:
-        return 'recommendationIntermediate';
-      case BhutaniZone.highIntermediate:
-        return 'recommendationHighIntermediate';
-      case BhutaniZone.high:
-        return 'recommendationHigh';
-      case BhutaniZone.veryHigh:
-        return 'recommendationVeryHigh';
     }
   }
 
@@ -88,13 +65,11 @@ enum BhutaniZone {
     switch (this) {
       case BhutaniZone.low:
         return const Color(0xFF2E7D32); // green-800
-      case BhutaniZone.intermediate:
-        return const Color(0xFF558B2F); // light-green-800
-      case BhutaniZone.highIntermediate:
+      case BhutaniZone.lowIntermediate:
         return const Color(0xFFF57F17); // amber-900
-      case BhutaniZone.high:
+      case BhutaniZone.highIntermediate:
         return const Color(0xFFE65100); // deep-orange-900
-      case BhutaniZone.veryHigh:
+      case BhutaniZone.high:
         return const Color(0xFFB71C1C); // red-900
     }
   }

@@ -8,10 +8,13 @@ import 'package:bilirubin/repositories/local_sync_outbox.dart';
 /// Converts between Drift-generated [Baby] rows and the domain [domain.Baby] model,
 /// and stamps [updatedAt] on every update.
 class BabyRepository {
-  BabyRepository(this._db, {LocalSyncOutbox? outbox}) : _outbox = outbox;
+  BabyRepository(this._db, {LocalSyncOutbox? outbox, void Function()? onQueued})
+      : _outbox = outbox,
+        _onQueued = onQueued;
 
   final AppDatabase _db;
   final LocalSyncOutbox? _outbox;
+  final void Function()? _onQueued;
 
   Stream<List<domain.Baby>> watchAllActive() =>
       _db.babiesDao.watchAllActive().map((rows) => rows.map(_toModel).toList());
@@ -21,7 +24,7 @@ class BabyRepository {
     return row == null ? null : _toModel(row);
   }
 
-  /// Creates a new baby record. Returns the assigned [id].
+  /// Creates a new baby record. Returns the assigned [babyId].
   Future<int> create({
     required String name,
     required DateTime dateOfBirth,
@@ -29,20 +32,20 @@ class BabyRepository {
   }) async {
     final now = DateTime.now();
     final id = await _db.babiesDao.insertBaby(BabiesCompanion.insert(
-      name: name,
-      dateOfBirth: dateOfBirth,
-      weightKg: weightKg,
+      babyName: name,
+      babyDob: dateOfBirth,
+      babyWeight: weightKg,
       createdAt: Value(now),
       updatedAt: Value(now),
     ));
     await _queue('upsert', {
-      'id': id,
-      'name': name,
-      'dateOfBirth': dateOfBirth.toIso8601String(),
-      'weightKg': weightKg,
-      'createdAt': now.toIso8601String(),
-      'updatedAt': now.toIso8601String(),
-      'isArchived': false,
+      'baby_id': id,
+      'baby_name': name,
+      'baby_dob': dateOfBirth.toIso8601String(),
+      'baby_weight': weightKg,
+      'created_at': now.toIso8601String(),
+      'updated_at': now.toIso8601String(),
+      'is_archived': false,
     });
     return id;
   }
@@ -51,41 +54,64 @@ class BabyRepository {
   Future<void> update(domain.Baby baby) {
     final now = DateTime.now();
     final future = _db.babiesDao.updateBaby(BabiesCompanion(
-      id: Value(baby.id),
-      name: Value(baby.name),
-      dateOfBirth: Value(baby.dateOfBirth),
-      weightKg: Value(baby.weightKg),
+      babyId: Value(baby.babyId),
+      babyName: Value(baby.babyName),
+      babyDob: Value(baby.babyDob),
+      babyWeight: Value(baby.babyWeight),
       updatedAt: Value(now),
     ));
     return future.then((_) => _queue('upsert', {
-          'id': baby.id,
-          'name': baby.name,
-          'dateOfBirth': baby.dateOfBirth.toIso8601String(),
-          'weightKg': baby.weightKg,
-          'updatedAt': now.toIso8601String(),
-          'isArchived': baby.isArchived,
+          'baby_id': baby.babyId,
+          'baby_name': baby.babyName,
+          'baby_dob': baby.babyDob.toIso8601String(),
+          'baby_weight': baby.babyWeight,
+          'created_at': baby.createdAt.toIso8601String(),
+          'updated_at': now.toIso8601String(),
+          'is_archived': baby.isArchived,
         }));
   }
 
   /// Soft-deletes (archives) a baby by [id].
-  Future<void> archive(int id) {
-    final future = _db.babiesDao.archiveBaby(id);
-    return future.then((_) => _queue('archive', {'id': id}));
+  Future<void> archive(int id) async {
+    final now = DateTime.now();
+    final baby = await _db.babiesDao.getBabyById(id);
+    if (baby == null) return;
+    await _db.babiesDao.archiveBaby(id);
+    await _queue('upsert', {
+      'baby_id': id,
+      'baby_name': baby.babyName,
+      'baby_dob': baby.babyDob.toIso8601String(),
+      'baby_weight': baby.babyWeight,
+      'created_at': baby.createdAt.toIso8601String(),
+      'updated_at': now.toIso8601String(),
+      'is_archived': true,
+    });
   }
 
   Stream<List<domain.Baby>> watchAllArchived() => _db.babiesDao
       .watchAllArchived()
       .map((rows) => rows.map(_toModel).toList());
 
-  Future<void> restore(int id) {
-    final future = _db.babiesDao.restoreBaby(id);
-    return future.then((_) => _queue('restore', {'id': id}));
+  Future<void> restore(int id) async {
+    final now = DateTime.now();
+    final baby = await _db.babiesDao.getBabyById(id);
+    if (baby == null) return;
+    await _db.babiesDao.restoreBaby(id);
+    await _queue('upsert', {
+      'baby_id': id,
+      'baby_name': baby.babyName,
+      'baby_dob': baby.babyDob.toIso8601String(),
+      'baby_weight': baby.babyWeight,
+      'created_at': baby.createdAt.toIso8601String(),
+      'updated_at': now.toIso8601String(),
+      'is_archived': false,
+    });
   }
 
   /// Permanently removes a baby record by [id].
   Future<void> delete(int id) {
     final future = _db.babiesDao.deleteBaby(id);
-    return future.then((_) => _queue('delete', {'id': id}));
+    return future.then((_) => _queue('delete', {'baby_id': id}));
   }
 
   Future<void> _queue(String action, Map<String, dynamic> payload) async {
@@ -95,9 +121,10 @@ class BabyRepository {
       await outbox.enqueue(
         table: 'babies',
         action: action,
-        entityId: '${payload['id'] ?? payload['name'] ?? 'unknown'}',
+        entityId: '${payload['baby_id'] ?? payload['baby_name'] ?? 'unknown'}',
         payload: payload,
       );
+      _onQueued?.call();
     } catch (_) {
       // Temporary staging must not block local CRUD.
     }
@@ -106,10 +133,10 @@ class BabyRepository {
   // ── Mapper ─────────────────────────────────────────────────────────────────
 
   static domain.Baby _toModel(Baby row) => domain.Baby(
-        id: row.id,
-        name: row.name,
-        dateOfBirth: row.dateOfBirth,
-        weightKg: row.weightKg,
+        babyId: row.babyId,
+        babyName: row.babyName,
+        babyDob: row.babyDob,
+        babyWeight: row.babyWeight,
         createdAt: row.createdAt,
         updatedAt: row.updatedAt,
         isArchived: row.isArchived,

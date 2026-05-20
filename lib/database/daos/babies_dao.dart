@@ -11,12 +11,12 @@ class BabiesDao extends DatabaseAccessor<AppDatabase> with _$BabiesDaoMixin {
   /// Stream of all non-archived babies, ordered by name.
   Stream<List<Baby>> watchAllActive() => (select(babies)
         ..where((b) => b.isArchived.equals(false))
-        ..orderBy([(b) => OrderingTerm.asc(b.name)]))
+        ..orderBy([(b) => OrderingTerm.asc(b.babyName)]))
       .watch();
 
   /// Returns a single baby by [id], or null if not found.
   Future<Baby?> getBabyById(int id) =>
-      (select(babies)..where((b) => b.id.equals(id))).getSingleOrNull();
+      (select(babies)..where((b) => b.babyId.equals(id))).getSingleOrNull();
 
   /// Inserts a new baby row.
   Future<int> insertBaby(BabiesCompanion companion) =>
@@ -28,7 +28,7 @@ class BabiesDao extends DatabaseAccessor<AppDatabase> with _$BabiesDaoMixin {
 
   /// Soft-deletes a baby by setting [isArchived] = true.
   Future<void> archiveBaby(int id) => (update(babies)
-        ..where((b) => b.id.equals(id)))
+        ..where((b) => b.babyId.equals(id)))
       .write(
     const BabiesCompanion(isArchived: Value(true)),
   );
@@ -36,17 +36,26 @@ class BabiesDao extends DatabaseAccessor<AppDatabase> with _$BabiesDaoMixin {
   /// Stream of all archived babies, ordered by name.
   Stream<List<Baby>> watchAllArchived() => (select(babies)
         ..where((b) => b.isArchived.equals(true))
-        ..orderBy([(b) => OrderingTerm.asc(b.name)]))
+        ..orderBy([(b) => OrderingTerm.asc(b.babyName)]))
       .watch();
 
   /// Restores an archived baby by setting [isArchived] = false.
   Future<void> restoreBaby(int id) => (update(babies)
-        ..where((b) => b.id.equals(id)))
+        ..where((b) => b.babyId.equals(id)))
       .write(
     const BabiesCompanion(isArchived: Value(false)),
   );
 
+  /// Upserts a baby row — inserts or overwrites on conflict with [babyId].
+  Future<void> upsertBaby(BabiesCompanion companion) =>
+      into(babies).insertOnConflictUpdate(companion);
+
+  /// Inserts a baby row only if no row with the same [babyId] exists locally.
+  /// Used by cloud pull — local data always wins on conflict.
+  Future<void> insertBabyIfAbsent(BabiesCompanion companion) =>
+      into(babies).insert(companion, mode: InsertMode.insertOrIgnore);
+
   /// Permanently deletes a baby row by [id].
   Future<void> deleteBaby(int id) =>
-      (delete(babies)..where((b) => b.id.equals(id))).go();
+      (delete(babies)..where((b) => b.babyId.equals(id))).go();
 }

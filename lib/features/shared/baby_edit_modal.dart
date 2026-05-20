@@ -5,7 +5,6 @@ import 'package:bilirubin/models/baby.dart';
 import 'package:bilirubin/providers/baby_providers.dart';
 import 'package:bilirubin/providers/database_provider.dart';
 import 'package:bilirubin/repositories/audit_repository.dart';
-import 'package:bilirubin/repositories/baby_repository.dart';
 import 'package:bilirubin/utils/input_validators.dart';
 
 /// Shows a modal bottom sheet to add a new baby or edit an existing one.
@@ -42,13 +41,13 @@ class _BabyEditSheetState extends ConsumerState<_BabyEditSheet> {
   @override
   void initState() {
     super.initState();
-    _nameCtrl = TextEditingController(text: widget.existing?.name ?? '');
+    _nameCtrl = TextEditingController(text: widget.existing?.babyName ?? '');
     _weightCtrl = TextEditingController(
       text: widget.existing != null
-          ? widget.existing!.weightKg.toStringAsFixed(1)
+          ? widget.existing!.babyWeight.toStringAsFixed(1)
           : '',
     );
-    _selectedDob = widget.existing?.dateOfBirth;
+    _selectedDob = widget.existing?.babyDob;
   }
 
   @override
@@ -194,7 +193,7 @@ class _BabyEditSheetState extends ConsumerState<_BabyEditSheet> {
     setState(() => _saving = true);
     try {
       final db = ref.read(appDatabaseProvider);
-      final repo = BabyRepository(db);
+      final repo = ref.read(babyRepositoryProvider);
       final audit = AuditRepository(db);
       final name = sanitiseName(_nameCtrl.text);
       final weight = parseWeight(_weightCtrl.text)!;
@@ -207,18 +206,18 @@ class _BabyEditSheetState extends ConsumerState<_BabyEditSheet> {
         );
       } else {
         await repo.update(widget.existing!.copyWith(
-          name: name,
-          dateOfBirth: _selectedDob,
-          weightKg: weight,
+          babyName: name,
+          babyDob: _selectedDob,
+          babyWeight: weight,
         ));
-        await audit.logBabyEdit(widget.existing!.id);
+        await audit.logBabyEdit(widget.existing!.babyId);
       }
 
       // Auto-select the newly created baby.
       if (widget.existing == null) {
         final babies = await db.babiesDao.watchAllActive().first;
         if (babies.isNotEmpty) {
-          ref.read(selectedBabyIdProvider.notifier).state = babies.last.id;
+          ref.read(selectedBabyIdProvider.notifier).state = babies.last.babyId;
         }
       }
 

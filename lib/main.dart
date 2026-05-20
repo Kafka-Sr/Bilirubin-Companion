@@ -9,6 +9,8 @@ import 'package:bilirubin/core/app_router.dart';
 import 'package:bilirubin/core/app_theme.dart';
 import 'package:bilirubin/core/supabase_config.dart';
 import 'package:bilirubin/providers/device_providers.dart';
+import 'package:bilirubin/providers/sync_providers.dart';
+import 'package:bilirubin/providers/connectivity_sync_provider.dart';
 import 'package:bilirubin/providers/settings_providers.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -50,8 +52,10 @@ class BilirubinApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Eagerly activate the device→storage bridge.
+    // Eagerly activate the device→storage bridge and startup sync.
     ref.watch(measurementBridgeProvider);
+    ref.watch(startupSyncProvider);
+    ref.watch(connectivitySyncProvider);
 
     final router = ref.watch(routerProvider);
     final themeMode = ref.watch(appThemeModeProvider);

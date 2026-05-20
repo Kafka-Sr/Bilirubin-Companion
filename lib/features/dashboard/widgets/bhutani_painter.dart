@@ -7,51 +7,57 @@ import 'package:bilirubin/utils/bhutani_classifier.dart' as bc;
 
 /// [CustomPainter] that draws the Bhutani nomogram chart.
 ///
-/// Design: gradient zone fills with right-side labels, red dot for the latest
-/// measurement, primary-coloured connecting line for history.
+/// X-axis spans 0–168 h (baby age). Y-axis spans 0–maxY mg/dL.
+/// Readings with ageHours > 168 are clamped to x=168 and rendered in purple.
 class BhutaniPainter extends CustomPainter {
   const BhutaniPainter({
     required this.context,
     required this.measurements,
     required this.showHistory,
+    required this.showOutsideRange,
     required this.maxY,
+    this.selectedMeasurementId,
   });
 
   final BuildContext context;
   final List<Measurement> measurements;
   final bool showHistory;
+  final bool showOutsideRange;
   final double maxY;
+  /// When non-null, highlights this measurement instead of measurements.first.
+  final String? selectedMeasurementId;
 
-  // Chart margins
-  static const double _left = 32;
+  // Chart margins (left is larger to allow Y-axis number labels)
+  static const double _left = 36;
   static const double _right = 16;
   static const double _top = 8;
-  static const double _bottom = 24;
+  static const double _bottom = 28;
 
-  // Zone fill colours (low → veryHigh)
+  // Zone fill colours: low → lowIntermediate → highIntermediate → high
   static const List<Color> _zoneColors = [
-    Color(0xFFBBF7D0),
-    Color(0xFFECFCCB),
-    Color(0xFFFEF08A),
-    Color(0xFFFECACA),
-    Color(0xFFFCA5A5),
+    Color(0xFFBBF7D0), // green
+    Color(0xFFFEF08A), // yellow
+    Color(0xFFFECACA), // light red
+    Color(0xFFFCA5A5), // red
   ];
 
   static List<String> _zoneLabels(AppLocalizations l10n) => [
     l10n.zoneLowFull,
-    l10n.zoneIntermediateFull,
+    l10n.zoneLowIntermediateFull,
     l10n.zoneHighIntermediateFull,
     l10n.zoneHighFull,
-    l10n.zoneVeryHighFull,
   ];
 
-  // Boundary curves in ascending order (lower threshold of each zone above low)
+  // Three boundary curves: 40th, 75th, 95th percentile
   static final List<List<(double, double)>> _boundaries = [
-    bc.kBoundaryLow,
-    bc.kBoundaryHighIntermediate,
-    bc.kBoundaryHigh,
-    bc.kBoundaryVeryHigh,
+    bc.kBoundaryHighIntermediate, // 40th  – Low / LowIntermediate boundary
+    bc.kBoundaryHigh,             // 75th  – LowIntermediate / HighIntermediate boundary
+    bc.kBoundaryVeryHigh,         // 95th  – HighIntermediate / High boundary
   ];
+
+  static const Color _purpleColor = Color(0xFF7C3AED); // violet-700
+
+  bool _isOutside(Measurement m) => m.ageHours > kNomogramMaxHours;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -66,6 +72,7 @@ class BhutaniPainter extends CustomPainter {
         ((x.clamp(kNomogramMinHours, kNomogramMaxHours) - kNomogramMinHours) /
             (kNomogramMaxHours - kNomogramMinHours)) *
             chartRect.width;
+
     double pxY(double y) =>
         chartRect.bottom - (y.clamp(0, maxY) / maxY) * chartRect.height;
 
@@ -85,7 +92,6 @@ class BhutaniPainter extends CustomPainter {
     double Function(double) pxX,
     double Function(double) pxY,
   ) {
-    // Build list of lower/upper boundary pairs per zone
     final lowerCurves = <List<(double, double)>>[
       [(kNomogramMinHours, 0.0), (kNomogramMaxHours, 0.0)],
       ..._boundaries,
@@ -123,16 +129,16 @@ class BhutaniPainter extends CustomPainter {
           ).createShader(chartRect),
       );
 
-      // Label: vertically centred within the zone on the right edge
+      // Zone label – vertically centred in its zone at the right edge
       final lowerEndY = pxY(lower.last.$2);
       final upperEndY = pxY(min(upper.last.$2, maxY));
       final midY = (lowerEndY + upperEndY) / 2;
       _paintText(
         canvas,
         _zoneLabels(l10n)[i],
-        Offset(chartRect.right - 130, midY - 6),
-        colorScheme.onSurface.withValues(alpha: 0.76),
-        fontSize: 10,
+        Offset(chartRect.right - 130, midY - 5),
+        colorScheme.onSurface.withValues(alpha: 0.72),
+        fontSize: 9,
       );
     }
   }
@@ -150,27 +156,34 @@ class BhutaniPainter extends CustomPainter {
       ..color = colorScheme.outlineVariant.withValues(alpha: 0.4)
       ..strokeWidth = 1;
 
+    // X-axis ticks every 12 h
     for (final tick in kNomogramXTicks) {
       final x = pxX(tick);
       canvas.drawLine(Offset(x, chartRect.top), Offset(x, chartRect.bottom), gridPaint);
       _paintText(
         canvas,
         tick.toInt().toString(),
-        Offset(x, chartRect.bottom + 2),
+        Offset(x, chartRect.bottom + 3),
         colorScheme.onSurfaceVariant,
         center: true,
+        fontSize: 8,
       );
     }
 
-    for (double y = 0; y <= maxY; y += 4) {
+    // Y-axis ticks every 5 mg/dL
+    for (double y = 0; y <= maxY; y += 5) {
       final py = pxY(y);
       canvas.drawLine(Offset(chartRect.left, py), Offset(chartRect.right, py), gridPaint);
-      _paintText(
-        canvas,
-        y.toInt().toString(),
-        Offset(0, py - 6),
-        colorScheme.onSurfaceVariant,
-      );
+      // Right-align the number just left of the chart area
+      final label = y.toInt().toString();
+      final tp = TextPainter(
+        text: TextSpan(
+          text: label,
+          style: TextStyle(fontSize: 10, color: colorScheme.onSurfaceVariant),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      tp.paint(canvas, Offset(chartRect.left - tp.width - 3, py - tp.height / 2));
     }
   }
 
@@ -184,16 +197,36 @@ class BhutaniPainter extends CustomPainter {
   ) {
     final paint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1
-      ..color = colorScheme.outline.withValues(alpha: 0.6);
+      ..strokeWidth = 1.2
+      ..color = colorScheme.outline.withValues(alpha: 0.65);
 
     for (final curve in _boundaries) {
-      final path = Path()
+      // Solid segment 0–120 h, dashed 120–168 h
+      final solidPath = Path()
         ..moveTo(pxX(curve.first.$1), pxY(curve.first.$2));
-      for (final p in curve.skip(1)) {
-        path.lineTo(pxX(p.$1), pxY(p.$2));
+      for (final p in curve) {
+        if (p.$1 <= 120) solidPath.lineTo(pxX(p.$1), pxY(p.$2));
       }
-      canvas.drawPath(path, paint);
+      canvas.drawPath(solidPath, paint);
+
+      // Dashed extension 120–168 h
+      final dashPaint = Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.2
+        ..color = colorScheme.outline.withValues(alpha: 0.65);
+
+      final x120 = pxX(120);
+      final x168 = pxX(168);
+      final y120 = pxY(curve.last.$2); // plateau value
+      double dx = x120;
+      while (dx < x168) {
+        canvas.drawLine(
+          Offset(dx, y120),
+          Offset(min(dx + 5, x168), y120),
+          dashPaint,
+        );
+        dx += 9;
+      }
     }
   }
 
@@ -208,49 +241,68 @@ class BhutaniPainter extends CustomPainter {
   ) {
     if (measurements.isEmpty) return;
 
-    final latest = measurements.first;
+    // The "active" measurement is whichever the carousel selected, else latest.
+    final active = selectedMeasurementId != null
+        ? measurements.firstWhere(
+            (m) => m.measurementId == selectedMeasurementId,
+            orElse: () => measurements.first,
+          )
+        : measurements.first;
+    final activeIsOutside = _isOutside(active);
 
+    // ── History line + dots ─────────────────────────────────────────────────
     if (showHistory && measurements.length > 1) {
       final sorted = measurements.reversed.toList();
-      final linePaint = Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2
-        ..color = colorScheme.primary.withValues(alpha: 0.6);
 
-      final path = Path();
-      for (var i = 0; i < sorted.length; i++) {
-        final m = sorted[i];
-        final pt = Offset(
-          pxX(m.ageHours.clamp(kNomogramMinHours, kNomogramMaxHours)),
-          pxY(m.bilirubinMgDl.clamp(0, maxY)),
-        );
-        if (i == 0) {
-          path.moveTo(pt.dx, pt.dy);
-        } else {
-          path.lineTo(pt.dx, pt.dy);
-        }
-      }
-      canvas.drawPath(path, linePaint);
+      final historyMeasurements = sorted
+          .where((m) => m != active)
+          .where((m) => !_isOutside(m) || showOutsideRange)
+          .toList();
 
-      for (final m in sorted) {
-        canvas.drawCircle(
-          Offset(
+      if (historyMeasurements.isNotEmpty) {
+        final linePaint = Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2
+          ..color = colorScheme.primary.withValues(alpha: 0.6);
+
+        final path = Path();
+        bool started = false;
+        for (final m in historyMeasurements) {
+          final pt = Offset(
             pxX(m.ageHours.clamp(kNomogramMinHours, kNomogramMaxHours)),
-            pxY(m.bilirubinMgDl.clamp(0, maxY)),
-          ),
-          3,
-          Paint()..color = colorScheme.primary.withValues(alpha: 0.8),
-        );
+            pxY(m.bilirubinMgdl.clamp(0, maxY)),
+          );
+          if (!started) {
+            path.moveTo(pt.dx, pt.dy);
+            started = true;
+          } else {
+            path.lineTo(pt.dx, pt.dy);
+          }
+        }
+        canvas.drawPath(path, linePaint);
+
+        for (final m in historyMeasurements) {
+          canvas.drawCircle(
+            Offset(
+              pxX(m.ageHours.clamp(kNomogramMinHours, kNomogramMaxHours)),
+              pxY(m.bilirubinMgdl.clamp(0, maxY)),
+            ),
+            3.5,
+            Paint()
+              ..color = colorScheme.outlineVariant,
+          );
+        }
       }
     }
 
-    // Latest point
-    final lx = pxX(latest.ageHours.clamp(kNomogramMinHours, kNomogramMaxHours));
-    final ly = pxY(latest.bilirubinMgDl.clamp(0, maxY));
+    // ── Active (highlighted) point ────────────────────────────────────────────
+    final dotColor = activeIsOutside ? _purpleColor : colorScheme.error;
+    final lx = pxX(active.ageHours.clamp(kNomogramMinHours, kNomogramMaxHours));
+    final ly = pxY(active.bilirubinMgdl.clamp(0, maxY));
 
-    // Dashed vertical line from top of chart to dot
+    // Dashed vertical drop-line
     final dashPaint = Paint()
-      ..color = colorScheme.error.withValues(alpha: 0.5)
+      ..color = dotColor.withValues(alpha: 0.5)
       ..strokeWidth = 1.2;
     var dashY = chartRect.top;
     while (dashY < ly) {
@@ -258,8 +310,8 @@ class BhutaniPainter extends CustomPainter {
       dashY += 7;
     }
 
-    canvas.drawCircle(Offset(lx, ly), 7, Paint()..color = colorScheme.error);
-    canvas.drawCircle(Offset(lx, ly), 3, Paint()..color = colorScheme.onError);
+    canvas.drawCircle(Offset(lx, ly), 7, Paint()..color = dotColor);
+    canvas.drawCircle(Offset(lx, ly), 3, Paint()..color = Colors.white);
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
@@ -269,7 +321,7 @@ class BhutaniPainter extends CustomPainter {
     String text,
     Offset offset,
     Color color, {
-    double fontSize = 11,
+    double fontSize = 10,
     bool center = false,
   }) {
     final tp = TextPainter(
@@ -283,5 +335,7 @@ class BhutaniPainter extends CustomPainter {
   bool shouldRepaint(BhutaniPainter old) =>
       old.measurements != measurements ||
       old.showHistory != showHistory ||
-      old.maxY != maxY;
+      old.showOutsideRange != showOutsideRange ||
+      old.maxY != maxY ||
+      old.selectedMeasurementId != selectedMeasurementId;
 }
