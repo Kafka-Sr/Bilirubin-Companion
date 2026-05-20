@@ -44,6 +44,11 @@ dependencies:
   path: ^1.9.0
   shared_preferences: ^2.3.2
   file_picker: ^8.1.2
+  flutter_blue_plus: ^1.35.3
+
+  pdf: ^3.11.1
+  printing: ^5.13.1
+  connectivity_plus: ^6.1.4
 
   cupertino_icons: ^1.0.8
 

@@ -43,7 +43,7 @@ class _LocaleNotifier extends StateNotifier<Locale> {
 
   final SharedPreferences _prefs;
 
-  static const _supported = ['en', 'id', 'de'];
+  static const _supported = ['en', 'id'];
 
   static Locale _load(SharedPreferences p) {
     final v = p.getString(kPrefLocale);

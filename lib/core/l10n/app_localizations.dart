@@ -164,12 +164,6 @@ abstract class AppLocalizations {
   /// **'BLE'**
   String get deviceTransportBle;
 
-  /// No description provided for @deviceTransportFake.
-  ///
-  /// In en, this message translates to:
-  /// **'Simulator'**
-  String get deviceTransportFake;
-
   /// No description provided for @bhutaniChartTitle.
   ///
   /// In en, this message translates to:
@@ -179,8 +173,38 @@ abstract class AppLocalizations {
   /// No description provided for @showPreviousBilirubin.
   ///
   /// In en, this message translates to:
-  /// **'Show Previous Bilirubin'**
+  /// **'Show Previous Readings'**
   String get showPreviousBilirubin;
+
+  /// No description provided for @showReadingsOutside168h.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Readings >168 h'**
+  String get showReadingsOutside168h;
+
+  /// No description provided for @bhutaniOutsideRangeNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder: This Bhutani nomogram only displays bilirubin readings from ages 0 to 168 hours. Readings beyond this age range are in purple dots.'**
+  String get bhutaniOutsideRangeNotice;
+
+  /// No description provided for @bhutaniCurrentBeyond168h.
+  ///
+  /// In en, this message translates to:
+  /// **'The baby\'s age is currently beyond 168 hours.'**
+  String get bhutaniCurrentBeyond168h;
+
+  /// No description provided for @axisLabelTotalSerumBilirubin.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Serum Bilirubin (mg/dL)'**
+  String get axisLabelTotalSerumBilirubin;
+
+  /// No description provided for @axisLabelAgeHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Age (h)'**
+  String get axisLabelAgeHours;
 
   /// No description provided for @zoneLow.
   ///
@@ -188,11 +212,11 @@ abstract class AppLocalizations {
   /// **'Low Risk'**
   String get zoneLow;
 
-  /// No description provided for @zoneIntermediate.
+  /// No description provided for @zoneLowIntermediate.
   ///
   /// In en, this message translates to:
-  /// **'Intermediate Risk'**
-  String get zoneIntermediate;
+  /// **'Low Intermediate Risk'**
+  String get zoneLowIntermediate;
 
   /// No description provided for @zoneHighIntermediate.
   ///
@@ -206,12 +230,6 @@ abstract class AppLocalizations {
   /// **'High Risk'**
   String get zoneHigh;
 
-  /// No description provided for @zoneVeryHigh.
-  ///
-  /// In en, this message translates to:
-  /// **'Very High Risk'**
-  String get zoneVeryHigh;
-
   /// No description provided for @recommendationHeader.
   ///
   /// In en, this message translates to:
@@ -221,32 +239,26 @@ abstract class AppLocalizations {
   /// No description provided for @recommendationLow.
   ///
   /// In en, this message translates to:
-  /// **'Bilirubin levels are within the safe range. Continue routine monitoring. No immediate action required.'**
+  /// **'Bilirubin levels are within the safe range (below 40th percentile). Continue routine monitoring. No immediate action required.'**
   String get recommendationLow;
 
-  /// No description provided for @recommendationIntermediate.
+  /// No description provided for @recommendationLowIntermediate.
   ///
   /// In en, this message translates to:
-  /// **'Bilirubin is in the intermediate zone. Repeat measurement in 8–12 hours and monitor closely.'**
-  String get recommendationIntermediate;
+  /// **'Bilirubin is in the low intermediate zone (40th–75th percentile). Repeat measurement in 8–12 hours and monitor closely.'**
+  String get recommendationLowIntermediate;
 
   /// No description provided for @recommendationHighIntermediate.
   ///
   /// In en, this message translates to:
-  /// **'Bilirubin is in the high-intermediate zone. Repeat measurement in 4–8 hours. Consider initiating phototherapy per AAP 2022 guidelines.'**
+  /// **'Bilirubin is in the high intermediate zone (75th–95th percentile). Repeat measurement in 4–8 hours. Consider initiating phototherapy per AAP 2022 guidelines.'**
   String get recommendationHighIntermediate;
 
   /// No description provided for @recommendationHigh.
   ///
   /// In en, this message translates to:
-  /// **'Bilirubin is in the high-risk zone. Consider phototherapy immediately. Consult a neonatologist.'**
+  /// **'Bilirubin is critically elevated (above 95th percentile). Immediate intervention required. Escalate to a neonatologist urgently.'**
   String get recommendationHigh;
-
-  /// No description provided for @recommendationVeryHigh.
-  ///
-  /// In en, this message translates to:
-  /// **'Bilirubin is critically elevated. Immediate intervention required. Escalate to a neonatologist urgently.'**
-  String get recommendationVeryHigh;
 
   /// No description provided for @metadataTitle.
   ///
@@ -392,6 +404,48 @@ abstract class AppLocalizations {
   /// **'Name contains invalid characters.'**
   String get validationNameInvalid;
 
+  /// No description provided for @settingsPiLanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Raspberry Pi LAN'**
+  String get settingsPiLanTitle;
+
+  /// No description provided for @settingsPiAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Pi address or URL'**
+  String get settingsPiAddressLabel;
+
+  /// No description provided for @settingsPiAddressHint.
+  ///
+  /// In en, this message translates to:
+  /// **'192.168.1.50:8080 or http://raspi.local:8080'**
+  String get settingsPiAddressHint;
+
+  /// No description provided for @settingsPiSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Pi address'**
+  String get settingsPiSave;
+
+  /// No description provided for @settingsPiClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get settingsPiClear;
+
+  /// No description provided for @settingsPiBeaconUse.
+  ///
+  /// In en, this message translates to:
+  /// **'Use'**
+  String get settingsPiBeaconUse;
+
+  /// No description provided for @settingsPiBeaconDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'If the phone and Pi are on the same Wi-Fi network, the app can discover the Pi automatically by beacon. Supabase still stores the synced history.'**
+  String get settingsPiBeaconDescription;
+
   /// No description provided for @settingsWifi.
   ///
   /// In en, this message translates to:
@@ -421,6 +475,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'BLE not yet supported in this version.'**
   String get settingsBleNotAvailable;
+
+  /// No description provided for @settingsBleNoPaired.
+  ///
+  /// In en, this message translates to:
+  /// **'No device paired'**
+  String get settingsBleNoPaired;
+
+  /// No description provided for @settingsBleUnpair.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpair'**
+  String get settingsBleUnpair;
+
+  /// No description provided for @settingsBleStartScan.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan for devices'**
+  String get settingsBleStartScan;
+
+  /// No description provided for @settingsBleScanning.
+  ///
+  /// In en, this message translates to:
+  /// **'Scanning…'**
+  String get settingsBleScanning;
+
+  /// No description provided for @settingsBlePair.
+  ///
+  /// In en, this message translates to:
+  /// **'Pair'**
+  String get settingsBlePair;
 
   /// No description provided for @settingsLanguage.
   ///
@@ -572,11 +656,11 @@ abstract class AppLocalizations {
   /// **'Low Risk Zone'**
   String get zoneLowFull;
 
-  /// No description provided for @zoneIntermediateFull.
+  /// No description provided for @zoneLowIntermediateFull.
   ///
   /// In en, this message translates to:
-  /// **'Intermediate Risk Zone'**
-  String get zoneIntermediateFull;
+  /// **'Low Intermediate Risk Zone'**
+  String get zoneLowIntermediateFull;
 
   /// No description provided for @zoneHighIntermediateFull.
   ///
@@ -589,12 +673,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'High Risk Zone'**
   String get zoneHighFull;
-
-  /// No description provided for @zoneVeryHighFull.
-  ///
-  /// In en, this message translates to:
-  /// **'Very High Risk Zone'**
-  String get zoneVeryHighFull;
 
   /// No description provided for @deviceConnecting.
   ///
@@ -685,6 +763,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Permanently delete'**
   String get permanentlyDeleteTooltip;
+
+  /// No description provided for @archivedBabies.
+  ///
+  /// In en, this message translates to:
+  /// **'View Archived Babies'**
+  String get archivedBabies;
+
+  /// No description provided for @pdfTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bilirubin Report'**
+  String get pdfTitle;
+
+  /// No description provided for @pdfExportedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Exported:'**
+  String get pdfExportedAt;
+
+  /// No description provided for @pdfGeneratedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated by Bilirubin App'**
+  String get pdfGeneratedBy;
+
+  /// No description provided for @pdfPatientInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient Information'**
+  String get pdfPatientInfo;
+
+  /// No description provided for @pdfBirthWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Birth Weight'**
+  String get pdfBirthWeight;
+
+  /// No description provided for @pdfAgeAtExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Age at Export'**
+  String get pdfAgeAtExport;
+
+  /// No description provided for @pdfMeasurementsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Measurements'**
+  String get pdfMeasurementsTitle;
+
+  /// No description provided for @pdfColDateTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Date/Time'**
+  String get pdfColDateTime;
+
+  /// No description provided for @pdfColBilirubin.
+  ///
+  /// In en, this message translates to:
+  /// **'Bilirubin (mg/dL)'**
+  String get pdfColBilirubin;
+
+  /// No description provided for @pdfColZone.
+  ///
+  /// In en, this message translates to:
+  /// **'Zone'**
+  String get pdfColZone;
+
+  /// No description provided for @pdfColDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Device'**
+  String get pdfColDevice;
+
+  /// No description provided for @cloudNotConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t connect to the server'**
+  String get cloudNotConfigured;
+
+  /// No description provided for @cloudSyncing.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing…'**
+  String get cloudSyncing;
+
+  /// No description provided for @cloudSyncError.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync error'**
+  String get cloudSyncError;
+
+  /// No description provided for @cloudSynced.
+  ///
+  /// In en, this message translates to:
+  /// **'Synced'**
+  String get cloudSynced;
 }
 
 class _AppLocalizationsDelegate

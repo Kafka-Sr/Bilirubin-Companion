@@ -8,7 +8,6 @@ import 'package:bilirubin/providers/baby_providers.dart';
 import 'package:bilirubin/providers/database_provider.dart';
 import 'package:bilirubin/providers/measurement_providers.dart';
 import 'package:bilirubin/repositories/audit_repository.dart';
-import 'package:bilirubin/repositories/baby_repository.dart';
 
 enum _BabyMenuAction { add, archive }
 
@@ -28,11 +27,11 @@ class BabySelector extends ConsumerWidget {
         // Auto-select the first baby if none is selected yet.
         if (selectedId == null && babies.isNotEmpty) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            ref.read(selectedBabyIdProvider.notifier).state = babies.first.id;
+            ref.read(selectedBabyIdProvider.notifier).state = babies.first.babyId;
           });
         }
 
-        final selectedBaby = babies.firstWhereOrNull((b) => b.id == selectedId);
+        final selectedBaby = babies.firstWhereOrNull((b) => b.babyId == selectedId);
 
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -74,7 +73,7 @@ class _BabyDropdownState extends ConsumerState<_BabyDropdown> {
   @override
   Widget build(BuildContext context) {
     final selected = widget.babies.firstWhereOrNull(
-      (b) => b.id == widget.selectedId,
+      (b) => b.babyId == widget.selectedId,
     );
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -93,7 +92,7 @@ class _BabyDropdownState extends ConsumerState<_BabyDropdown> {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                selected?.name ?? AppLocalizations.of(context).selectBaby,
+                selected?.babyName ?? AppLocalizations.of(context).selectBaby,
                 style: Theme.of(context).textTheme.bodyLarge,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -142,15 +141,24 @@ class _OverflowMenu extends ConsumerWidget {
         return [
           PopupMenuItem(
             value: _BabyMenuAction.add,
-            child: Text(l10n.addBabyTitle),
+            child: Row(children: [
+              const Icon(Icons.add_rounded, size: 18),
+              const SizedBox(width: 12),
+              Text(l10n.addBabyTitle),
+            ]),
           ),
           PopupMenuItem(
             value: _BabyMenuAction.archive,
             enabled: hasSelection,
-            child: Text(
-              l10n.archiveBabyAction,
-              style: hasSelection ? null : TextStyle(color: colorScheme.onSurface.withValues(alpha: 0.38)),
-            ),
+            child: Row(children: [
+              Icon(Icons.archive_outlined, size: 18,
+                  color: hasSelection ? null : colorScheme.onSurface.withValues(alpha: 0.38)),
+              const SizedBox(width: 12),
+              Text(
+                l10n.archiveBabyAction,
+                style: hasSelection ? null : TextStyle(color: colorScheme.onSurface.withValues(alpha: 0.38)),
+              ),
+            ]),
           ),
         ];
       },
@@ -184,7 +192,7 @@ class _OverflowMenu extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l10n.archiveBabyAction),
-        content: Text(l10n.archiveBabyContent(baby.name)),
+        content: Text(l10n.archiveBabyContent(baby.babyName)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
@@ -201,8 +209,8 @@ class _OverflowMenu extends ConsumerWidget {
     if (confirmed != true) return;
 
     final db = ref.read(appDatabaseProvider);
-    await BabyRepository(db).archive(baby.id);
-    await AuditRepository(db).logBabyDelete(baby.id);
+    await ref.read(babyRepositoryProvider).archive(baby.babyId);
+    await AuditRepository(db).logBabyDelete(baby.babyId);
     ref.read(selectedBabyIdProvider.notifier).state = null;
   }
 }
@@ -249,7 +257,7 @@ class _ExportButton extends ConsumerWidget {
     if (baby == null) return;
 
     final measurements =
-        await ref.read(measurementRepositoryProvider).watchByBaby(baby.id).first;
+        await ref.read(measurementRepositoryProvider).watchByBaby(baby.babyId).first;
 
     if (context.mounted) {
       await showExportBottomSheet(context, ref,
@@ -281,7 +289,7 @@ class _BabySearchSheetState extends ConsumerState<_BabySearchSheet> {
 
     final source = _showArchived ? archived : widget.babies;
     final filtered = source
-        .where((b) => b.name.toLowerCase().contains(_query.toLowerCase()))
+        .where((b) => b.babyName.toLowerCase().contains(_query.toLowerCase()))
         .toList();
 
     return DraggableScrollableSheet(
@@ -371,10 +379,10 @@ class _BabySearchSheetState extends ConsumerState<_BabySearchSheet> {
                 if (_showArchived) {
                   return ListTile(
                     leading: const CircleAvatar(child: Icon(Icons.child_friendly)),
-                    title: Text(baby.name),
+                    title: Text(baby.babyName),
                     subtitle: Text(
-                      '${baby.weightKg.toStringAsFixed(1)} kg · '
-                      'DOB ${baby.dateOfBirth.day}/${baby.dateOfBirth.month}/${baby.dateOfBirth.year}',
+                      '${baby.babyWeight.toStringAsFixed(1)} kg · '
+                      'DOB ${baby.babyDob.day}/${baby.babyDob.month}/${baby.babyDob.year}',
                     ),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -383,8 +391,7 @@ class _BabySearchSheetState extends ConsumerState<_BabySearchSheet> {
                           icon: const Icon(Icons.restore),
                           tooltip: AppLocalizations.of(context).restoreAction,
                           onPressed: () async {
-                            final db = ref.read(appDatabaseProvider);
-                            await BabyRepository(db).restore(baby.id);
+                            await ref.read(babyRepositoryProvider).restore(baby.babyId);
                           },
                         ),
                         IconButton(
@@ -399,13 +406,13 @@ class _BabySearchSheetState extends ConsumerState<_BabySearchSheet> {
                 }
                 return ListTile(
                   leading: const CircleAvatar(child: Icon(Icons.child_friendly)),
-                  title: Text(baby.name),
+                  title: Text(baby.babyName),
                   subtitle: Text(
-                    '${baby.weightKg.toStringAsFixed(1)} kg · '
-                    'DOB ${baby.dateOfBirth.day}/${baby.dateOfBirth.month}/${baby.dateOfBirth.year}',
+                    '${baby.babyWeight.toStringAsFixed(1)} kg · '
+                    'DOB ${baby.babyDob.day}/${baby.babyDob.month}/${baby.babyDob.year}',
                   ),
                   onTap: () {
-                    widget.onSelect(baby.id);
+                    widget.onSelect(baby.babyId);
                     Navigator.of(context).pop();
                   },
                 );
@@ -424,7 +431,7 @@ class _BabySearchSheetState extends ConsumerState<_BabySearchSheet> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l10n.permanentDeleteTitle),
-        content: Text(l10n.permanentDeleteContent(baby.name)),
+        content: Text(l10n.permanentDeleteContent(baby.babyName)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
@@ -443,8 +450,7 @@ class _BabySearchSheetState extends ConsumerState<_BabySearchSheet> {
 
     if (confirmed != true) return;
 
-    final db = ref.read(appDatabaseProvider);
-    await BabyRepository(db).delete(baby.id);
+    await ref.read(babyRepositoryProvider).delete(baby.babyId);
   }
 }
 

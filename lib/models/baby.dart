@@ -1,43 +1,43 @@
 /// Immutable domain model representing a registered baby.
 class Baby {
   const Baby({
-    required this.id,
-    required this.name,
-    required this.dateOfBirth,
-    required this.weightKg,
+    required this.babyId,
+    required this.babyName,
+    required this.babyDob,
+    required this.babyWeight,
     required this.createdAt,
     required this.updatedAt,
     this.isArchived = false,
   });
 
-  final int id;
-  final String name;
-  final DateTime dateOfBirth;
-  final double weightKg;
+  final int babyId;
+  final String babyName;
+  final DateTime babyDob;
+  final double babyWeight;
   final DateTime createdAt;
   final DateTime updatedAt;
   final bool isArchived;
 
   /// Returns the baby's postnatal age in whole hours relative to [reference].
   double ageHoursAt(DateTime reference) {
-    final diff = reference.difference(dateOfBirth);
+    final diff = reference.difference(babyDob);
     return diff.inMinutes / 60.0;
   }
 
   Baby copyWith({
-    int? id,
-    String? name,
-    DateTime? dateOfBirth,
-    double? weightKg,
+    int? babyId,
+    String? babyName,
+    DateTime? babyDob,
+    double? babyWeight,
     DateTime? createdAt,
     DateTime? updatedAt,
     bool? isArchived,
   }) {
     return Baby(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
-      weightKg: weightKg ?? this.weightKg,
+      babyId: babyId ?? this.babyId,
+      babyName: babyName ?? this.babyName,
+      babyDob: babyDob ?? this.babyDob,
+      babyWeight: babyWeight ?? this.babyWeight,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       isArchived: isArchived ?? this.isArchived,
@@ -47,11 +47,11 @@ class Baby {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Baby && runtimeType == other.runtimeType && id == other.id;
+      other is Baby && runtimeType == other.runtimeType && babyId == other.babyId;
 
   @override
-  int get hashCode => id.hashCode;
+  int get hashCode => babyId.hashCode;
 
   @override
-  String toString() => 'Baby(id: $id, name: $name)';
+  String toString() => 'Baby(babyId: $babyId, babyName: $babyName)';
 }

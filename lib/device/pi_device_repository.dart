@@ -5,7 +5,6 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
-import 'package:bilirubin/core/constants.dart';
 import 'package:bilirubin/device/device_repository.dart';
 import 'package:bilirubin/models/device_connection_state.dart';
 import 'package:bilirubin/models/device_info.dart';
@@ -106,7 +105,7 @@ class PiDeviceRepository implements DeviceRepository {
 
     final jsonMap = jsonDecode(response.body) as Map<String, dynamic>;
     return DeviceInfo(
-      deviceId: (jsonMap['deviceId'] as String?) ?? kFakeDeviceId,
+      deviceId: (jsonMap['deviceId'] as String?) ?? 'unknown-device',
       displayName: (jsonMap['displayName'] as String?) ?? 'Raspberry Pi',
       transport: DeviceTransport.wifi,
       connectionState: DeviceConnectionState.connected,
@@ -156,7 +155,7 @@ class PiDeviceRepository implements DeviceRepository {
     final measurementId = jsonMap['measurementId'] as String? ?? _uuid.v4();
     final capturedAtRaw = jsonMap['capturedAt'] as String?;
     final bilirubin = (jsonMap['bilirubinMgDl'] as num?)?.toDouble();
-    final deviceId = jsonMap['deviceId'] as String? ?? kFakeDeviceId;
+    final deviceId = jsonMap['deviceId'] as String? ?? 'unknown-device';
     final modelVersion = jsonMap['modelVersion'] as String? ?? 'pi-1';
     final imageBytesBase64 = jsonMap['imageBytesBase64'] as String?;
 
@@ -170,7 +169,7 @@ class PiDeviceRepository implements DeviceRepository {
     return IncomingMeasurement(
       measurementId: measurementId,
       capturedAt: DateTime.parse(capturedAtRaw),
-      bilirubinMgDl: bilirubin,
+      bilirubinMgdl: bilirubin,
       deviceId: deviceId,
       modelVersion: modelVersion,
       imageBytes: imageBytes,

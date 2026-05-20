@@ -53,6 +53,12 @@ class LocalSyncOutbox {
     }
   }
 
+  Future<void> removeIds(Set<String> ids) async {
+    if (ids.isEmpty) return;
+    final entries = await readPending();
+    await _write(entries.where((e) => !ids.contains(e.id)).toList());
+  }
+
   Future<void> _write(List<LocalSyncOutboxEntry> entries) async {
     final file = await _file();
     await file.writeAsString(jsonEncode(entries.map((e) => e.toJson()).toList()));

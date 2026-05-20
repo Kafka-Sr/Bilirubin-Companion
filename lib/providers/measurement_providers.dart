@@ -2,6 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bilirubin/models/measurement.dart';
 import 'package:bilirubin/providers/baby_providers.dart';
 import 'package:bilirubin/providers/database_provider.dart';
+import 'package:bilirubin/providers/sync_providers.dart';
+import 'package:bilirubin/providers/supabase_providers.dart';
 import 'package:bilirubin/repositories/measurement_repository.dart';
 import 'package:bilirubin/security/encryption_service.dart';
 import 'package:bilirubin/providers/sync_queue_providers.dart';
@@ -13,10 +15,13 @@ final encryptionServiceProvider = Provider<EncryptionService>((ref) {
 
 /// [MeasurementRepository] instance.
 final measurementRepositoryProvider = Provider<MeasurementRepository>((ref) {
+  final sync = ref.read(syncServiceProvider);
   return MeasurementRepository(
     ref.watch(appDatabaseProvider),
     ref.watch(encryptionServiceProvider),
     outbox: ref.watch(localSyncOutboxProvider),
+    onQueued: () => sync.drainOutbox().catchError((_) {}),
+    supabase: ref.watch(supabaseClientProvider),
   );
 });
 
@@ -30,7 +35,26 @@ final measurementsProvider =
 final latestMeasurementProvider = Provider<Measurement?>((ref) {
   final baby = ref.watch(selectedBabyProvider);
   if (baby == null) return null;
-  return ref.watch(measurementsProvider(baby.id)).valueOrNull?.firstOrNull;
+  return ref.watch(measurementsProvider(baby.babyId)).valueOrNull?.firstOrNull;
+});
+
+/// The measurement ID selected via the image carousel. Null = show latest.
+final selectedCarouselMeasurementIdProvider =
+    StateProvider<String?>((ref) => null);
+
+/// The measurement currently highlighted by the carousel, or the latest if
+/// no carousel selection is active.
+final activeMeasurementProvider = Provider<Measurement?>((ref) {
+  final selectedId = ref.watch(selectedCarouselMeasurementIdProvider);
+  final baby = ref.watch(selectedBabyProvider);
+  if (baby == null) return null;
+  final all = ref.watch(measurementsProvider(baby.babyId)).valueOrNull;
+  if (all == null || all.isEmpty) return null;
+  if (selectedId == null) return all.firstOrNull;
+  return all.firstWhere(
+    (m) => m.measurementId == selectedId,
+    orElse: () => all.first,
+  );
 });
 
 extension<T> on List<T> {

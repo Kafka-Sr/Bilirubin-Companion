@@ -1,30 +1,46 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:bilirubin/device/ble_device_repository.dart';
 import 'package:bilirubin/device/device_repository.dart';
-import 'package:bilirubin/device/fake_device_repository.dart';
+import 'package:bilirubin/device/null_device_repository.dart';
 import 'package:bilirubin/device/pi_device_repository.dart';
 import 'package:bilirubin/models/device_connection_state.dart';
 import 'package:bilirubin/models/device_info.dart';
+import 'package:bilirubin/providers/ble_providers.dart';
 import 'package:bilirubin/providers/pi_discovery_providers.dart';
 import 'package:bilirubin/providers/baby_providers.dart';
 import 'package:bilirubin/providers/measurement_providers.dart';
 import 'package:bilirubin/providers/settings_providers.dart';
 
-/// The active [DeviceRepository] implementation (fake in v1).
+/// The active [DeviceRepository] implementation.
 ///
-/// Swap [FakeDeviceRepository] for [WifiDeviceRepository] or
-/// [BleDeviceRepository] in a future release.
+/// Priority:
+///   1. Pi beacon (UDP auto-discovered on LAN)
+///   2. Manually entered Pi base URL
+///   3. Paired BLE device (from [activeBleDeviceProvider])
+///   4. [NullDeviceRepository] — "No device connected"
 final deviceRepositoryProvider = Provider<DeviceRepository>((ref) {
-  final discoveredBeacons = ref.watch(piBeaconListProvider).valueOrNull ?? const [];
-  final discoveredBaseUrl = discoveredBeacons.isNotEmpty
-      ? discoveredBeacons.first.baseUrl
-      : '';
+  final discoveredBeacons =
+      ref.watch(piBeaconListProvider).valueOrNull ?? const [];
+  final discoveredBaseUrl =
+      discoveredBeacons.isNotEmpty ? discoveredBeacons.first.baseUrl : '';
   final piBaseUrl = ref.watch(piBaseUrlProvider);
-  final baseUrl = discoveredBaseUrl.isNotEmpty ? discoveredBaseUrl : piBaseUrl;
-  final repo = baseUrl.isNotEmpty
-      ? PiDeviceRepository(baseUrl: baseUrl)
-      : FakeDeviceRepository();
-  ref.onDispose(repo.dispose);
-  return repo;
+  final baseUrl =
+      discoveredBaseUrl.isNotEmpty ? discoveredBaseUrl : piBaseUrl;
+
+  if (baseUrl.isNotEmpty) {
+    final repo = PiDeviceRepository(baseUrl: baseUrl);
+    ref.onDispose(repo.dispose);
+    return repo;
+  }
+
+  final bleDevice = ref.watch(activeBleDeviceProvider);
+  if (bleDevice != null) {
+    final repo = BleDeviceRepository(bleDevice);
+    ref.onDispose(repo.dispose);
+    return repo;
+  }
+
+  return NullDeviceRepository();
 });
 
 /// Live stream of device connection states.
@@ -39,6 +55,9 @@ final deviceInfoProvider = StreamProvider<DeviceInfo?>((ref) {
 
 /// Whether the "Show Previous Bilirubin" toggle is on.
 final showHistoryProvider = StateProvider<bool>((ref) => false);
+
+/// Whether the "Show Readings Outside 168 h" toggle is on.
+final showOutsideRangeProvider = StateProvider<bool>((ref) => false);
 
 /// Bridge: listens to incoming device measurements and persists them
 /// for the currently selected baby.

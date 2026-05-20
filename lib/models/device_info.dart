@@ -1,7 +1,7 @@
 import 'package:bilirubin/models/device_connection_state.dart';
 
 /// Transport protocol used to communicate with the device.
-enum DeviceTransport { wifi, ble, fake }
+enum DeviceTransport { wifi, ble }
 
 /// Runtime information about the paired/connected device.
 class DeviceInfo {

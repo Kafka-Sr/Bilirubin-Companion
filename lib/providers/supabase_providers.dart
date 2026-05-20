@@ -4,7 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:bilirubin/core/supabase_config.dart';
 
 final supabaseConfigProvider = Provider<SupabaseConfig>((ref) {
-  return SupabaseConfig.fromEnvironment();
+  return SupabaseConfig.fromDotEnv();
 });
 
 final supabaseClientProvider = Provider<SupabaseClient?>((ref) {

@@ -10,6 +10,7 @@ import 'package:bilirubin/features/dashboard/widgets/image_carousel.dart';
 import 'package:bilirubin/features/dashboard/widgets/latest_result_card.dart';
 import 'package:bilirubin/features/dashboard/widgets/recommendation_card.dart';
 import 'package:bilirubin/providers/baby_providers.dart';
+import 'package:bilirubin/providers/sync_providers.dart';
 
 /// Main dashboard screen — composes all dashboard widgets.
 class DashboardScreen extends ConsumerWidget {
@@ -33,7 +34,15 @@ class DashboardScreen extends ConsumerWidget {
 
           return RefreshIndicator(
             onRefresh: () async {
-              // Re-read stream — no-op but satisfies the gesture.
+              ref.read(syncStatusProvider.notifier).set(SyncStatus.syncing);
+              try {
+                final sync = ref.read(syncServiceProvider);
+                await sync.drainOutbox();
+                await sync.pullChanges();
+                ref.read(syncStatusProvider.notifier).set(SyncStatus.idle);
+              } catch (_) {
+                ref.read(syncStatusProvider.notifier).set(SyncStatus.error);
+              }
             },
             child: CustomScrollView(
               slivers: [
@@ -58,16 +67,16 @@ class DashboardScreen extends ConsumerWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                ImageCarousel(babyId: baby.id, embedded: true),
+                                ImageCarousel(babyId: baby.babyId, embedded: true),
                                 const SizedBox(height: 1),
-                                const LatestResultCard(embedded: true),
+                                LatestResultCard(babyId: baby.babyId, embedded: true),
                               ],
                             ),
                           ),
                         ),
 
                         // 5. Bhutani chart
-                        BhutaniChart(babyId: baby.id),
+                        BhutaniChart(babyId: baby.babyId),
 
                         // 6. Baby metadata
                         BabyMetadataSection(baby: baby),

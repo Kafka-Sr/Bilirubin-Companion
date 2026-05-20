@@ -44,19 +44,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deviceTransportBle => 'BLE';
 
   @override
-  String get deviceTransportFake => 'Simulator';
-
-  @override
   String get bhutaniChartTitle => 'Bhutani Nomogram';
 
   @override
-  String get showPreviousBilirubin => 'Show Previous Bilirubin';
+  String get showPreviousBilirubin => 'Show Previous Readings';
+
+  @override
+  String get showReadingsOutside168h => 'Show Readings >168 h';
+
+  @override
+  String get bhutaniOutsideRangeNotice =>
+      'Reminder: This Bhutani nomogram only displays bilirubin readings from ages 0 to 168 hours. Readings beyond this age range are in purple dots.';
+
+  @override
+  String get bhutaniCurrentBeyond168h =>
+      'The baby\'s age is currently beyond 168 hours.';
+
+  @override
+  String get axisLabelTotalSerumBilirubin => 'Total Serum Bilirubin (mg/dL)';
+
+  @override
+  String get axisLabelAgeHours => 'Age (h)';
 
   @override
   String get zoneLow => 'Low Risk';
 
   @override
-  String get zoneIntermediate => 'Intermediate Risk';
+  String get zoneLowIntermediate => 'Low Intermediate Risk';
 
   @override
   String get zoneHighIntermediate => 'High Intermediate Risk';
@@ -65,30 +79,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zoneHigh => 'High Risk';
 
   @override
-  String get zoneVeryHigh => 'Very High Risk';
-
-  @override
   String get recommendationHeader => 'Recommendation';
 
   @override
   String get recommendationLow =>
-      'Bilirubin levels are within the safe range. Continue routine monitoring. No immediate action required.';
+      'Bilirubin levels are within the safe range (below 40th percentile). Continue routine monitoring. No immediate action required.';
 
   @override
-  String get recommendationIntermediate =>
-      'Bilirubin is in the intermediate zone. Repeat measurement in 8–12 hours and monitor closely.';
+  String get recommendationLowIntermediate =>
+      'Bilirubin is in the low intermediate zone (40th–75th percentile). Repeat measurement in 8–12 hours and monitor closely.';
 
   @override
   String get recommendationHighIntermediate =>
-      'Bilirubin is in the high-intermediate zone. Repeat measurement in 4–8 hours. Consider initiating phototherapy per AAP 2022 guidelines.';
+      'Bilirubin is in the high intermediate zone (75th–95th percentile). Repeat measurement in 4–8 hours. Consider initiating phototherapy per AAP 2022 guidelines.';
 
   @override
   String get recommendationHigh =>
-      'Bilirubin is in the high-risk zone. Consider phototherapy immediately. Consult a neonatologist.';
-
-  @override
-  String get recommendationVeryHigh =>
-      'Bilirubin is critically elevated. Immediate intervention required. Escalate to a neonatologist urgently.';
+      'Bilirubin is critically elevated (above 95th percentile). Immediate intervention required. Escalate to a neonatologist urgently.';
 
   @override
   String get metadataTitle => 'Baby Information';
@@ -169,6 +176,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get validationNameInvalid => 'Name contains invalid characters.';
 
   @override
+  String get settingsPiLanTitle => 'Raspberry Pi LAN';
+
+  @override
+  String get settingsPiAddressLabel => 'Pi address or URL';
+
+  @override
+  String get settingsPiAddressHint =>
+      '192.168.1.50:8080 or http://raspi.local:8080';
+
+  @override
+  String get settingsPiSave => 'Save Pi address';
+
+  @override
+  String get settingsPiClear => 'Clear';
+
+  @override
+  String get settingsPiBeaconUse => 'Use';
+
+  @override
+  String get settingsPiBeaconDescription =>
+      'If the phone and Pi are on the same Wi-Fi network, the app can discover the Pi automatically by beacon. Supabase still stores the synced history.';
+
+  @override
   String get settingsWifi => 'Wi-Fi Configuration';
 
   @override
@@ -183,6 +213,21 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsBleNotAvailable =>
       'BLE not yet supported in this version.';
+
+  @override
+  String get settingsBleNoPaired => 'No device paired';
+
+  @override
+  String get settingsBleUnpair => 'Unpair';
+
+  @override
+  String get settingsBleStartScan => 'Scan for devices';
+
+  @override
+  String get settingsBleScanning => 'Scanning…';
+
+  @override
+  String get settingsBlePair => 'Pair';
 
   @override
   String get settingsLanguage => 'Language';
@@ -263,16 +308,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zoneLowFull => 'Low Risk Zone';
 
   @override
-  String get zoneIntermediateFull => 'Intermediate Risk Zone';
+  String get zoneLowIntermediateFull => 'Low Intermediate Risk Zone';
 
   @override
   String get zoneHighIntermediateFull => 'High Intermediate Risk Zone';
 
   @override
   String get zoneHighFull => 'High Risk Zone';
-
-  @override
-  String get zoneVeryHighFull => 'Very High Risk Zone';
 
   @override
   String get deviceConnecting => 'Connecting…';
@@ -324,4 +366,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get permanentlyDeleteTooltip => 'Permanently delete';
+
+  @override
+  String get archivedBabies => 'View Archived Babies';
+
+  @override
+  String get pdfTitle => 'Bilirubin Report';
+
+  @override
+  String get pdfExportedAt => 'Exported:';
+
+  @override
+  String get pdfGeneratedBy => 'Generated by Bilirubin App';
+
+  @override
+  String get pdfPatientInfo => 'Patient Information';
+
+  @override
+  String get pdfBirthWeight => 'Birth Weight';
+
+  @override
+  String get pdfAgeAtExport => 'Age at Export';
+
+  @override
+  String get pdfMeasurementsTitle => 'Measurements';
+
+  @override
+  String get pdfColDateTime => 'Date/Time';
+
+  @override
+  String get pdfColBilirubin => 'Bilirubin (mg/dL)';
+
+  @override
+  String get pdfColZone => 'Zone';
+
+  @override
+  String get pdfColDevice => 'Device';
+
+  @override
+  String get cloudNotConfigured => 'Can\'t connect to the server';
+
+  @override
+  String get cloudSyncing => 'Syncing…';
+
+  @override
+  String get cloudSyncError => 'Sync error';
+
+  @override
+  String get cloudSynced => 'Synced';
 }

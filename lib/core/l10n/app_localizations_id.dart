@@ -45,19 +45,33 @@ class AppLocalizationsId extends AppLocalizations {
   String get deviceTransportBle => 'BLE';
 
   @override
-  String get deviceTransportFake => 'Simulator';
-
-  @override
   String get bhutaniChartTitle => 'Nomogram Bhutani';
 
   @override
-  String get showPreviousBilirubin => 'Tampilkan Bilirubin Sebelumnya';
+  String get showPreviousBilirubin => 'Tampilkan Bacaan Sebelumnya';
+
+  @override
+  String get showReadingsOutside168h => 'Tampilkan Bacaan >168 jam';
+
+  @override
+  String get bhutaniOutsideRangeNotice =>
+      'Pengingat: Nomogram Bhutani ini hanya menampilkan pembacaan bilirubin dari usia 0 hingga 168 jam. Pembacaan di luar rentang usia ini ditampilkan sebagai titik ungu.';
+
+  @override
+  String get bhutaniCurrentBeyond168h =>
+      'Usia bayi saat ini sudah lebih dari 168 jam.';
+
+  @override
+  String get axisLabelTotalSerumBilirubin => 'Total Bilirubin Serum (mg/dL)';
+
+  @override
+  String get axisLabelAgeHours => 'Usia (jam)';
 
   @override
   String get zoneLow => 'Risiko Rendah';
 
   @override
-  String get zoneIntermediate => 'Risiko Menengah';
+  String get zoneLowIntermediate => 'Risiko Rendah Menengah';
 
   @override
   String get zoneHighIntermediate => 'Risiko Menengah Tinggi';
@@ -66,30 +80,23 @@ class AppLocalizationsId extends AppLocalizations {
   String get zoneHigh => 'Risiko Tinggi';
 
   @override
-  String get zoneVeryHigh => 'Risiko Sangat Tinggi';
-
-  @override
   String get recommendationHeader => 'Rekomendasi';
 
   @override
   String get recommendationLow =>
-      'Kadar bilirubin dalam batas aman. Terus lakukan pemantauan rutin. Tidak diperlukan tindakan segera.';
+      'Kadar bilirubin dalam batas aman (di bawah persentil ke-40). Terus lakukan pemantauan rutin. Tidak diperlukan tindakan segera.';
 
   @override
-  String get recommendationIntermediate =>
-      'Bilirubin berada di zona menengah. Ulangi pengukuran dalam 8–12 jam dan pantau dengan cermat.';
+  String get recommendationLowIntermediate =>
+      'Bilirubin berada di zona rendah menengah (persentil ke-40 hingga ke-75). Ulangi pengukuran dalam 8–12 jam dan pantau dengan cermat.';
 
   @override
   String get recommendationHighIntermediate =>
-      'Bilirubin berada di zona menengah tinggi. Ulangi pengukuran dalam 4–8 jam. Pertimbangkan fototerapi sesuai panduan AAP 2022.';
+      'Bilirubin berada di zona menengah tinggi (persentil ke-75 hingga ke-95). Ulangi pengukuran dalam 4–8 jam. Pertimbangkan fototerapi sesuai panduan AAP 2022.';
 
   @override
   String get recommendationHigh =>
-      'Bilirubin berada di zona risiko tinggi. Pertimbangkan fototerapi segera. Konsultasikan dengan dokter spesialis neonatologi.';
-
-  @override
-  String get recommendationVeryHigh =>
-      'Bilirubin berada dalam kondisi kritis. Diperlukan intervensi segera. Segera eskalasi ke dokter neonatologi.';
+      'Bilirubin berada dalam kondisi kritis (di atas persentil ke-95). Diperlukan intervensi segera. Segera eskalasi ke dokter neonatologi.';
 
   @override
   String get metadataTitle => 'Informasi Bayi';
@@ -172,6 +179,29 @@ class AppLocalizationsId extends AppLocalizations {
       'Nama mengandung karakter yang tidak valid.';
 
   @override
+  String get settingsPiLanTitle => 'Raspberry Pi LAN';
+
+  @override
+  String get settingsPiAddressLabel => 'Alamat Pi atau URL';
+
+  @override
+  String get settingsPiAddressHint =>
+      '192.168.1.50:8080 atau http://raspi.local:8080';
+
+  @override
+  String get settingsPiSave => 'Simpan alamat Pi';
+
+  @override
+  String get settingsPiClear => 'Hapus';
+
+  @override
+  String get settingsPiBeaconUse => 'Gunakan';
+
+  @override
+  String get settingsPiBeaconDescription =>
+      'Jika ponsel dan Pi terhubung ke jaringan Wi-Fi yang sama, aplikasi dapat menemukan Pi secara otomatis melalui beacon. Supabase tetap menyimpan riwayat yang disinkronkan.';
+
+  @override
   String get settingsWifi => 'Konfigurasi Wi-Fi';
 
   @override
@@ -185,6 +215,21 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get settingsBleNotAvailable => 'BLE belum didukung pada versi ini.';
+
+  @override
+  String get settingsBleNoPaired => 'Tidak ada perangkat yang dipasangkan';
+
+  @override
+  String get settingsBleUnpair => 'Putuskan pasangan';
+
+  @override
+  String get settingsBleStartScan => 'Cari perangkat';
+
+  @override
+  String get settingsBleScanning => 'Memindai…';
+
+  @override
+  String get settingsBlePair => 'Pasangkan';
 
   @override
   String get settingsLanguage => 'Bahasa';
@@ -265,16 +310,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get zoneLowFull => 'Zona Risiko Rendah';
 
   @override
-  String get zoneIntermediateFull => 'Zona Risiko Menengah';
+  String get zoneLowIntermediateFull => 'Zona Risiko Rendah Menengah';
 
   @override
   String get zoneHighIntermediateFull => 'Zona Risiko Menengah Tinggi';
 
   @override
   String get zoneHighFull => 'Zona Risiko Tinggi';
-
-  @override
-  String get zoneVeryHighFull => 'Zona Risiko Sangat Tinggi';
 
   @override
   String get deviceConnecting => 'Menghubungkan…';
@@ -326,4 +368,52 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get permanentlyDeleteTooltip => 'Hapus permanen';
+
+  @override
+  String get archivedBabies => 'Lihat Bayi Diarsipkan';
+
+  @override
+  String get pdfTitle => 'Laporan Bilirubin';
+
+  @override
+  String get pdfExportedAt => 'Diekspor:';
+
+  @override
+  String get pdfGeneratedBy => 'Dibuat oleh Aplikasi Bilirubin';
+
+  @override
+  String get pdfPatientInfo => 'Informasi Pasien';
+
+  @override
+  String get pdfBirthWeight => 'Berat Lahir';
+
+  @override
+  String get pdfAgeAtExport => 'Usia saat Ekspor';
+
+  @override
+  String get pdfMeasurementsTitle => 'Pengukuran';
+
+  @override
+  String get pdfColDateTime => 'Tanggal/Waktu';
+
+  @override
+  String get pdfColBilirubin => 'Bilirubin (mg/dL)';
+
+  @override
+  String get pdfColZone => 'Zona';
+
+  @override
+  String get pdfColDevice => 'Perangkat';
+
+  @override
+  String get cloudNotConfigured => 'Tidak dapat terhubung ke server';
+
+  @override
+  String get cloudSyncing => 'Menyinkronkan…';
+
+  @override
+  String get cloudSyncError => 'Gagal sinkronisasi';
+
+  @override
+  String get cloudSynced => 'Tersinkronisasi';
 }

@@ -1,27 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bilirubin/core/l10n/app_localizations.dart';
-import 'package:bilirubin/providers/bhutani_providers.dart';
 import 'package:bilirubin/providers/measurement_providers.dart';
+import 'package:bilirubin/utils/bhutani_classifier.dart' as classifier;
 
-/// Card showing the most recent bilirubin value, timestamp, and age.
+/// Card showing the carousel-selected bilirubin value, timestamp, and age.
 ///
-/// Set [embedded] to true when hosting inside another card so the widget
-/// does not wrap itself in its own [Card].
+/// Swipes to a historical reading update this card. Falls back to the latest
+/// reading when nothing is carousel-selected.
+///
+/// Set [embedded] to true when hosting inside another card.
 class LatestResultCard extends ConsumerWidget {
-  const LatestResultCard({super.key, this.embedded = false});
+  const LatestResultCard({super.key, required this.babyId, this.embedded = false});
 
+  final int babyId;
   final bool embedded;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final m = ref.watch(latestMeasurementProvider);
-    final zone = ref.watch(currentBhutaniZoneProvider);
+    final m = ref.watch(activeMeasurementProvider);
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
 
-    if (m == null) return const SizedBox.shrink();
+    final dimColor = theme.colorScheme.outline;
 
+    if (m == null) {
+      final emptyContent = Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                '—',
+                style: theme.textTheme.headlineLarge?.copyWith(
+                  color: dimColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text('—', style: theme.textTheme.bodyMedium?.copyWith(color: dimColor)),
+                const SizedBox(height: 4),
+                Text('—', style: theme.textTheme.bodyMedium?.copyWith(color: dimColor)),
+              ],
+            ),
+          ],
+        ),
+      );
+      if (embedded) return emptyContent;
+      return Card(child: emptyContent);
+
+    }
+
+    final zone = classifier.classify(m.ageHours, m.bilirubinMgdl);
     final zoneColor = zone?.color ?? theme.colorScheme.primary;
 
     final content = Padding(
@@ -34,7 +67,7 @@ class LatestResultCard extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  l10n.bilirubinValue(m.bilirubinMgDl.toStringAsFixed(1)),
+                  l10n.bilirubinValue(m.bilirubinMgdl.toStringAsFixed(1)),
                   style: theme.textTheme.headlineLarge?.copyWith(
                     color: zoneColor,
                     fontWeight: FontWeight.bold,
@@ -71,8 +104,30 @@ class LatestResultCard extends ConsumerWidget {
       ),
     );
 
-    if (embedded) return content;
-    return Card(child: content);
+    final swipeable = GestureDetector(
+      onHorizontalDragEnd: (details) => _handleSwipe(details, ref),
+      child: content,
+    );
+
+    if (embedded) return swipeable;
+    return Card(child: swipeable);
+  }
+
+  void _handleSwipe(DragEndDetails details, WidgetRef ref) {
+    final measurements =
+        ref.read(measurementsProvider(babyId)).valueOrNull ?? [];
+    if (measurements.isEmpty) return;
+    final currentId = ref.read(selectedCarouselMeasurementIdProvider);
+    final currentIdx = currentId == null
+        ? 0
+        : measurements.indexWhere((m) => m.measurementId == currentId);
+    final safeIdx = currentIdx < 0 ? 0 : currentIdx;
+    final velocity = details.primaryVelocity ?? 0;
+    final nextIdx = velocity < 0
+        ? (safeIdx + 1).clamp(0, measurements.length - 1)
+        : (safeIdx - 1).clamp(0, measurements.length - 1);
+    ref.read(selectedCarouselMeasurementIdProvider.notifier).state =
+        measurements[nextIdx].measurementId;
   }
 
   String _formatTimestamp(DateTime dt) {

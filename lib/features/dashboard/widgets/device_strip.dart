@@ -6,104 +6,107 @@ import 'package:bilirubin/core/l10n/app_localizations.dart';
 import 'package:bilirubin/models/device_connection_state.dart';
 import 'package:bilirubin/models/device_info.dart';
 import 'package:bilirubin/providers/device_providers.dart';
+import 'package:bilirubin/providers/supabase_providers.dart';
+import 'package:bilirubin/providers/sync_providers.dart';
 
-/// Thin strip showing device connection status + a shortcut to Settings.
 class DeviceStrip extends ConsumerWidget {
   const DeviceStrip({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final stateAsync = ref.watch(connectionStateProvider);
-    final infoAsync = ref.watch(deviceInfoProvider);
+    final connectionState = ref.watch(connectionStateProvider).valueOrNull;
+    final info = ref.watch(deviceInfoProvider).valueOrNull;
+    final syncStatus = ref.watch(syncStatusProvider);
+    final client = ref.watch(supabaseClientProvider);
     final l10n = AppLocalizations.of(context);
-
-    final connectionState = stateAsync.valueOrNull;
-    final info = infoAsync.valueOrNull;
+    final cs = Theme.of(context).colorScheme;
 
     final isConnected = connectionState == DeviceConnectionState.connected;
-    final isConnecting = connectionState == DeviceConnectionState.connecting ||
-        connectionState == DeviceConnectionState.scanning;
 
-    return InkWell(
-      onTap: () => _toggle(ref, isConnected),
-      borderRadius: BorderRadius.circular(14),
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Row(
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: cs.surfaceContainer,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Status dot
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            width: 20,
-            height: 20,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: isConnected
-                  ? AppColors.connected
-                  : isConnecting
-                      ? Colors.amber
-                      : AppColors.disconnected,
-            ),
+          // Row 1: Gun connection status
+          Row(
+            children: [
+              Icon(
+                _deviceIcon(connectionState, info),
+                size: 20,
+                color: _deviceColor(connectionState, cs),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  _deviceText(connectionState, info, l10n),
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 8),
 
-          // Status text
-          Expanded(
-            child: isConnected && info != null
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+          const SizedBox(height: 6),
+
+          // Row 2: Cloud / Supabase status
+          Row(
+            children: [
+              Icon(
+                Icons.cloud_sync_rounded,
+                size: 20,
+                color: _cloudColor(client, syncStatus, cs),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  _cloudText(client, syncStatus, l10n),
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 10),
+
+          // Row 3: Action buttons
+          Row(
+            children: [
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: () => _toggle(ref, isConnected),
+                  icon: Icon(
+                    isConnected ? Icons.link_off_rounded : Icons.link_rounded,
+                    size: 16,
+                  ),
+                  label: Text(
+                      isConnected ? l10n.deviceDisconnect : l10n.deviceConnect),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: FilledButton.tonal(
+                  onPressed: () => context.go('/settings'),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        l10n.deviceConnectedLabel,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                      Text(
-                        '${info.displayName} (${_transportLabel(info.transport, l10n)})',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                      const Icon(Icons.settings_outlined, size: 16),
+                      const SizedBox(width: 8),
+                      Text(l10n.settingsTitle),
                     ],
-                  )
-                : Text(
-                    isConnecting ? l10n.deviceConnecting : l10n.deviceDisconnected,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
                   ),
-          ),
-
-          // Connect / disconnect toggle
-          TextButton(
-            onPressed: () => _toggle(ref, isConnected),
-            style: TextButton.styleFrom(
-              textStyle: Theme.of(context).textTheme.labelLarge,
-            ),
-            child: Text(isConnected ? l10n.deviceDisconnect : l10n.deviceConnect),
-          ),
-
-          const SizedBox(width: 8),
-
-          // Settings shortcut
-          FilledButton.tonal(
-            onPressed: () => context.go('/settings'),
-            style: FilledButton.styleFrom(
-              shape: const CircleBorder(),
-              padding: EdgeInsets.zero,
-              minimumSize: const Size(48, 48),
-              maximumSize: const Size(48, 48),
-            ),
-            child: const Icon(Icons.settings_outlined, size: 20),
+                ),
+              ),
+            ],
           ),
         ],
-        ),
       ),
     );
   }
@@ -117,15 +120,53 @@ class DeviceStrip extends ConsumerWidget {
     }
   }
 
-  String _transportLabel(DeviceTransport transport, AppLocalizations l10n) {
-    switch (transport) {
-      case DeviceTransport.wifi:
-        return l10n.deviceTransportWifi;
-      case DeviceTransport.ble:
-        return l10n.deviceTransportBle;
-      case DeviceTransport.fake:
-        return l10n.deviceTransportFake;
+  IconData _deviceIcon(DeviceConnectionState? state, DeviceInfo? info) {
+    if (state == DeviceConnectionState.connected && info != null) {
+      switch (info.transport) {
+        case DeviceTransport.wifi:
+          return Icons.router_outlined;
+        case DeviceTransport.ble:
+          return Icons.bluetooth;
+      }
     }
+    return Icons.signal_wifi_off_rounded;
+  }
+
+  Color _deviceColor(DeviceConnectionState? state, ColorScheme cs) {
+    if (state == DeviceConnectionState.connected) return AppColors.connected;
+    if (state == DeviceConnectionState.connecting ||
+        state == DeviceConnectionState.scanning) {
+      return Colors.amber;
+    }
+    return cs.error;
+  }
+
+  String _deviceText(
+      DeviceConnectionState? state, DeviceInfo? info, AppLocalizations l10n) {
+    if (state == DeviceConnectionState.connected && info != null) {
+      final transport = info.transport == DeviceTransport.wifi
+          ? l10n.deviceTransportWifi
+          : l10n.deviceTransportBle;
+      return '${info.displayName} · $transport';
+    }
+    if (state == DeviceConnectionState.connecting ||
+        state == DeviceConnectionState.scanning) {
+      return l10n.deviceConnecting;
+    }
+    return l10n.deviceDisconnected;
+  }
+
+  Color _cloudColor(dynamic client, SyncStatus status, ColorScheme cs) {
+    if (client == null) { return cs.error; }
+    if (status == SyncStatus.syncing) { return Colors.amber; }
+    if (status == SyncStatus.error) { return cs.error; }
+    return AppColors.connected;
+  }
+
+  String _cloudText(dynamic client, SyncStatus status, AppLocalizations l10n) {
+    if (client == null) { return l10n.cloudNotConfigured; }
+    if (status == SyncStatus.syncing) { return l10n.cloudSyncing; }
+    if (status == SyncStatus.error) { return l10n.cloudSyncError; }
+    return l10n.cloudSynced;
   }
 }
- 

@@ -1,14 +1,17 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bilirubin/models/baby.dart';
 import 'package:bilirubin/providers/database_provider.dart';
+import 'package:bilirubin/providers/sync_providers.dart';
 import 'package:bilirubin/repositories/baby_repository.dart';
 import 'package:bilirubin/providers/sync_queue_providers.dart';
 
 /// [BabyRepository] instance, derived from the singleton database.
 final babyRepositoryProvider = Provider<BabyRepository>((ref) {
+  final sync = ref.read(syncServiceProvider);
   return BabyRepository(
     ref.watch(appDatabaseProvider),
     outbox: ref.watch(localSyncOutboxProvider),
+    onQueued: () => sync.drainOutbox().catchError((_) {}),
   );
 });
 
@@ -31,7 +34,7 @@ final selectedBabyProvider = Provider<Baby?>((ref) {
   final id = ref.watch(selectedBabyIdProvider);
   if (id == null) return null;
   return ref.watch(babiesListProvider).valueOrNull
-      ?.firstWhereOrNull((b) => b.id == id);
+      ?.firstWhereOrNull((b) => b.babyId == id);
 });
 
 extension<T> on Iterable<T> {

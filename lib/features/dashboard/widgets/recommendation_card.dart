@@ -74,14 +74,12 @@ class RecommendationCard extends ConsumerWidget {
     switch (zone) {
       case BhutaniZone.low:
         return l10n.recommendationLow;
-      case BhutaniZone.intermediate:
-        return l10n.recommendationIntermediate;
+      case BhutaniZone.lowIntermediate:
+        return l10n.recommendationLowIntermediate;
       case BhutaniZone.highIntermediate:
         return l10n.recommendationHighIntermediate;
       case BhutaniZone.high:
         return l10n.recommendationHigh;
-      case BhutaniZone.veryHigh:
-        return l10n.recommendationVeryHigh;
     }
   }
 }
