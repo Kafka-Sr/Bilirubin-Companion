@@ -107,7 +107,6 @@ class PiDeviceRepository implements DeviceRepository {
     return DeviceInfo(
       deviceId: (jsonMap['deviceId'] as String?) ?? 'unknown-device',
       displayName: (jsonMap['displayName'] as String?) ?? 'Raspberry Pi',
-      transport: DeviceTransport.wifi,
       connectionState: DeviceConnectionState.connected,
       lastSeen: DateTime.now(),
       firmwareVersion: jsonMap['firmwareVersion'] as String?,

@@ -140,29 +140,11 @@ abstract class AppLocalizations {
   /// **'Connect the device and take a measurement.'**
   String get noMeasurementsBody;
 
-  /// No description provided for @deviceConnected.
-  ///
-  /// In en, this message translates to:
-  /// **'Connected: {deviceName} ({transport})'**
-  String deviceConnected(String deviceName, String transport);
-
   /// No description provided for @deviceDisconnected.
   ///
   /// In en, this message translates to:
   /// **'Not connected'**
   String get deviceDisconnected;
-
-  /// No description provided for @deviceTransportWifi.
-  ///
-  /// In en, this message translates to:
-  /// **'Wi-Fi'**
-  String get deviceTransportWifi;
-
-  /// No description provided for @deviceTransportBle.
-  ///
-  /// In en, this message translates to:
-  /// **'BLE'**
-  String get deviceTransportBle;
 
   /// No description provided for @bhutaniChartTitle.
   ///
@@ -419,8 +401,20 @@ abstract class AppLocalizations {
   /// No description provided for @settingsPiAddressHint.
   ///
   /// In en, this message translates to:
-  /// **'192.168.1.50:8080 or http://raspi.local:8080'**
+  /// **'192.168.4.1:8080'**
   String get settingsPiAddressHint;
+
+  /// No description provided for @settingsHotspotTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotspot Connection'**
+  String get settingsHotspotTitle;
+
+  /// No description provided for @settingsHotspotInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect your phone to the Pi\'s Wi-Fi hotspot, then enter its address below.'**
+  String get settingsHotspotInstructions;
 
   /// No description provided for @settingsPiSave.
   ///
@@ -445,66 +439,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'If the phone and Pi are on the same Wi-Fi network, the app can discover the Pi automatically by beacon. Supabase still stores the synced history.'**
   String get settingsPiBeaconDescription;
-
-  /// No description provided for @settingsWifi.
-  ///
-  /// In en, this message translates to:
-  /// **'Wi-Fi Configuration'**
-  String get settingsWifi;
-
-  /// No description provided for @settingsWifiSsid.
-  ///
-  /// In en, this message translates to:
-  /// **'Network name (SSID)'**
-  String get settingsWifiSsid;
-
-  /// No description provided for @settingsWifiPassword.
-  ///
-  /// In en, this message translates to:
-  /// **'Password'**
-  String get settingsWifiPassword;
-
-  /// No description provided for @settingsBle.
-  ///
-  /// In en, this message translates to:
-  /// **'Bluetooth Configuration'**
-  String get settingsBle;
-
-  /// No description provided for @settingsBleNotAvailable.
-  ///
-  /// In en, this message translates to:
-  /// **'BLE not yet supported in this version.'**
-  String get settingsBleNotAvailable;
-
-  /// No description provided for @settingsBleNoPaired.
-  ///
-  /// In en, this message translates to:
-  /// **'No device paired'**
-  String get settingsBleNoPaired;
-
-  /// No description provided for @settingsBleUnpair.
-  ///
-  /// In en, this message translates to:
-  /// **'Unpair'**
-  String get settingsBleUnpair;
-
-  /// No description provided for @settingsBleStartScan.
-  ///
-  /// In en, this message translates to:
-  /// **'Scan for devices'**
-  String get settingsBleStartScan;
-
-  /// No description provided for @settingsBleScanning.
-  ///
-  /// In en, this message translates to:
-  /// **'Scanning…'**
-  String get settingsBleScanning;
-
-  /// No description provided for @settingsBlePair.
-  ///
-  /// In en, this message translates to:
-  /// **'Pair'**
-  String get settingsBlePair;
 
   /// No description provided for @settingsLanguage.
   ///

@@ -1,16 +1,9 @@
-import 'dart:io';
-
-import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bilirubin/core/l10n/app_localizations.dart';
-import 'package:bilirubin/database/database.dart';
 import 'package:bilirubin/models/pi_beacon.dart';
 import 'package:bilirubin/features/shared/pin_lock_screen.dart';
-import 'package:bilirubin/providers/ble_providers.dart';
-import 'package:bilirubin/providers/database_provider.dart';
 import 'package:bilirubin/providers/pi_discovery_providers.dart';
 import 'package:bilirubin/providers/settings_providers.dart';
 import 'package:bilirubin/security/app_lock_service.dart';
@@ -33,9 +26,7 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: const [
-          _PiLanSection(),
-          _WifiSection(),
-          _BleSection(),
+          _HotspotSection(),
           _LanguageSection(),
           _ThemeSection(),
           _AppLockSection(),
@@ -45,16 +36,16 @@ class SettingsScreen extends ConsumerWidget {
   }
 }
 
-// ── Raspberry Pi LAN ─────────────────────────────────────────────────────────
+// ── Hotspot Connection ────────────────────────────────────────────────────────
 
-class _PiLanSection extends ConsumerStatefulWidget {
-  const _PiLanSection();
+class _HotspotSection extends ConsumerStatefulWidget {
+  const _HotspotSection();
 
   @override
-  ConsumerState<_PiLanSection> createState() => _PiLanSectionState();
+  ConsumerState<_HotspotSection> createState() => _HotspotSectionState();
 }
 
-class _PiLanSectionState extends ConsumerState<_PiLanSection> {
+class _HotspotSectionState extends ConsumerState<_HotspotSection> {
   late final TextEditingController _baseUrlCtrl;
 
   @override
@@ -76,9 +67,16 @@ class _PiLanSectionState extends ConsumerState<_PiLanSection> {
     final beacons = beaconsAsync.valueOrNull ?? const <PiBeacon>[];
 
     return _Section(
-      title: l10n.settingsPiLanTitle,
+      title: l10n.settingsHotspotTitle,
       icon: Icons.router_outlined,
       children: [
+        Text(
+          l10n.settingsHotspotInstructions,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.outline,
+              ),
+        ),
+        const SizedBox(height: 12),
         if (beacons.isNotEmpty) ...[
           _BeaconList(
             beacons: beacons,
@@ -117,13 +115,6 @@ class _PiLanSectionState extends ConsumerState<_PiLanSection> {
             ),
           ],
         ),
-        const SizedBox(height: 8),
-        Text(
-          l10n.settingsPiBeaconDescription,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.outline,
-              ),
-        ),
       ],
     );
   }
@@ -154,187 +145,6 @@ class _BeaconList extends StatelessWidget {
               child: Text(l10n.settingsPiBeaconUse),
             ),
           ),
-      ],
-    );
-  }
-}
-
-// ── Wi-Fi ─────────────────────────────────────────────────────────────────────
-
-class _WifiSection extends StatefulWidget {
-  const _WifiSection();
-
-  @override
-  State<_WifiSection> createState() => _WifiSectionState();
-}
-
-class _WifiSectionState extends State<_WifiSection> {
-  final _ssidCtrl = TextEditingController();
-  final _passCtrl = TextEditingController();
-  bool _obscure = true;
-
-  @override
-  void dispose() {
-    _ssidCtrl.dispose();
-    _passCtrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return _Section(
-      title: l10n.settingsWifi,
-      icon: Icons.wifi,
-      children: [
-        TextField(
-          controller: _ssidCtrl,
-          decoration: InputDecoration(labelText: l10n.settingsWifiSsid),
-        ),
-        const SizedBox(height: 12),
-        TextField(
-          controller: _passCtrl,
-          obscureText: _obscure,
-          decoration: InputDecoration(
-            labelText: l10n.settingsWifiPassword,
-            suffixIcon: IconButton(
-              icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility),
-              onPressed: () => setState(() => _obscure = !_obscure),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// ── BLE ───────────────────────────────────────────────────────────────────────
-
-class _BleSection extends ConsumerStatefulWidget {
-  const _BleSection();
-
-  @override
-  ConsumerState<_BleSection> createState() => _BleSectionState();
-}
-
-class _BleSectionState extends ConsumerState<_BleSection> {
-  bool _scanning = false;
-
-  Future<void> _startScan() async {
-    setState(() => _scanning = true);
-    try {
-      // On Android, prompt the user to enable Bluetooth if it's off.
-      if (Platform.isAndroid &&
-          await FlutterBluePlus.adapterState.first !=
-              BluetoothAdapterState.on) {
-        await FlutterBluePlus.turnOn();
-        await FlutterBluePlus.adapterState
-            .where((s) => s == BluetoothAdapterState.on)
-            .first
-            .timeout(const Duration(seconds: 15));
-      }
-      await FlutterBluePlus.startScan(
-        timeout: const Duration(seconds: 15),
-      );
-    } finally {
-      if (mounted) setState(() => _scanning = false);
-    }
-  }
-
-  Future<void> _pair(BuildContext context, ScanResult result) async {
-    final device = result.device;
-    final deviceId = device.remoteId.str;
-    final displayName = device.platformName.isNotEmpty
-        ? device.platformName
-        : deviceId;
-
-    // Persist to local devices table.
-    final db = ref.read(appDatabaseProvider);
-    await db.devicesDao.upsertDevice(DevicesCompanion.insert(
-      deviceId: deviceId,
-      displayName: displayName,
-      transport: 'ble',
-      isPaired: const Value(true),
-      pairedAt: Value(DateTime.now()),
-      lastSeenAt: Value(DateTime.now()),
-    ));
-
-    // Update in-memory state so device_providers picks up the BLE device.
-    ref.read(pairedBleDeviceIdProvider.notifier).pair(deviceId);
-    ref.read(activeBleDeviceProvider.notifier).state = device;
-
-    await FlutterBluePlus.stopScan();
-    if (mounted) setState(() => _scanning = false);
-  }
-
-  Future<void> _unpair() async {
-    ref.read(pairedBleDeviceIdProvider.notifier).unpair();
-    ref.read(activeBleDeviceProvider.notifier).state = null;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final pairedId = ref.watch(pairedBleDeviceIdProvider);
-    final scanResults = (ref.watch(bleScanResultsProvider).valueOrNull ?? const [])
-        .where((r) => r.device.platformName.isNotEmpty)
-        .toList();
-
-    return _Section(
-      title: l10n.settingsBle,
-      icon: Icons.bluetooth,
-      children: [
-        // ── Paired device status ─────────────────────────────────────────────
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                pairedId ?? l10n.settingsBleNoPaired,
-                style: theme.textTheme.bodyMedium,
-              ),
-            ),
-            if (pairedId != null)
-              TextButton(
-                onPressed: _unpair,
-                child: Text(l10n.settingsBleUnpair),
-              ),
-          ],
-        ),
-        const SizedBox(height: 8),
-
-        // ── Scan button ──────────────────────────────────────────────────────
-        FilledButton.icon(
-          icon: _scanning
-              ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(
-                      strokeWidth: 2, color: Colors.white),
-                )
-              : const Icon(Icons.bluetooth_searching, size: 18),
-          label: Text(_scanning
-              ? l10n.settingsBleScanning
-              : l10n.settingsBleStartScan),
-          onPressed: _scanning ? null : _startScan,
-        ),
-
-        // ── Scan results ─────────────────────────────────────────────────────
-        if (scanResults.isNotEmpty) ...[
-          const SizedBox(height: 12),
-          ...scanResults.map((r) => ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.bluetooth),
-                title: Text(r.device.platformName.isNotEmpty
-                    ? r.device.platformName
-                    : r.device.remoteId.str),
-                subtitle: Text('RSSI ${r.rssi} dBm'),
-                trailing: FilledButton.tonal(
-                  onPressed: () => _pair(context, r),
-                  child: Text(l10n.settingsBlePair),
-                ),
-              )),
-        ],
       ],
     );
   }
@@ -402,23 +212,23 @@ class _ThemeSection extends ConsumerWidget {
             onSelectionChanged: (s) =>
                 ref.read(appThemeModeProvider.notifier).set(s.first),
             segments: [
-            ButtonSegment(
-              value: ThemeMode.system,
-              label: Text(l10n.settingsThemeSystem),
-              icon: const Icon(Icons.brightness_auto),
-            ),
-            ButtonSegment(
-              value: ThemeMode.light,
-              label: Text(l10n.settingsThemeLight),
-              icon: const Icon(Icons.light_mode),
-            ),
-            ButtonSegment(
-              value: ThemeMode.dark,
-              label: Text(l10n.settingsThemeDark),
-              icon: const Icon(Icons.dark_mode),
-            ),
-          ],
-        ),
+              ButtonSegment(
+                value: ThemeMode.system,
+                label: Text(l10n.settingsThemeSystem),
+                icon: const Icon(Icons.brightness_auto),
+              ),
+              ButtonSegment(
+                value: ThemeMode.light,
+                label: Text(l10n.settingsThemeLight),
+                icon: const Icon(Icons.light_mode),
+              ),
+              ButtonSegment(
+                value: ThemeMode.dark,
+                label: Text(l10n.settingsThemeDark),
+                icon: const Icon(Icons.dark_mode),
+              ),
+            ],
+          ),
         ),
       ],
     );

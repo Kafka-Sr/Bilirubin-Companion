@@ -31,18 +31,7 @@ class AppLocalizationsId extends AppLocalizations {
       'Hubungkan perangkat dan lakukan pengukuran.';
 
   @override
-  String deviceConnected(String deviceName, String transport) {
-    return 'Terhubung: $deviceName ($transport)';
-  }
-
-  @override
   String get deviceDisconnected => 'Tidak terhubung';
-
-  @override
-  String get deviceTransportWifi => 'Wi-Fi';
-
-  @override
-  String get deviceTransportBle => 'BLE';
 
   @override
   String get bhutaniChartTitle => 'Nomogram Bhutani';
@@ -185,8 +174,14 @@ class AppLocalizationsId extends AppLocalizations {
   String get settingsPiAddressLabel => 'Alamat Pi atau URL';
 
   @override
-  String get settingsPiAddressHint =>
-      '192.168.1.50:8080 atau http://raspi.local:8080';
+  String get settingsPiAddressHint => '192.168.4.1:8080';
+
+  @override
+  String get settingsHotspotTitle => 'Koneksi Hotspot';
+
+  @override
+  String get settingsHotspotInstructions =>
+      'Hubungkan ponsel Anda ke hotspot Wi-Fi Pi, lalu masukkan alamatnya di bawah.';
 
   @override
   String get settingsPiSave => 'Simpan alamat Pi';
@@ -200,36 +195,6 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get settingsPiBeaconDescription =>
       'Jika ponsel dan Pi terhubung ke jaringan Wi-Fi yang sama, aplikasi dapat menemukan Pi secara otomatis melalui beacon. Supabase tetap menyimpan riwayat yang disinkronkan.';
-
-  @override
-  String get settingsWifi => 'Konfigurasi Wi-Fi';
-
-  @override
-  String get settingsWifiSsid => 'Nama jaringan (SSID)';
-
-  @override
-  String get settingsWifiPassword => 'Kata sandi';
-
-  @override
-  String get settingsBle => 'Konfigurasi Bluetooth';
-
-  @override
-  String get settingsBleNotAvailable => 'BLE belum didukung pada versi ini.';
-
-  @override
-  String get settingsBleNoPaired => 'Tidak ada perangkat yang dipasangkan';
-
-  @override
-  String get settingsBleUnpair => 'Putuskan pasangan';
-
-  @override
-  String get settingsBleStartScan => 'Cari perangkat';
-
-  @override
-  String get settingsBleScanning => 'Memindai…';
-
-  @override
-  String get settingsBlePair => 'Pasangkan';
 
   @override
   String get settingsLanguage => 'Bahasa';

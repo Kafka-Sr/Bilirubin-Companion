@@ -20,12 +20,21 @@ class AppDatabase extends _$AppDatabase {
       : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
         onCreate: (m) => m.createAll(),
         onUpgrade: (m, from, to) async {
+          if (from < 3) {
+            await customStatement(
+                'ALTER TABLE devices ADD COLUMN ssid TEXT;');
+            await customStatement(
+                "DELETE FROM devices WHERE transport = 'ble'");
+          }
+          if (from < 4) {
+            await m.alterTable(TableMigration(devices));
+          }
           if (from == 1) {
             await m.alterTable(TableMigration(
               babies,

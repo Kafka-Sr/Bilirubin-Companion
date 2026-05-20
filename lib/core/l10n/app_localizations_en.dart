@@ -30,18 +30,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noMeasurementsBody => 'Connect the device and take a measurement.';
 
   @override
-  String deviceConnected(String deviceName, String transport) {
-    return 'Connected: $deviceName ($transport)';
-  }
-
-  @override
   String get deviceDisconnected => 'Not connected';
-
-  @override
-  String get deviceTransportWifi => 'Wi-Fi';
-
-  @override
-  String get deviceTransportBle => 'BLE';
 
   @override
   String get bhutaniChartTitle => 'Bhutani Nomogram';
@@ -182,8 +171,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsPiAddressLabel => 'Pi address or URL';
 
   @override
-  String get settingsPiAddressHint =>
-      '192.168.1.50:8080 or http://raspi.local:8080';
+  String get settingsPiAddressHint => '192.168.4.1:8080';
+
+  @override
+  String get settingsHotspotTitle => 'Hotspot Connection';
+
+  @override
+  String get settingsHotspotInstructions =>
+      'Connect your phone to the Pi\'s Wi-Fi hotspot, then enter its address below.';
 
   @override
   String get settingsPiSave => 'Save Pi address';
@@ -197,37 +192,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsPiBeaconDescription =>
       'If the phone and Pi are on the same Wi-Fi network, the app can discover the Pi automatically by beacon. Supabase still stores the synced history.';
-
-  @override
-  String get settingsWifi => 'Wi-Fi Configuration';
-
-  @override
-  String get settingsWifiSsid => 'Network name (SSID)';
-
-  @override
-  String get settingsWifiPassword => 'Password';
-
-  @override
-  String get settingsBle => 'Bluetooth Configuration';
-
-  @override
-  String get settingsBleNotAvailable =>
-      'BLE not yet supported in this version.';
-
-  @override
-  String get settingsBleNoPaired => 'No device paired';
-
-  @override
-  String get settingsBleUnpair => 'Unpair';
-
-  @override
-  String get settingsBleStartScan => 'Scan for devices';
-
-  @override
-  String get settingsBleScanning => 'Scanning…';
-
-  @override
-  String get settingsBlePair => 'Pair';
 
   @override
   String get settingsLanguage => 'Language';

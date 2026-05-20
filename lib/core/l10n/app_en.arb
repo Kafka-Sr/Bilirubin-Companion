@@ -10,16 +10,7 @@
   "noMeasurementsTitle": "No measurements yet",
   "noMeasurementsBody": "Connect the device and take a measurement.",
 
-  "deviceConnected": "Connected: {deviceName} ({transport})",
-  "@deviceConnected": {
-    "placeholders": {
-      "deviceName": { "type": "String" },
-      "transport": { "type": "String" }
-    }
-  },
   "deviceDisconnected": "Not connected",
-  "deviceTransportWifi": "Wi-Fi",
-  "deviceTransportBle": "BLE",
   "bhutaniChartTitle": "Bhutani Nomogram",
   "showPreviousBilirubin": "Show Previous Readings",
   "showReadingsOutside168h": "Show Readings >168 h",
@@ -84,22 +75,14 @@
 
   "settingsPiLanTitle": "Raspberry Pi LAN",
   "settingsPiAddressLabel": "Pi address or URL",
-  "settingsPiAddressHint": "192.168.1.50:8080 or http://raspi.local:8080",
+  "settingsPiAddressHint": "192.168.4.1:8080",
+  "settingsHotspotTitle": "Hotspot Connection",
+  "settingsHotspotInstructions": "Connect your phone to the Pi's Wi-Fi hotspot, then enter its address below.",
   "settingsPiSave": "Save Pi address",
   "settingsPiClear": "Clear",
   "settingsPiBeaconUse": "Use",
   "settingsPiBeaconDescription": "If the phone and Pi are on the same Wi-Fi network, the app can discover the Pi automatically by beacon. Supabase still stores the synced history.",
 
-  "settingsWifi": "Wi-Fi Configuration",
-  "settingsWifiSsid": "Network name (SSID)",
-  "settingsWifiPassword": "Password",
-  "settingsBle": "Bluetooth Configuration",
-  "settingsBleNotAvailable": "BLE not yet supported in this version.",
-  "settingsBleNoPaired": "No device paired",
-  "settingsBleUnpair": "Unpair",
-  "settingsBleStartScan": "Scan for devices",
-  "settingsBleScanning": "Scanning…",
-  "settingsBlePair": "Pair",
   "settingsLanguage": "Language",
   "settingsTheme": "Theme",
   "settingsThemeSystem": "System",
