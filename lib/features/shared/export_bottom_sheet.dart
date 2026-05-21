@@ -327,12 +327,7 @@ class _ExportSheetState extends State<_ExportSheet> {
     final colorScheme = theme.colorScheme;
 
     return Padding(
-      padding: EdgeInsets.only(
-        left: 24,
-        right: 24,
-        top: 24,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-      ),
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -454,6 +449,7 @@ class _ExportSheetState extends State<_ExportSheet> {
                   )
                 : Text(l10n.exportAction),
           ),
+          SizedBox(height: MediaQuery.viewInsetsOf(context).bottom + 24),
         ],
       ),
     );
