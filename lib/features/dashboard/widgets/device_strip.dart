@@ -22,6 +22,8 @@ class DeviceStrip extends ConsumerWidget {
     final cs = Theme.of(context).colorScheme;
 
     final isConnected = connectionState == DeviceConnectionState.connected;
+    final isConnecting = connectionState == DeviceConnectionState.connecting ||
+        connectionState == DeviceConnectionState.scanning;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -80,13 +82,23 @@ class DeviceStrip extends ConsumerWidget {
             children: [
               Expanded(
                 child: FilledButton.icon(
-                  onPressed: () => _toggle(ref, isConnected),
+                  onPressed:
+                      isConnecting ? null : () => _toggle(ref, isConnected),
                   icon: Icon(
-                    isConnected ? Icons.link_off_rounded : Icons.link_rounded,
+                    isConnected
+                        ? Icons.link_off_rounded
+                        : isConnecting
+                            ? Icons.sync_rounded
+                            : Icons.link_rounded,
                     size: 16,
                   ),
                   label: Text(
-                      isConnected ? l10n.deviceDisconnect : l10n.deviceConnect),
+                    isConnected
+                        ? l10n.deviceDisconnect
+                        : isConnecting
+                            ? l10n.deviceConnecting
+                            : l10n.deviceConnect,
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
@@ -139,11 +151,14 @@ class DeviceStrip extends ConsumerWidget {
   String _deviceText(
       DeviceConnectionState? state, DeviceInfo? info, AppLocalizations l10n) {
     if (state == DeviceConnectionState.connected && info != null) {
-      return info.displayName;
+      return l10n.deviceConnectedTo(info.displayName);
     }
     if (state == DeviceConnectionState.connecting ||
         state == DeviceConnectionState.scanning) {
       return l10n.deviceConnecting;
+    }
+    if (state == DeviceConnectionState.error) {
+      return l10n.deviceConnectionError;
     }
     return l10n.deviceDisconnected;
   }

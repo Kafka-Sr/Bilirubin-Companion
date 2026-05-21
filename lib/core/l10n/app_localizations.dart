@@ -389,43 +389,43 @@ abstract class AppLocalizations {
   /// No description provided for @settingsPiLanTitle.
   ///
   /// In en, this message translates to:
-  /// **'Raspberry Pi LAN'**
+  /// **'Biligun LAN'**
   String get settingsPiLanTitle;
 
   /// No description provided for @settingsPiAddressLabel.
   ///
   /// In en, this message translates to:
-  /// **'Pi address or URL'**
+  /// **'Biligun address or URL'**
   String get settingsPiAddressLabel;
 
   /// No description provided for @settingsPiAddressHint.
   ///
   /// In en, this message translates to:
-  /// **'192.168.4.1:8080'**
+  /// **'10.42.0.1:7878'**
   String get settingsPiAddressHint;
 
   /// No description provided for @settingsHotspotTitle.
   ///
   /// In en, this message translates to:
-  /// **'Hotspot Connection'**
+  /// **'Biligun Pairing'**
   String get settingsHotspotTitle;
 
   /// No description provided for @settingsHotspotInstructions.
   ///
   /// In en, this message translates to:
-  /// **'Connect your phone to the Pi\'s Wi-Fi hotspot, then enter its address below.'**
+  /// **'Connect your phone to the Biligun\'s Wi-Fi hotspot, then enter its address below.'**
   String get settingsHotspotInstructions;
 
   /// No description provided for @settingsPiSave.
   ///
   /// In en, this message translates to:
-  /// **'Save Pi address'**
+  /// **'Save & Connect'**
   String get settingsPiSave;
 
   /// No description provided for @settingsPiClear.
   ///
   /// In en, this message translates to:
-  /// **'Clear'**
+  /// **'Clear & Disconnect'**
   String get settingsPiClear;
 
   /// No description provided for @settingsPiBeaconUse.
@@ -437,7 +437,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsPiBeaconDescription.
   ///
   /// In en, this message translates to:
-  /// **'If the phone and Pi are on the same Wi-Fi network, the app can discover the Pi automatically by beacon. Supabase still stores the synced history.'**
+  /// **'If the phone and Biligun are on the same Wi-Fi network, the app can discover the Biligun automatically by beacon. Supabase still stores the synced history.'**
   String get settingsPiBeaconDescription;
 
   /// No description provided for @settingsLanguage.
@@ -631,6 +631,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Disconnect'**
   String get deviceDisconnect;
+
+  /// No description provided for @deviceConnectedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected to {displayName}'**
+  String deviceConnectedTo(String displayName);
+
+  /// No description provided for @deviceConnectionError.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection failed'**
+  String get deviceConnectionError;
 
   /// No description provided for @selectBaby.
   ///

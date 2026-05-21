@@ -9,12 +9,11 @@ import 'package:bilirubin/device/device_repository.dart';
 import 'package:bilirubin/models/device_connection_state.dart';
 import 'package:bilirubin/models/device_info.dart';
 
-/// Direct LAN client for a Raspberry Pi bilirubin capture service.
+/// Direct LAN client for a Biligun bilirubin capture device.
 ///
-/// Expected Pi API:
-/// - GET /health -> 200 OK
-/// - GET /device -> JSON device info
-/// - GET /measurements?after=<iso8601> -> JSON array of measurement events
+/// Expected Biligun API (base http://10.42.0.1:7878):
+/// - GET /api/sync/status  -> JSON with device_id + success flag (health + identity)
+/// - GET /api/history      -> JSON array of measurement events
 class PiDeviceRepository implements DeviceRepository {
   PiDeviceRepository({
     required String baseUrl,
@@ -35,6 +34,7 @@ class PiDeviceRepository implements DeviceRepository {
 
   Timer? _pollTimer;
   bool _connected = false;
+  bool _connecting = false;
   DateTime? _lastCapturedAt;
   final Set<String> _recentMeasurementIds = <String>{};
 
@@ -49,12 +49,12 @@ class PiDeviceRepository implements DeviceRepository {
 
   @override
   Future<void> connect() async {
-    if (_connected) return;
+    if (_connected || _connecting) return;
+    _connecting = true;
 
     _emit(DeviceConnectionState.connecting, null);
 
     try {
-      await _healthCheck();
       final info = await _loadDeviceInfo();
       _connected = true;
       _emit(DeviceConnectionState.connected, info);
@@ -65,6 +65,8 @@ class PiDeviceRepository implements DeviceRepository {
       );
     } catch (_) {
       _emit(DeviceConnectionState.error, null);
+    } finally {
+      _connecting = false;
     }
   }
 
@@ -74,6 +76,7 @@ class PiDeviceRepository implements DeviceRepository {
     _pollTimer?.cancel();
     _pollTimer = null;
     _connected = false;
+    _connecting = false;
     _emit(DeviceConnectionState.disconnected, null);
   }
 
@@ -86,30 +89,25 @@ class PiDeviceRepository implements DeviceRepository {
     _measurementsCtrl.close();
   }
 
-  Future<void> _healthCheck() async {
-    final response = await _client
-        .get(_baseUri.resolve('health'))
-        .timeout(const Duration(seconds: 3));
-    if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw StateError('Pi health check failed: ${response.statusCode}');
-    }
-  }
-
   Future<DeviceInfo> _loadDeviceInfo() async {
     final response = await _client
-        .get(_baseUri.resolve('device'))
+        .get(_baseUri.resolve('api/sync/status'))
         .timeout(const Duration(seconds: 3));
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw StateError('Pi device lookup failed: ${response.statusCode}');
+      throw StateError('Biligun unreachable: ${response.statusCode}');
     }
 
-    final jsonMap = jsonDecode(response.body) as Map<String, dynamic>;
+    final json = jsonDecode(response.body) as Map<String, dynamic>;
+    final success = json['success'] as bool? ?? false;
+    if (!success) throw StateError('Biligun reports failure');
+
+    final deviceId = (json['device_id'] as String?) ?? 'unknown-device';
     return DeviceInfo(
-      deviceId: (jsonMap['deviceId'] as String?) ?? 'unknown-device',
-      displayName: (jsonMap['displayName'] as String?) ?? 'Raspberry Pi',
+      deviceId: deviceId,
+      displayName: deviceId,
       connectionState: DeviceConnectionState.connected,
       lastSeen: DateTime.now(),
-      firmwareVersion: jsonMap['firmwareVersion'] as String?,
+      firmwareVersion: null,
     );
   }
 
@@ -119,8 +117,8 @@ class PiDeviceRepository implements DeviceRepository {
     try {
       final since = _lastCapturedAt?.toIso8601String();
       final uri = since == null
-          ? _baseUri.resolve('measurements')
-          : _baseUri.resolve('measurements?after=$since');
+          ? _baseUri.resolve('api/history')
+          : _baseUri.resolve('api/history?after=$since');
       final response =
           await _client.get(uri).timeout(const Duration(seconds: 5));
       if (response.statusCode < 200 || response.statusCode >= 300) {
@@ -146,7 +144,8 @@ class PiDeviceRepository implements DeviceRepository {
         _measurementsCtrl.add(measurement);
       }
     } catch (_) {
-      _emit(DeviceConnectionState.error, null);
+      // Poll failure is not a disconnect — transient network hiccup or
+      // endpoint not yet implemented. Retry silently on the next tick.
     }
   }
 

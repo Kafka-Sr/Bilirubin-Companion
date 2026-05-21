@@ -165,33 +165,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get validationNameInvalid => 'Name contains invalid characters.';
 
   @override
-  String get settingsPiLanTitle => 'Raspberry Pi LAN';
+  String get settingsPiLanTitle => 'Biligun LAN';
 
   @override
-  String get settingsPiAddressLabel => 'Pi address or URL';
+  String get settingsPiAddressLabel => 'Biligun address or URL';
 
   @override
-  String get settingsPiAddressHint => '192.168.4.1:8080';
+  String get settingsPiAddressHint => '10.42.0.1:7878';
 
   @override
-  String get settingsHotspotTitle => 'Hotspot Connection';
+  String get settingsHotspotTitle => 'Biligun Pairing';
 
   @override
   String get settingsHotspotInstructions =>
-      'Connect your phone to the Pi\'s Wi-Fi hotspot, then enter its address below.';
+      'Connect your phone to the Biligun\'s Wi-Fi hotspot, then enter its address below.';
 
   @override
-  String get settingsPiSave => 'Save Pi address';
+  String get settingsPiSave => 'Save & Connect';
 
   @override
-  String get settingsPiClear => 'Clear';
+  String get settingsPiClear => 'Clear & Disconnect';
 
   @override
   String get settingsPiBeaconUse => 'Use';
 
   @override
   String get settingsPiBeaconDescription =>
-      'If the phone and Pi are on the same Wi-Fi network, the app can discover the Pi automatically by beacon. Supabase still stores the synced history.';
+      'If the phone and Biligun are on the same Wi-Fi network, the app can discover the Biligun automatically by beacon. Supabase still stores the synced history.';
 
   @override
   String get settingsLanguage => 'Language';
@@ -291,6 +291,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deviceDisconnect => 'Disconnect';
+
+  @override
+  String deviceConnectedTo(String displayName) {
+    return 'Connected to $displayName';
+  }
+
+  @override
+  String get deviceConnectionError => 'Connection failed';
 
   @override
   String get selectBaby => 'Select baby';

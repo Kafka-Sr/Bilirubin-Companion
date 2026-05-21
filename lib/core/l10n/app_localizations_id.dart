@@ -168,33 +168,33 @@ class AppLocalizationsId extends AppLocalizations {
       'Nama mengandung karakter yang tidak valid.';
 
   @override
-  String get settingsPiLanTitle => 'Raspberry Pi LAN';
+  String get settingsPiLanTitle => 'Biligun LAN';
 
   @override
-  String get settingsPiAddressLabel => 'Alamat Pi atau URL';
+  String get settingsPiAddressLabel => 'Alamat Biligun atau URL';
 
   @override
-  String get settingsPiAddressHint => '192.168.4.1:8080';
+  String get settingsPiAddressHint => '10.42.0.1:7878';
 
   @override
-  String get settingsHotspotTitle => 'Koneksi Hotspot';
+  String get settingsHotspotTitle => 'Pemasangan Biligun';
 
   @override
   String get settingsHotspotInstructions =>
-      'Hubungkan ponsel Anda ke hotspot Wi-Fi Pi, lalu masukkan alamatnya di bawah.';
+      'Hubungkan ponsel Anda ke hotspot Wi-Fi Biligun, lalu masukkan alamatnya di bawah.';
 
   @override
-  String get settingsPiSave => 'Simpan alamat Pi';
+  String get settingsPiSave => 'Simpan & Hubungkan';
 
   @override
-  String get settingsPiClear => 'Hapus';
+  String get settingsPiClear => 'Hapus & Putuskan';
 
   @override
   String get settingsPiBeaconUse => 'Gunakan';
 
   @override
   String get settingsPiBeaconDescription =>
-      'Jika ponsel dan Pi terhubung ke jaringan Wi-Fi yang sama, aplikasi dapat menemukan Pi secara otomatis melalui beacon. Supabase tetap menyimpan riwayat yang disinkronkan.';
+      'Jika ponsel dan Biligun terhubung ke jaringan Wi-Fi yang sama, aplikasi dapat menemukan Biligun secara otomatis melalui beacon. Supabase tetap menyimpan riwayat yang disinkronkan.';
 
   @override
   String get settingsLanguage => 'Bahasa';
@@ -294,6 +294,14 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get deviceDisconnect => 'Putuskan';
+
+  @override
+  String deviceConnectedTo(String displayName) {
+    return 'Terhubung ke $displayName';
+  }
+
+  @override
+  String get deviceConnectionError => 'Koneksi gagal';
 
   @override
   String get selectBaby => 'Pilih bayi';

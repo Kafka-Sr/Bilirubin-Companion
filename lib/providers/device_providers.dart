@@ -9,24 +9,36 @@ import 'package:bilirubin/providers/baby_providers.dart';
 import 'package:bilirubin/providers/measurement_providers.dart';
 import 'package:bilirubin/providers/settings_providers.dart';
 
-/// The active [DeviceRepository] implementation.
+/// Derives the single "winning" base URL.
 ///
-/// Priority:
-///   1. Pi beacon (UDP auto-discovered on hotspot network)
-///   2. Manually entered Pi base URL
-///   3. [NullDeviceRepository] — "No device connected"
-final deviceRepositoryProvider = Provider<DeviceRepository>((ref) {
+/// Manual URL (saved by the user) takes priority over beacon auto-discovery.
+/// Beacon is only used as a fallback when no manual URL is stored — matching
+/// standard IoT app behaviour (Home Assistant, Hue, etc.).
+///
+/// Being a [Provider<String>], Riverpod only notifies dependents when the
+/// *value* changes. When a manual URL is set, [piBeaconListProvider] is not
+/// watched at all — beacon ticks have zero cost and cannot rebuild
+/// [deviceRepositoryProvider], eliminating the 10-second disconnect bug.
+final activeBaseUrlProvider = Provider<String>((ref) {
+  final piBaseUrl = ref.watch(piBaseUrlProvider);
+  if (piBaseUrl.isNotEmpty) return piBaseUrl;
   final discoveredBeacons =
       ref.watch(piBeaconListProvider).valueOrNull ?? const [];
-  final discoveredBaseUrl =
-      discoveredBeacons.isNotEmpty ? discoveredBeacons.first.baseUrl : '';
-  final piBaseUrl = ref.watch(piBaseUrlProvider);
-  final baseUrl =
-      discoveredBaseUrl.isNotEmpty ? discoveredBaseUrl : piBaseUrl;
+  return discoveredBeacons.isNotEmpty ? discoveredBeacons.first.baseUrl : '';
+});
+
+/// The active [DeviceRepository] implementation.
+///
+/// Watches [activeBaseUrlProvider] (a String) rather than the raw beacon
+/// StreamProvider. Rebuilds only when the URL *value* changes.
+/// Auto-connects via [Future.microtask] whenever a new repo is created.
+final deviceRepositoryProvider = Provider<DeviceRepository>((ref) {
+  final baseUrl = ref.watch(activeBaseUrlProvider);
 
   if (baseUrl.isNotEmpty) {
     final repo = PiDeviceRepository(baseUrl: baseUrl);
     ref.onDispose(repo.dispose);
+    Future.microtask(() => repo.connect());
     return repo;
   }
 

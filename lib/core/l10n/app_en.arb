@@ -73,15 +73,15 @@
   "validationNameTooLong": "Name must be 100 characters or fewer.",
   "validationNameInvalid": "Name contains invalid characters.",
 
-  "settingsPiLanTitle": "Raspberry Pi LAN",
-  "settingsPiAddressLabel": "Pi address or URL",
-  "settingsPiAddressHint": "192.168.4.1:8080",
-  "settingsHotspotTitle": "Hotspot Connection",
-  "settingsHotspotInstructions": "Connect your phone to the Pi's Wi-Fi hotspot, then enter its address below.",
-  "settingsPiSave": "Save Pi address",
-  "settingsPiClear": "Clear",
+  "settingsPiLanTitle": "Biligun LAN",
+  "settingsPiAddressLabel": "Biligun address or URL",
+  "settingsPiAddressHint": "10.42.0.1:7878",
+  "settingsHotspotTitle": "Biligun Pairing",
+  "settingsHotspotInstructions": "Connect your phone to the Biligun's Wi-Fi hotspot, then enter its address below.",
+  "settingsPiSave": "Save & Connect",
+  "settingsPiClear": "Clear & Disconnect",
   "settingsPiBeaconUse": "Use",
-  "settingsPiBeaconDescription": "If the phone and Pi are on the same Wi-Fi network, the app can discover the Pi automatically by beacon. Supabase still stores the synced history.",
+  "settingsPiBeaconDescription": "If the phone and Biligun are on the same Wi-Fi network, the app can discover the Biligun automatically by beacon. Supabase still stores the synced history.",
 
   "settingsLanguage": "Language",
   "settingsTheme": "Theme",
@@ -125,6 +125,13 @@
   "deviceConnectedLabel": "Connected:",
   "deviceConnect": "Connect",
   "deviceDisconnect": "Disconnect",
+  "deviceConnectedTo": "Connected to {displayName}",
+  "@deviceConnectedTo": {
+    "placeholders": {
+      "displayName": { "type": "String" }
+    }
+  },
+  "deviceConnectionError": "Connection failed",
 
   "selectBaby": "Select baby",
   "searchBabiesHint": "Search babies\u2026",
