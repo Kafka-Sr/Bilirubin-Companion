@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bilirubin/core/app_theme.dart';
 import 'package:bilirubin/core/l10n/app_localizations.dart';
+import 'package:bilirubin/models/device_connection_state.dart';
 import 'package:bilirubin/models/pi_beacon.dart';
 import 'package:bilirubin/features/shared/pin_lock_screen.dart';
+import 'package:bilirubin/providers/device_providers.dart';
 import 'package:bilirubin/providers/pi_discovery_providers.dart';
 import 'package:bilirubin/providers/settings_providers.dart';
 import 'package:bilirubin/security/app_lock_service.dart';
@@ -63,6 +66,15 @@ class _HotspotSectionState extends ConsumerState<_HotspotSection> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+
+    // Keep the text field in sync with the stored URL (e.g. after normalization
+    // on save, or when the Clear button wipes piBaseUrlProvider).
+    ref.listen<String>(piBaseUrlProvider, (_, next) {
+      if (_baseUrlCtrl.text != next) {
+        _baseUrlCtrl.text = next;
+      }
+    });
+
     final beaconsAsync = ref.watch(piBeaconListProvider);
     final beacons = beaconsAsync.valueOrNull ?? const <PiBeacon>[];
 
@@ -102,18 +114,76 @@ class _HotspotSectionState extends ConsumerState<_HotspotSection> {
               icon: const Icon(Icons.save_outlined),
               label: Text(l10n.settingsPiSave),
               onPressed: () {
-                ref.read(piBaseUrlProvider.notifier).set(_baseUrlCtrl.text);
+                // Fall back to the hint address if the field was left empty
+                // (user saw the hint text and assumed it was pre-filled).
+                final text = _baseUrlCtrl.text.trim().isEmpty
+                    ? l10n.settingsPiAddressHint
+                    : _baseUrlCtrl.text;
+                ref.read(piBaseUrlProvider.notifier).set(text);
+                // If URL unchanged the provider won't rebuild — connect directly.
+                // _connecting guard in PiDeviceRepository prevents double-connect.
+                Future.microtask(
+                    () => ref.read(deviceRepositoryProvider).connect());
               },
             ),
             const SizedBox(width: 12),
             TextButton(
               onPressed: () {
                 _baseUrlCtrl.clear();
+                ref.read(deviceRepositoryProvider).disconnect();
                 ref.read(piBaseUrlProvider.notifier).clear();
               },
               child: Text(l10n.settingsPiClear),
             ),
           ],
+        ),
+        const SizedBox(height: 12),
+        const _BiligunStatusRow(),
+      ],
+    );
+  }
+}
+
+class _BiligunStatusRow extends ConsumerWidget {
+  const _BiligunStatusRow();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final cs = Theme.of(context).colorScheme;
+    final connectionState = ref.watch(connectionStateProvider).valueOrNull;
+    final info = ref.watch(deviceInfoProvider).valueOrNull;
+
+    final IconData icon;
+    final Color color;
+    final String text;
+
+    if (connectionState == DeviceConnectionState.connected && info != null) {
+      icon = Icons.check_circle_outline;
+      color = AppColors.connected;
+      text = l10n.deviceConnectedTo(info.displayName);
+    } else if (connectionState == DeviceConnectionState.connecting ||
+        connectionState == DeviceConnectionState.scanning) {
+      icon = Icons.sync_rounded;
+      color = Colors.amber;
+      text = l10n.deviceConnecting;
+    } else if (connectionState == DeviceConnectionState.error) {
+      icon = Icons.error_outline;
+      color = cs.error;
+      text = l10n.deviceConnectionError;
+    } else {
+      icon = Icons.link_off_rounded;
+      color = cs.outline;
+      text = l10n.deviceDisconnected;
+    }
+
+    return Row(
+      children: [
+        Icon(icon, size: 16, color: color),
+        const SizedBox(width: 6),
+        Text(
+          text,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: color),
         ),
       ],
     );
