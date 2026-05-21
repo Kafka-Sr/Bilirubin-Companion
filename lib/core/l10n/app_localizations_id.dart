@@ -133,7 +133,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get fieldWeight => 'Berat (kg)';
 
   @override
-  String get fieldDob => 'Tanggal Lahir';
+  String get fieldDob => 'Tanggal & Waktu Lahir';
 
   @override
   String get selectDate => 'Pilih tanggal';
@@ -177,7 +177,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get settingsPiAddressHint => '10.42.0.1:7878';
 
   @override
-  String get settingsHotspotTitle => 'Pemasangan Biligun';
+  String get settingsHotspotTitle => 'Pairing Biligun';
 
   @override
   String get settingsHotspotInstructions =>

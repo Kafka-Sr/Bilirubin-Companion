@@ -60,7 +60,7 @@
   "addBabyTitle": "Add Baby",
   "fieldName": "Name",
   "fieldWeight": "Weight (kg)",
-  "fieldDob": "Date of Birth",
+  "fieldDob": "Date & Time of Birth",
   "selectDate": "Select date",
   "save": "Save",
   "cancel": "Cancel",

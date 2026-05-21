@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
-import 'package:flutter/foundation.dart';
+import 'dart:typed_data';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:pointycastle/export.dart';
@@ -108,16 +108,4 @@ class AppLockService {
     }
     return diff == 0;
   }
-}
-
-/// Stub for platforms that don't support local_auth (Windows, Linux desktop).
-@visibleForTesting
-class NoOpAppLockService extends AppLockService {
-  NoOpAppLockService() : super();
-
-  @override
-  Future<bool> canUseBiometric() async => false;
-
-  @override
-  Future<bool> authenticateBiometric() async => false;
 }

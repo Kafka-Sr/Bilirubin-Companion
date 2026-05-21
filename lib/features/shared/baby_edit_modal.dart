@@ -260,22 +260,37 @@ class _DobField extends StatelessWidget {
                       : selected!.isAfter(now)
                           ? now
                           : selected!;
-              final picked = await showDatePicker(
+              final pickedDate = await showDatePicker(
                 context: context,
                 initialDate: clampedInitial,
                 firstDate: first,
                 lastDate: now,
               );
-              if (picked != null) {
-                state.didChange(picked);
-                onChanged(picked);
-              }
+              if (pickedDate == null) return;
+              if (!context.mounted) return;
+              final initialTime = selected != null
+                  ? TimeOfDay(hour: selected!.hour, minute: selected!.minute)
+                  : TimeOfDay.fromDateTime(now);
+              final pickedTime = await showTimePicker(
+                context: context,
+                initialTime: initialTime,
+              );
+              if (pickedTime == null) return;
+              final combined = DateTime(
+                pickedDate.year,
+                pickedDate.month,
+                pickedDate.day,
+                pickedTime.hour,
+                pickedTime.minute,
+              );
+              state.didChange(combined);
+              onChanged(combined);
             },
             borderRadius: BorderRadius.circular(99),
             child: InputDecorator(
               decoration: InputDecoration(
                 errorText: state.errorText,
-                suffixIcon: const Icon(Icons.calendar_today_outlined),
+                suffixIcon: const Icon(Icons.event_outlined),
                 filled: true,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(99),
@@ -292,7 +307,9 @@ class _DobField extends StatelessWidget {
               ),
               child: Text(
                 selected != null
-                    ? '${selected!.day}/${selected!.month}/${selected!.year}'
+                    ? '${selected!.day}/${selected!.month}/${selected!.year}  '
+                      '${selected!.hour.toString().padLeft(2, '0')}:'
+                      '${selected!.minute.toString().padLeft(2, '0')}'
                     : '—',
               ),
             ),

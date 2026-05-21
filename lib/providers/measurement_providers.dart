@@ -7,6 +7,7 @@ import 'package:bilirubin/providers/supabase_providers.dart';
 import 'package:bilirubin/repositories/measurement_repository.dart';
 import 'package:bilirubin/security/encryption_service.dart';
 import 'package:bilirubin/providers/sync_queue_providers.dart';
+import 'package:bilirubin/utils/extensions.dart';
 
 /// Singleton [EncryptionService].
 final encryptionServiceProvider = Provider<EncryptionService>((ref) {
@@ -35,7 +36,9 @@ final measurementsProvider =
 final latestMeasurementProvider = Provider<Measurement?>((ref) {
   final baby = ref.watch(selectedBabyProvider);
   if (baby == null) return null;
-  return ref.watch(measurementsProvider(baby.babyId)).valueOrNull?.firstOrNull;
+  return ref.watch(
+    measurementsProvider(baby.babyId).select((v) => v.valueOrNull?.firstOrNull),
+  );
 });
 
 /// The measurement ID selected via the image carousel. Null = show latest.
@@ -48,7 +51,9 @@ final activeMeasurementProvider = Provider<Measurement?>((ref) {
   final selectedId = ref.watch(selectedCarouselMeasurementIdProvider);
   final baby = ref.watch(selectedBabyProvider);
   if (baby == null) return null;
-  final all = ref.watch(measurementsProvider(baby.babyId)).valueOrNull;
+  final all = ref.watch(
+    measurementsProvider(baby.babyId).select((v) => v.valueOrNull),
+  );
   if (all == null || all.isEmpty) return null;
   if (selectedId == null) return all.firstOrNull;
   return all.firstWhere(
@@ -56,7 +61,3 @@ final activeMeasurementProvider = Provider<Measurement?>((ref) {
     orElse: () => all.first,
   );
 });
-
-extension<T> on List<T> {
-  T? get firstOrNull => isEmpty ? null : first;
-}

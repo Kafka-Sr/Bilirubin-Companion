@@ -10,14 +10,25 @@ import 'package:bilirubin/utils/bhutani_classifier.dart' as bc;
 /// X-axis spans 0–168 h (baby age). Y-axis spans 0–maxY mg/dL.
 /// Readings with ageHours > 168 are clamped to x=168 and rendered in purple.
 class BhutaniPainter extends CustomPainter {
-  const BhutaniPainter({
+  BhutaniPainter({
     required this.context,
     required this.measurements,
     required this.showHistory,
     required this.showOutsideRange,
     required this.maxY,
     this.selectedMeasurementId,
-  });
+  }) {
+    final color = Theme.of(context).colorScheme.onSurfaceVariant;
+    for (double y = 0; y <= maxY; y += 5) {
+      _yLabels[y] = TextPainter(
+        text: TextSpan(
+          text: y.toInt().toString(),
+          style: TextStyle(fontSize: 10, color: color),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+    }
+  }
 
   final BuildContext context;
   final List<Measurement> measurements;
@@ -26,6 +37,8 @@ class BhutaniPainter extends CustomPainter {
   final double maxY;
   /// When non-null, highlights this measurement instead of measurements.first.
   final String? selectedMeasurementId;
+
+  final _yLabels = <double, TextPainter>{};
 
   // Chart margins (left is larger to allow Y-axis number labels)
   static const double _left = 36;
@@ -174,15 +187,7 @@ class BhutaniPainter extends CustomPainter {
     for (double y = 0; y <= maxY; y += 5) {
       final py = pxY(y);
       canvas.drawLine(Offset(chartRect.left, py), Offset(chartRect.right, py), gridPaint);
-      // Right-align the number just left of the chart area
-      final label = y.toInt().toString();
-      final tp = TextPainter(
-        text: TextSpan(
-          text: label,
-          style: TextStyle(fontSize: 10, color: colorScheme.onSurfaceVariant),
-        ),
-        textDirection: TextDirection.ltr,
-      )..layout();
+      final tp = _yLabels[y]!;
       tp.paint(canvas, Offset(chartRect.left - tp.width - 3, py - tp.height / 2));
     }
   }
