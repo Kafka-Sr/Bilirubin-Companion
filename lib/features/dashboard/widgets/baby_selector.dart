@@ -312,7 +312,7 @@ class _BabySearchSheetState extends ConsumerState<_BabySearchSheet> {
           Padding(
             padding: const EdgeInsets.all(16),
             child: TextField(
-              autofocus: true,
+              autofocus: false,
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.search),
                 hintText: AppLocalizations.of(context).searchBabiesHint,

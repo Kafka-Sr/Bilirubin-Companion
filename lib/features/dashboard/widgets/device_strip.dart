@@ -104,7 +104,7 @@ class DeviceStrip extends ConsumerWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: FilledButton.tonal(
-                  onPressed: () => context.go('/settings'),
+                  onPressed: () => context.push('/settings'),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,

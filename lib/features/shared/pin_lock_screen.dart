@@ -297,10 +297,7 @@ class _SetPinSheetState extends State<_SetPinSheet> {
     final current = _confirming ? _confirm : _pin;
 
     return Padding(
-      padding: EdgeInsets.only(
-        left: 24, right: 24, top: 24,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-      ),
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -335,6 +332,7 @@ class _SetPinSheetState extends State<_SetPinSheet> {
             onBiometric: () {},
             canBiometric: false,
           ),
+          SizedBox(height: MediaQuery.viewInsetsOf(context).bottom + 24),
         ],
       ),
     );

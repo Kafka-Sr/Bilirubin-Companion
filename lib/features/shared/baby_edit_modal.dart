@@ -101,12 +101,7 @@ class _BabyEditSheetState extends ConsumerState<_BabyEditSheet> {
     final isEditing = widget.existing != null;
 
     return Padding(
-      padding: EdgeInsets.only(
-        left: 24,
-        right: 24,
-        top: 24,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-      ),
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
       child: Form(
         key: _formKey,
         child: Column(
@@ -177,6 +172,7 @@ class _BabyEditSheetState extends ConsumerState<_BabyEditSheet> {
                     )
                   : Text(l10n.save),
             ),
+            SizedBox(height: MediaQuery.viewInsetsOf(context).bottom + 24),
           ],
         ),
       ),
