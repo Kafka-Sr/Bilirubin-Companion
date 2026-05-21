@@ -323,7 +323,7 @@ abstract class AppLocalizations {
   /// No description provided for @fieldDob.
   ///
   /// In en, this message translates to:
-  /// **'Date of Birth'**
+  /// **'Date & Time of Birth'**
   String get fieldDob;
 
   /// No description provided for @selectDate.

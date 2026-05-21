@@ -35,6 +35,7 @@ class MeasurementRepository {
   final LocalSyncOutbox? _outbox;
   final void Function()? _onQueued;
   final SupabaseClient? _supabase;
+  final _imageCache = <String, Uint8List>{};
 
   // ── Write ──────────────────────────────────────────────────────────────────
 
@@ -101,13 +102,18 @@ class MeasurementRepository {
   /// downloaded from the bucket and returned as-is (plain JPEG from the Gun).
   /// Otherwise the ref is a local filename encrypted with [EncryptionService].
   Future<Uint8List?> getDecryptedImage(String imageRef) async {
+    if (_imageCache.containsKey(imageRef)) return _imageCache[imageRef];
+    final Uint8List? result;
     if (imageRef.contains('/')) {
-      return _fetchCloudImage(imageRef);
+      result = await _fetchCloudImage(imageRef);
+    } else {
+      final file = await _imageFile(imageRef);
+      if (!file.existsSync()) return null;
+      final blob = await file.readAsBytes();
+      result = await _encryption.decrypt(blob);
     }
-    final file = await _imageFile(imageRef);
-    if (!file.existsSync()) return null;
-    final blob = await file.readAsBytes();
-    return _encryption.decrypt(blob);
+    if (result != null) _imageCache[imageRef] = result;
+    return result;
   }
 
   Future<Uint8List?> _fetchCloudImage(String storagePath) async {

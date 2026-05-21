@@ -132,7 +132,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fieldWeight => 'Weight (kg)';
 
   @override
-  String get fieldDob => 'Date of Birth';
+  String get fieldDob => 'Date & Time of Birth';
 
   @override
   String get selectDate => 'Select date';

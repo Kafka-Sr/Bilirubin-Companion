@@ -75,13 +75,13 @@ class DashboardScreen extends ConsumerWidget {
                           ),
                         ),
 
-                        // 5. Bhutani chart
+                        // 4. Bhutani chart
                         BhutaniChart(babyId: baby.babyId),
 
-                        // 6. Baby metadata
+                        // 5. Baby metadata
                         BabyMetadataSection(baby: baby),
 
-                        // 7. Recommendation
+                        // 6. Recommendation
                         const RecommendationCard(),
 
                         const SizedBox(height: 24),

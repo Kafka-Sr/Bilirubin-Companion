@@ -145,31 +145,12 @@ class _ImageCarouselState extends ConsumerState<ImageCarousel> {
           ),
         );
 
-        final colorScheme = Theme.of(context).colorScheme;
-        final mostRecentColor =
-            measurements.isNotEmpty && measurements[0].ageHours > 168
-                ? const Color(0xFF7C3AED)
-                : colorScheme.error;
-
-        final dots = Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(measurements.length, (i) {
-            final dotColor = i == 0
-                ? mostRecentColor
-                : (_currentPage == i
-                    ? colorScheme.primary
-                    : colorScheme.outlineVariant);
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              margin: const EdgeInsets.symmetric(horizontal: 3),
-              width: _currentPage == i ? 20 : 8,
-              height: 8,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: dotColor,
-              ),
-            );
-          }),
+        final mostRecentIsOld =
+            measurements.isNotEmpty && measurements[0].ageHours > 168;
+        final dots = _CarouselDots(
+          count: measurements.length,
+          currentPage: _currentPage,
+          mostRecentIsOld: mostRecentIsOld,
         );
 
         if (widget.embedded) {
@@ -197,6 +178,45 @@ class _ImageCarouselState extends ConsumerState<ImageCarousel> {
           ),
         );
       },
+    );
+  }
+}
+
+class _CarouselDots extends StatelessWidget {
+  const _CarouselDots({
+    required this.count,
+    required this.currentPage,
+    required this.mostRecentIsOld,
+  });
+
+  final int count;
+  final int currentPage;
+  final bool mostRecentIsOld;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final mostRecentColor =
+        mostRecentIsOld ? const Color(0xFF7C3AED) : colorScheme.error;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(count, (i) {
+        final dotColor = i == 0
+            ? mostRecentColor
+            : (currentPage == i
+                ? colorScheme.primary
+                : colorScheme.outlineVariant);
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          margin: const EdgeInsets.symmetric(horizontal: 3),
+          width: currentPage == i ? 20 : 8,
+          height: 8,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: dotColor,
+          ),
+        );
+      }),
     );
   }
 }

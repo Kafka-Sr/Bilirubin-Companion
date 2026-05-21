@@ -4,6 +4,7 @@ import 'package:bilirubin/providers/database_provider.dart';
 import 'package:bilirubin/providers/sync_providers.dart';
 import 'package:bilirubin/repositories/baby_repository.dart';
 import 'package:bilirubin/providers/sync_queue_providers.dart';
+import 'package:bilirubin/utils/extensions.dart';
 
 /// [BabyRepository] instance, derived from the singleton database.
 final babyRepositoryProvider = Provider<BabyRepository>((ref) {
@@ -36,12 +37,3 @@ final selectedBabyProvider = Provider<Baby?>((ref) {
   return ref.watch(babiesListProvider).valueOrNull
       ?.firstWhereOrNull((b) => b.babyId == id);
 });
-
-extension<T> on Iterable<T> {
-  T? firstWhereOrNull(bool Function(T) test) {
-    for (final e in this) {
-      if (test(e)) return e;
-    }
-    return null;
-  }
-}

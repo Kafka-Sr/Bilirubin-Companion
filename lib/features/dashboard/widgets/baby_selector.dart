@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bilirubin/core/l10n/app_localizations.dart';
 import 'package:bilirubin/features/shared/baby_edit_modal.dart';
 import 'package:bilirubin/features/shared/export_bottom_sheet.dart';
+import 'package:bilirubin/utils/extensions.dart';
 import 'package:bilirubin/models/baby.dart';
 import 'package:bilirubin/providers/baby_providers.dart';
 import 'package:bilirubin/providers/database_provider.dart';
@@ -451,14 +452,5 @@ class _BabySearchSheetState extends ConsumerState<_BabySearchSheet> {
     if (confirmed != true) return;
 
     await ref.read(babyRepositoryProvider).delete(baby.babyId);
-  }
-}
-
-extension<T> on List<T> {
-  T? firstWhereOrNull(bool Function(T) test) {
-    for (final e in this) {
-      if (test(e)) return e;
-    }
-    return null;
   }
 }

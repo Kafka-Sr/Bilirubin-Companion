@@ -71,21 +71,13 @@ class EncryptionService {
   }
 
   Uint8List _generateKey() {
-    final rng = FortunaRandom();
-    rng.seed(KeyParameter(_platformSeed(32)));
-    return rng.nextBytes(32);
+    final r = Random.secure();
+    return Uint8List.fromList(List.generate(32, (_) => r.nextInt(256)));
   }
 
   Uint8List _generateIV() {
-    final rng = FortunaRandom();
-    rng.seed(KeyParameter(_platformSeed(32)));
-    return rng.nextBytes(12);
-  }
-
-  /// Builds a seed for the PRNG from [dart:math] SecureRandom.
-  Uint8List _platformSeed(int length) {
     final r = Random.secure();
-    return Uint8List.fromList(List.generate(length, (_) => r.nextInt(256)));
+    return Uint8List.fromList(List.generate(12, (_) => r.nextInt(256)));
   }
 
   static String _base64Encode(Uint8List bytes) {

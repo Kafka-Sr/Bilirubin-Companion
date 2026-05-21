@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bilirubin/providers/sync_providers.dart';
 
 final connectivitySyncProvider = Provider<void>((ref) {
-  Connectivity().onConnectivityChanged.listen((results) {
+  final sub = Connectivity().onConnectivityChanged.listen((results) {
     final hasNetwork = results.any((r) =>
         r == ConnectivityResult.wifi || r == ConnectivityResult.mobile);
     if (!hasNetwork) return;
@@ -17,4 +17,5 @@ final connectivitySyncProvider = Provider<void>((ref) {
         .then((_) => notifier.set(SyncStatus.idle))
         .catchError((_) => notifier.set(SyncStatus.error));
   });
+  ref.onDispose(sub.cancel);
 });
