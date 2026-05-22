@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:bilirubin/core/app_theme.dart';
 import 'package:bilirubin/core/l10n/app_localizations.dart';
 import 'package:bilirubin/features/shared/pairing_status_icon.dart';
 import 'package:bilirubin/models/device_connection_state.dart';
@@ -151,8 +150,9 @@ class _HotspotSectionState extends ConsumerState<_HotspotSection> {
     final l10n = AppLocalizations.of(context);
 
     ref.listen<String>(piBaseUrlProvider, (_, next) {
-      if (_baseUrlCtrl.text != next) {
-        _baseUrlCtrl.text = next;
+      final stripped = next.replaceFirst(RegExp(r'^https?://'), '');
+      if (_baseUrlCtrl.text != stripped) {
+        _baseUrlCtrl.text = stripped;
       }
     });
 
@@ -244,54 +244,6 @@ class _HotspotSectionState extends ConsumerState<_HotspotSection> {
               child: Text(l10n.settingsPiClear),
             ),
           ],
-        ),
-        const SizedBox(height: 12),
-        const _BiligunStatusRow(),
-      ],
-    );
-  }
-}
-
-class _BiligunStatusRow extends ConsumerWidget {
-  const _BiligunStatusRow();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
-    final cs = Theme.of(context).colorScheme;
-    final connectionState = ref.watch(connectionStateProvider).valueOrNull;
-    final info = ref.watch(deviceInfoProvider).valueOrNull;
-
-    final IconData icon;
-    final Color color;
-    final String text;
-
-    if (connectionState == DeviceConnectionState.connected && info != null) {
-      icon = Icons.check_circle_outline;
-      color = AppColors.connected;
-      text = l10n.deviceConnectedTo(info.displayName);
-    } else if (connectionState == DeviceConnectionState.connecting ||
-        connectionState == DeviceConnectionState.scanning) {
-      icon = Icons.sync_rounded;
-      color = Colors.amber;
-      text = l10n.deviceConnecting;
-    } else if (connectionState == DeviceConnectionState.error) {
-      icon = Icons.error_outline;
-      color = cs.error;
-      text = l10n.deviceConnectionError;
-    } else {
-      icon = Icons.link_off_rounded;
-      color = cs.outline;
-      text = l10n.deviceDisconnected;
-    }
-
-    return Row(
-      children: [
-        Icon(icon, size: 16, color: color),
-        const SizedBox(width: 6),
-        Text(
-          text,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: color),
         ),
       ],
     );

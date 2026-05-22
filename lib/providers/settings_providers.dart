@@ -69,19 +69,10 @@ class _PiBaseUrlNotifier extends StateNotifier<String> {
 
   final SharedPreferences _prefs;
 
-  String _normalize(String value) {
-    final trimmed = value.trim();
-    if (trimmed.isEmpty) return '';
-    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
-      return trimmed;
-    }
-    return 'http://$trimmed';
-  }
-
   void set(String value) {
-    final normalized = _normalize(value);
-    state = normalized;
-    _prefs.setString(kPrefPiBaseUrl, normalized);
+    final trimmed = value.trim();
+    state = trimmed;
+    _prefs.setString(kPrefPiBaseUrl, trimmed);
   }
 
   void clear() {
