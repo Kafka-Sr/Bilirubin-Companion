@@ -14,7 +14,7 @@ import 'package:bilirubin/utils/bhutani_classifier.dart' as bc;
 class BhutaniChart extends ConsumerWidget {
   const BhutaniChart({super.key, required this.babyId});
 
-  final int babyId;
+  final String babyId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -86,6 +86,7 @@ class BhutaniChart extends ConsumerWidget {
                                 showHistory: showHistory,
                                 showOutsideRange: showOutsideRange,
                                 maxY: maxY,
+                                isDark: theme.brightness == Brightness.dark,
                                 selectedMeasurementId: selectedMeasurementId,
                               ),
                               child: const SizedBox.expand(),

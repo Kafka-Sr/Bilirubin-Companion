@@ -8,6 +8,7 @@ import 'package:bilirubin/database/database.dart' hide Baby;
 import 'package:bilirubin/device/device_repository.dart';
 import 'package:bilirubin/models/measurement.dart' as domain;
 import 'package:bilirubin/models/baby.dart';
+import 'package:bilirubin/repositories/audit_repository.dart';
 import 'package:bilirubin/repositories/local_sync_outbox.dart';
 import 'package:bilirubin/security/encryption_service.dart';
 import 'package:bilirubin/utils/input_validators.dart';
@@ -26,15 +27,18 @@ class MeasurementRepository {
     LocalSyncOutbox? outbox,
     void Function()? onQueued,
     SupabaseClient? supabase,
+    AuditRepository? audit,
   }) : _outbox = outbox,
        _onQueued = onQueued,
-       _supabase = supabase;
+       _supabase = supabase,
+       _audit = audit;
 
   final AppDatabase _db;
   final EncryptionService _encryption;
   final LocalSyncOutbox? _outbox;
   final void Function()? _onQueued;
   final SupabaseClient? _supabase;
+  final AuditRepository? _audit;
   final _imageCache = <String, Uint8List>{};
 
   // ── Write ──────────────────────────────────────────────────────────────────
@@ -69,6 +73,7 @@ class MeasurementRepository {
       deviceId: Value(event.deviceId),
       modelVersion: Value(event.modelVersion),
     ));
+    _audit?.logMeasurementCreate(event.measurementId, baby.babyId);
 
     await _queue('upsert', {
       'measurement_id': event.measurementId,
@@ -86,12 +91,12 @@ class MeasurementRepository {
 
   // ── Read ───────────────────────────────────────────────────────────────────
 
-  Stream<List<domain.Measurement>> watchByBaby(int babyId) =>
+  Stream<List<domain.Measurement>> watchByBaby(String babyId) =>
       _db.measurementsDao
           .watchByBaby(babyId)
           .map((rows) => rows.map(_toModel).toList());
 
-  Future<domain.Measurement?> getLatest(int babyId) async {
+  Future<domain.Measurement?> getLatest(String babyId) async {
     final row = await _db.measurementsDao.getLatest(babyId);
     return row == null ? null : _toModel(row);
   }
@@ -132,17 +137,17 @@ class MeasurementRepository {
   // ── Delete ─────────────────────────────────────────────────────────────────
 
   Future<void> delete(String measurementId) async {
-    // Look up the encrypted image ref before deleting the row.
-    final ref = await (_db.select(_db.measurements)
+    // Look up the row before deleting (need imageRef and babyId).
+    final row = await (_db.select(_db.measurements)
           ..where((m) => m.measurementId.equals(measurementId)))
-        .map((r) => r.encryptedImageRef)
         .getSingleOrNull();
 
-    if (ref != null) {
-      final file = await _imageFile(ref);
+    if (row?.encryptedImageRef != null) {
+      final file = await _imageFile(row!.encryptedImageRef!);
       if (file.existsSync()) await file.delete();
     }
     await _db.measurementsDao.deleteMeasurement(measurementId);
+    if (row != null) _audit?.logMeasurementDelete(measurementId, row.babyId);
     await _queue('delete', {'measurement_id': measurementId});
   }
 

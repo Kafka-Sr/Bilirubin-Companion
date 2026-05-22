@@ -10,7 +10,7 @@
   "noMeasurementsTitle": "No measurements yet",
   "noMeasurementsBody": "Connect the device and take a measurement.",
 
-  "deviceDisconnected": "Not connected",
+  "deviceDisconnected": "Not paired",
   "bhutaniChartTitle": "Bhutani Nomogram",
   "showPreviousBilirubin": "Show Previous Readings",
   "showReadingsOutside168h": "Show Readings >168 h",
@@ -78,8 +78,8 @@
   "settingsPiAddressHint": "10.42.0.1:7878",
   "settingsHotspotTitle": "Biligun Pairing",
   "settingsHotspotInstructions": "Connect your phone to the Biligun's Wi-Fi hotspot, then enter its address below.",
-  "settingsPiSave": "Save & Connect",
-  "settingsPiClear": "Clear & Disconnect",
+  "settingsPiSave": "Connect",
+  "settingsPiClear": "Disconnect",
   "settingsPiBeaconUse": "Use",
   "settingsPiBeaconDescription": "If the phone and Biligun are on the same Wi-Fi network, the app can discover the Biligun automatically by beacon. Supabase still stores the synced history.",
 
@@ -121,17 +121,17 @@
   "zoneHighIntermediateFull": "High Intermediate Risk Zone",
   "zoneHighFull": "High Risk Zone",
 
-  "deviceConnecting": "Connecting\u2026",
+  "deviceConnecting": "Pairing\u2026",
   "deviceConnectedLabel": "Connected:",
   "deviceConnect": "Connect",
   "deviceDisconnect": "Disconnect",
-  "deviceConnectedTo": "Connected to {displayName}",
+  "deviceConnectedTo": "Paired with {displayName}",
   "@deviceConnectedTo": {
     "placeholders": {
       "displayName": { "type": "String" }
     }
   },
-  "deviceConnectionError": "Connection failed",
+  "deviceConnectionError": "Failed to pair",
 
   "selectBaby": "Select baby",
   "searchBabiesHint": "Search babies\u2026",
@@ -176,5 +176,134 @@
   "cloudNotConfigured": "Can't connect to the server",
   "cloudSyncing": "Syncing…",
   "cloudSyncError": "Sync error",
-  "cloudSynced": "Synced"
+  "cloudSynced": "Synced",
+
+  "noReadings": "No Readings",
+  "syncButton": "Synchronise",
+  "metadataTob": "Time of Birth",
+  "errorAccountDeactivated": "Your account has been deactivated. Contact your hospital administrator.",
+
+  "loginSubtitle": "Sign in to continue",
+  "loginEmailLabel": "Email",
+  "loginPasswordLabel": "Password",
+  "loginSignIn": "Sign In",
+  "loginEmailValidation": "Enter your email",
+  "loginPasswordValidation": "Enter your password",
+  "loginContactAdmin": "Contact your hospital administrator to get an account.",
+  "loginUnexpectedError": "An unexpected error occurred.",
+
+  "adminPanelTitle": "Admin Panel",
+  "adminUserManagementTitle": "User Management",
+  "adminUserManagementSubtitle": "Manage all accounts — staff, admin, and parent",
+  "adminParentAccessTitle": "Parent Access",
+  "adminParentAccessSubtitle": "Link and unlink parents to babies",
+  "adminTransfersTitle": "Baby Transfers",
+  "adminTransfersSubtitle": "Initiate and manage inter-hospital transfers",
+  "adminAuditTitle": "Audit Events Log",
+  "adminAuditSubtitle": "View a log of sensitive actions in your hospital",
+
+  "userManagementTitle": "User Management",
+  "addAccountFab": "Add Account",
+  "noAccountsFound": "No accounts found.",
+  "roleAll": "All",
+  "roleAdmin": "Admin",
+  "roleStaff": "Staff",
+  "roleParent": "Parent",
+  "deactivateAccountTitle": "Deactivate Account",
+  "reactivateAccountTitle": "Reactivate Account",
+  "deactivateConfirmContent": "Deactivate {name} ({role})? They will lose access immediately.",
+  "@deactivateConfirmContent": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "role": { "type": "String" }
+    }
+  },
+  "reactivateConfirmContent": "Reactivate {name} ({role})? They will regain access.",
+  "@reactivateConfirmContent": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "role": { "type": "String" }
+    }
+  },
+  "deactivatedLabel": "Deactivated",
+  "selfLabel": "(you)",
+  "addAccountDialogTitle": "Add Account",
+  "fullNameLabel": "Full Name",
+  "roleLabel": "Role",
+  "passwordMinLength": "Min 8 characters",
+  "createLabel": "Create",
+  "loadingUsersError": "Error loading users: {error}",
+  "@loadingUsersError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+
+  "parentAccessTitle": "Parent Access",
+  "currentLinksTitle": "Current Links",
+  "noParentLinksYet": "No parent links yet.",
+  "linkParentSectionTitle": "Link a Parent to a Baby",
+  "findParentStep": "Step 1: Find parent account",
+  "parentEmailLabel": "Parent email",
+  "searchLabel": "Search",
+  "selectBabyStep": "Step 2: Select baby",
+  "linkParentButton": "Link Parent to Baby",
+  "unlinkParentTitle": "Unlink Parent",
+  "unlinkConfirmContent": "Remove {parent}'s access to {baby}?",
+  "@unlinkConfirmContent": {
+    "placeholders": {
+      "parent": { "type": "String" },
+      "baby": { "type": "String" }
+    }
+  },
+  "parentLinkedSuccess": "Parent linked successfully.",
+
+  "babyTransfersTitle": "Baby Transfers",
+  "outgoingTab": "Outgoing",
+  "incomingTab": "Incoming",
+  "initiateTransferFab": "Initiate Transfer",
+  "noOutgoingTransfers": "No outgoing transfers.",
+  "noIncomingTransfers": "No incoming transfers.",
+  "acceptLabel": "Accept",
+  "rejectLabel": "Reject",
+  "initiateTransferDialogTitle": "Initiate Transfer",
+  "babyLabel": "Baby",
+  "targetHospitalCodeLabel": "Target Hospital Code",
+  "hospitalCodeHint": "e.g. RSU-01",
+  "sendLabel": "Send",
+
+  "auditEventsLogTitle": "Audit Events Log",
+  "auditAllFilter": "All",
+  "auditNoEvents": "No events found.",
+  "auditEventBabyCreate": "Baby Created",
+  "auditEventBabyEdit": "Baby Edited",
+  "auditEventBabyDelete": "Baby Deleted",
+  "auditEventMeasurementCreate": "Measurement Recorded",
+  "auditEventMeasurementDelete": "Measurement Deleted",
+  "auditEventExport": "Data Export",
+  "auditEventAccountCreate": "Account Created",
+  "auditEventAccountDeactivate": "Account Deactivated",
+  "auditEventAccountReactivate": "Account Reactivated",
+  "auditEventParentLink": "Parent Linked",
+  "auditEventParentUnlink": "Parent Unlinked",
+  "auditEventDeviceAdd": "Device Connected",
+  "auditEventTransferCreate": "Transfer Initiated",
+  "auditEventTransferAccept": "Transfer Accepted",
+  "auditEventTransferReject": "Transfer Rejected",
+
+  "parentDashboardTitle": "My Baby",
+  "signOutTooltip": "Sign Out",
+  "awaitingLinkageTitle": "Awaiting linkage",
+  "awaitingLinkageBody": "Your account ({email}) has not yet been linked to a baby by the hospital. Please contact your hospital staff.",
+  "@awaitingLinkageBody": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "measurementsSectionTitle": "Measurements",
+  "noMeasurementsParent": "No measurements yet.",
+
+  "settingsAccountTitle": "Account",
+  "signOutLabel": "Sign Out",
+  "couldNotLoadProfile": "Could not load profile."
 }

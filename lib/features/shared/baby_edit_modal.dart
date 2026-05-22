@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bilirubin/core/l10n/app_localizations.dart';
 import 'package:bilirubin/models/baby.dart';
+import 'package:bilirubin/providers/auth_providers.dart';
 import 'package:bilirubin/providers/baby_providers.dart';
 import 'package:bilirubin/providers/database_provider.dart';
 import 'package:bilirubin/repositories/audit_repository.dart';
@@ -195,10 +196,13 @@ class _BabyEditSheetState extends ConsumerState<_BabyEditSheet> {
       final weight = parseWeight(_weightCtrl.text)!;
 
       if (widget.existing == null) {
+        final hospitalId =
+            ref.read(userProfileProvider).value?.hospitalId ?? '';
         await repo.create(
           name: name,
           dateOfBirth: _selectedDob!,
           weightKg: weight,
+          hospitalId: hospitalId,
         );
       } else {
         await repo.update(widget.existing!.copyWith(

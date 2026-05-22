@@ -30,7 +30,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noMeasurementsBody => 'Connect the device and take a measurement.';
 
   @override
-  String get deviceDisconnected => 'Not connected';
+  String get deviceDisconnected => 'Not paired';
 
   @override
   String get bhutaniChartTitle => 'Bhutani Nomogram';
@@ -181,10 +181,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Connect your phone to the Biligun\'s Wi-Fi hotspot, then enter its address below.';
 
   @override
-  String get settingsPiSave => 'Save & Connect';
+  String get settingsPiSave => 'Connect';
 
   @override
-  String get settingsPiClear => 'Clear & Disconnect';
+  String get settingsPiClear => 'Disconnect';
 
   @override
   String get settingsPiBeaconUse => 'Use';
@@ -281,7 +281,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zoneHighFull => 'High Risk Zone';
 
   @override
-  String get deviceConnecting => 'Connecting…';
+  String get deviceConnecting => 'Pairing…';
 
   @override
   String get deviceConnectedLabel => 'Connected:';
@@ -294,11 +294,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String deviceConnectedTo(String displayName) {
-    return 'Connected to $displayName';
+    return 'Paired with $displayName';
   }
 
   @override
-  String get deviceConnectionError => 'Connection failed';
+  String get deviceConnectionError => 'Failed to pair';
 
   @override
   String get selectBaby => 'Select baby';
@@ -386,4 +386,295 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cloudSynced => 'Synced';
+
+  @override
+  String get noReadings => 'No Readings';
+
+  @override
+  String get syncButton => 'Synchronise';
+
+  @override
+  String get metadataTob => 'Time of Birth';
+
+  @override
+  String get errorAccountDeactivated =>
+      'Your account has been deactivated. Contact your hospital administrator.';
+
+  @override
+  String get loginSubtitle => 'Sign in to continue';
+
+  @override
+  String get loginEmailLabel => 'Email';
+
+  @override
+  String get loginPasswordLabel => 'Password';
+
+  @override
+  String get loginSignIn => 'Sign In';
+
+  @override
+  String get loginEmailValidation => 'Enter your email';
+
+  @override
+  String get loginPasswordValidation => 'Enter your password';
+
+  @override
+  String get loginContactAdmin =>
+      'Contact your hospital administrator to get an account.';
+
+  @override
+  String get loginUnexpectedError => 'An unexpected error occurred.';
+
+  @override
+  String get adminPanelTitle => 'Admin Panel';
+
+  @override
+  String get adminUserManagementTitle => 'User Management';
+
+  @override
+  String get adminUserManagementSubtitle =>
+      'Manage all accounts — staff, admin, and parent';
+
+  @override
+  String get adminParentAccessTitle => 'Parent Access';
+
+  @override
+  String get adminParentAccessSubtitle => 'Link and unlink parents to babies';
+
+  @override
+  String get adminTransfersTitle => 'Baby Transfers';
+
+  @override
+  String get adminTransfersSubtitle =>
+      'Initiate and manage inter-hospital transfers';
+
+  @override
+  String get adminAuditTitle => 'Audit Events Log';
+
+  @override
+  String get adminAuditSubtitle =>
+      'View a log of sensitive actions in your hospital';
+
+  @override
+  String get userManagementTitle => 'User Management';
+
+  @override
+  String get addAccountFab => 'Add Account';
+
+  @override
+  String get noAccountsFound => 'No accounts found.';
+
+  @override
+  String get roleAll => 'All';
+
+  @override
+  String get roleAdmin => 'Admin';
+
+  @override
+  String get roleStaff => 'Staff';
+
+  @override
+  String get roleParent => 'Parent';
+
+  @override
+  String get deactivateAccountTitle => 'Deactivate Account';
+
+  @override
+  String get reactivateAccountTitle => 'Reactivate Account';
+
+  @override
+  String deactivateConfirmContent(String name, String role) {
+    return 'Deactivate $name ($role)? They will lose access immediately.';
+  }
+
+  @override
+  String reactivateConfirmContent(String name, String role) {
+    return 'Reactivate $name ($role)? They will regain access.';
+  }
+
+  @override
+  String get deactivatedLabel => 'Deactivated';
+
+  @override
+  String get selfLabel => '(you)';
+
+  @override
+  String get addAccountDialogTitle => 'Add Account';
+
+  @override
+  String get fullNameLabel => 'Full Name';
+
+  @override
+  String get roleLabel => 'Role';
+
+  @override
+  String get passwordMinLength => 'Min 8 characters';
+
+  @override
+  String get createLabel => 'Create';
+
+  @override
+  String loadingUsersError(String error) {
+    return 'Error loading users: $error';
+  }
+
+  @override
+  String get parentAccessTitle => 'Parent Access';
+
+  @override
+  String get currentLinksTitle => 'Current Links';
+
+  @override
+  String get noParentLinksYet => 'No parent links yet.';
+
+  @override
+  String get linkParentSectionTitle => 'Link a Parent to a Baby';
+
+  @override
+  String get findParentStep => 'Step 1: Find parent account';
+
+  @override
+  String get parentEmailLabel => 'Parent email';
+
+  @override
+  String get searchLabel => 'Search';
+
+  @override
+  String get selectBabyStep => 'Step 2: Select baby';
+
+  @override
+  String get linkParentButton => 'Link Parent to Baby';
+
+  @override
+  String get unlinkParentTitle => 'Unlink Parent';
+
+  @override
+  String unlinkConfirmContent(String parent, String baby) {
+    return 'Remove $parent\'s access to $baby?';
+  }
+
+  @override
+  String get parentLinkedSuccess => 'Parent linked successfully.';
+
+  @override
+  String get babyTransfersTitle => 'Baby Transfers';
+
+  @override
+  String get outgoingTab => 'Outgoing';
+
+  @override
+  String get incomingTab => 'Incoming';
+
+  @override
+  String get initiateTransferFab => 'Initiate Transfer';
+
+  @override
+  String get noOutgoingTransfers => 'No outgoing transfers.';
+
+  @override
+  String get noIncomingTransfers => 'No incoming transfers.';
+
+  @override
+  String get acceptLabel => 'Accept';
+
+  @override
+  String get rejectLabel => 'Reject';
+
+  @override
+  String get initiateTransferDialogTitle => 'Initiate Transfer';
+
+  @override
+  String get babyLabel => 'Baby';
+
+  @override
+  String get targetHospitalCodeLabel => 'Target Hospital Code';
+
+  @override
+  String get hospitalCodeHint => 'e.g. RSU-01';
+
+  @override
+  String get sendLabel => 'Send';
+
+  @override
+  String get auditEventsLogTitle => 'Audit Events Log';
+
+  @override
+  String get auditAllFilter => 'All';
+
+  @override
+  String get auditNoEvents => 'No events found.';
+
+  @override
+  String get auditEventBabyCreate => 'Baby Created';
+
+  @override
+  String get auditEventBabyEdit => 'Baby Edited';
+
+  @override
+  String get auditEventBabyDelete => 'Baby Deleted';
+
+  @override
+  String get auditEventMeasurementCreate => 'Measurement Recorded';
+
+  @override
+  String get auditEventMeasurementDelete => 'Measurement Deleted';
+
+  @override
+  String get auditEventExport => 'Data Export';
+
+  @override
+  String get auditEventAccountCreate => 'Account Created';
+
+  @override
+  String get auditEventAccountDeactivate => 'Account Deactivated';
+
+  @override
+  String get auditEventAccountReactivate => 'Account Reactivated';
+
+  @override
+  String get auditEventParentLink => 'Parent Linked';
+
+  @override
+  String get auditEventParentUnlink => 'Parent Unlinked';
+
+  @override
+  String get auditEventDeviceAdd => 'Device Connected';
+
+  @override
+  String get auditEventTransferCreate => 'Transfer Initiated';
+
+  @override
+  String get auditEventTransferAccept => 'Transfer Accepted';
+
+  @override
+  String get auditEventTransferReject => 'Transfer Rejected';
+
+  @override
+  String get parentDashboardTitle => 'My Baby';
+
+  @override
+  String get signOutTooltip => 'Sign Out';
+
+  @override
+  String get awaitingLinkageTitle => 'Awaiting linkage';
+
+  @override
+  String awaitingLinkageBody(String email) {
+    return 'Your account ($email) has not yet been linked to a baby by the hospital. Please contact your hospital staff.';
+  }
+
+  @override
+  String get measurementsSectionTitle => 'Measurements';
+
+  @override
+  String get noMeasurementsParent => 'No measurements yet.';
+
+  @override
+  String get settingsAccountTitle => 'Account';
+
+  @override
+  String get signOutLabel => 'Sign Out';
+
+  @override
+  String get couldNotLoadProfile => 'Could not load profile.';
 }

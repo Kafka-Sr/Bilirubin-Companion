@@ -31,7 +31,7 @@ class AppLocalizationsId extends AppLocalizations {
       'Hubungkan perangkat dan lakukan pengukuran.';
 
   @override
-  String get deviceDisconnected => 'Tidak terhubung';
+  String get deviceDisconnected => 'Tidak berpasangan';
 
   @override
   String get bhutaniChartTitle => 'Nomogram Bhutani';
@@ -184,10 +184,10 @@ class AppLocalizationsId extends AppLocalizations {
       'Hubungkan ponsel Anda ke hotspot Wi-Fi Biligun, lalu masukkan alamatnya di bawah.';
 
   @override
-  String get settingsPiSave => 'Simpan & Hubungkan';
+  String get settingsPiSave => 'Hubungkan';
 
   @override
-  String get settingsPiClear => 'Hapus & Putuskan';
+  String get settingsPiClear => 'Putuskan';
 
   @override
   String get settingsPiBeaconUse => 'Gunakan';
@@ -284,7 +284,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get zoneHighFull => 'Zona Risiko Tinggi';
 
   @override
-  String get deviceConnecting => 'Menghubungkan…';
+  String get deviceConnecting => 'Memasangkan…';
 
   @override
   String get deviceConnectedLabel => 'Terhubung:';
@@ -297,11 +297,11 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String deviceConnectedTo(String displayName) {
-    return 'Terhubung ke $displayName';
+    return 'Berpasangan dengan $displayName';
   }
 
   @override
-  String get deviceConnectionError => 'Koneksi gagal';
+  String get deviceConnectionError => 'Gagal memasangkan';
 
   @override
   String get selectBaby => 'Pilih bayi';
@@ -389,4 +389,296 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get cloudSynced => 'Tersinkronisasi';
+
+  @override
+  String get noReadings => 'Belum Ada Bacaan';
+
+  @override
+  String get syncButton => 'Sinkronisasi';
+
+  @override
+  String get metadataTob => 'Waktu Lahir';
+
+  @override
+  String get errorAccountDeactivated =>
+      'Akun Anda telah dinonaktifkan. Hubungi administrator rumah sakit Anda.';
+
+  @override
+  String get loginSubtitle => 'Masuk untuk melanjutkan';
+
+  @override
+  String get loginEmailLabel => 'Email';
+
+  @override
+  String get loginPasswordLabel => 'Kata sandi';
+
+  @override
+  String get loginSignIn => 'Masuk';
+
+  @override
+  String get loginEmailValidation => 'Masukkan email Anda';
+
+  @override
+  String get loginPasswordValidation => 'Masukkan kata sandi Anda';
+
+  @override
+  String get loginContactAdmin =>
+      'Hubungi administrator rumah sakit Anda untuk mendapatkan akun.';
+
+  @override
+  String get loginUnexpectedError => 'Terjadi kesalahan yang tidak terduga.';
+
+  @override
+  String get adminPanelTitle => 'Panel Admin';
+
+  @override
+  String get adminUserManagementTitle => 'Manajemen Pengguna';
+
+  @override
+  String get adminUserManagementSubtitle =>
+      'Kelola semua akun — staf, admin, dan orang tua';
+
+  @override
+  String get adminParentAccessTitle => 'Akses Orang Tua';
+
+  @override
+  String get adminParentAccessSubtitle =>
+      'Hubungkan dan putuskan hubungan orang tua dengan bayi';
+
+  @override
+  String get adminTransfersTitle => 'Transfer Bayi';
+
+  @override
+  String get adminTransfersSubtitle =>
+      'Inisiasi dan kelola transfer antar rumah sakit';
+
+  @override
+  String get adminAuditTitle => 'Log Peristiwa Audit';
+
+  @override
+  String get adminAuditSubtitle =>
+      'Lihat log tindakan sensitif di rumah sakit Anda';
+
+  @override
+  String get userManagementTitle => 'Manajemen Pengguna';
+
+  @override
+  String get addAccountFab => 'Tambah Akun';
+
+  @override
+  String get noAccountsFound => 'Tidak ada akun ditemukan.';
+
+  @override
+  String get roleAll => 'Semua';
+
+  @override
+  String get roleAdmin => 'Admin';
+
+  @override
+  String get roleStaff => 'Staf';
+
+  @override
+  String get roleParent => 'Orang Tua';
+
+  @override
+  String get deactivateAccountTitle => 'Nonaktifkan Akun';
+
+  @override
+  String get reactivateAccountTitle => 'Aktifkan Kembali Akun';
+
+  @override
+  String deactivateConfirmContent(String name, String role) {
+    return 'Nonaktifkan $name ($role)? Mereka akan langsung kehilangan akses.';
+  }
+
+  @override
+  String reactivateConfirmContent(String name, String role) {
+    return 'Aktifkan kembali $name ($role)? Mereka akan mendapatkan kembali akses.';
+  }
+
+  @override
+  String get deactivatedLabel => 'Dinonaktifkan';
+
+  @override
+  String get selfLabel => '(Anda)';
+
+  @override
+  String get addAccountDialogTitle => 'Tambah Akun';
+
+  @override
+  String get fullNameLabel => 'Nama Lengkap';
+
+  @override
+  String get roleLabel => 'Peran';
+
+  @override
+  String get passwordMinLength => 'Min 8 karakter';
+
+  @override
+  String get createLabel => 'Buat';
+
+  @override
+  String loadingUsersError(String error) {
+    return 'Gagal memuat pengguna: $error';
+  }
+
+  @override
+  String get parentAccessTitle => 'Akses Orang Tua';
+
+  @override
+  String get currentLinksTitle => 'Tautan Saat Ini';
+
+  @override
+  String get noParentLinksYet => 'Belum ada tautan orang tua.';
+
+  @override
+  String get linkParentSectionTitle => 'Tautkan Orang Tua ke Bayi';
+
+  @override
+  String get findParentStep => 'Langkah 1: Temukan akun orang tua';
+
+  @override
+  String get parentEmailLabel => 'Email orang tua';
+
+  @override
+  String get searchLabel => 'Cari';
+
+  @override
+  String get selectBabyStep => 'Langkah 2: Pilih bayi';
+
+  @override
+  String get linkParentButton => 'Tautkan Orang Tua ke Bayi';
+
+  @override
+  String get unlinkParentTitle => 'Putuskan Tautan Orang Tua';
+
+  @override
+  String unlinkConfirmContent(String parent, String baby) {
+    return 'Hapus akses $parent ke $baby?';
+  }
+
+  @override
+  String get parentLinkedSuccess => 'Orang tua berhasil ditautkan.';
+
+  @override
+  String get babyTransfersTitle => 'Transfer Bayi';
+
+  @override
+  String get outgoingTab => 'Keluar';
+
+  @override
+  String get incomingTab => 'Masuk';
+
+  @override
+  String get initiateTransferFab => 'Inisiasi Transfer';
+
+  @override
+  String get noOutgoingTransfers => 'Tidak ada transfer keluar.';
+
+  @override
+  String get noIncomingTransfers => 'Tidak ada transfer masuk.';
+
+  @override
+  String get acceptLabel => 'Terima';
+
+  @override
+  String get rejectLabel => 'Tolak';
+
+  @override
+  String get initiateTransferDialogTitle => 'Inisiasi Transfer';
+
+  @override
+  String get babyLabel => 'Bayi';
+
+  @override
+  String get targetHospitalCodeLabel => 'Kode Rumah Sakit Tujuan';
+
+  @override
+  String get hospitalCodeHint => 'mis. RSU-01';
+
+  @override
+  String get sendLabel => 'Kirim';
+
+  @override
+  String get auditEventsLogTitle => 'Log Peristiwa Audit';
+
+  @override
+  String get auditAllFilter => 'Semua';
+
+  @override
+  String get auditNoEvents => 'Tidak ada peristiwa ditemukan.';
+
+  @override
+  String get auditEventBabyCreate => 'Bayi Dibuat';
+
+  @override
+  String get auditEventBabyEdit => 'Bayi Diubah';
+
+  @override
+  String get auditEventBabyDelete => 'Bayi Dihapus';
+
+  @override
+  String get auditEventMeasurementCreate => 'Pengukuran Dicatat';
+
+  @override
+  String get auditEventMeasurementDelete => 'Pengukuran Dihapus';
+
+  @override
+  String get auditEventExport => 'Ekspor Data';
+
+  @override
+  String get auditEventAccountCreate => 'Akun Dibuat';
+
+  @override
+  String get auditEventAccountDeactivate => 'Akun Dinonaktifkan';
+
+  @override
+  String get auditEventAccountReactivate => 'Akun Diaktifkan Kembali';
+
+  @override
+  String get auditEventParentLink => 'Orang Tua Ditautkan';
+
+  @override
+  String get auditEventParentUnlink => 'Orang Tua Diputuskan';
+
+  @override
+  String get auditEventDeviceAdd => 'Perangkat Terhubung';
+
+  @override
+  String get auditEventTransferCreate => 'Transfer Diinisiasi';
+
+  @override
+  String get auditEventTransferAccept => 'Transfer Diterima';
+
+  @override
+  String get auditEventTransferReject => 'Transfer Ditolak';
+
+  @override
+  String get parentDashboardTitle => 'Bayi Saya';
+
+  @override
+  String get signOutTooltip => 'Keluar';
+
+  @override
+  String get awaitingLinkageTitle => 'Menunggu tautan';
+
+  @override
+  String awaitingLinkageBody(String email) {
+    return 'Akun Anda ($email) belum ditautkan ke bayi oleh rumah sakit. Hubungi staf rumah sakit Anda.';
+  }
+
+  @override
+  String get measurementsSectionTitle => 'Pengukuran';
+
+  @override
+  String get noMeasurementsParent => 'Belum ada pengukuran.';
+
+  @override
+  String get settingsAccountTitle => 'Akun';
+
+  @override
+  String get signOutLabel => 'Keluar';
+
+  @override
+  String get couldNotLoadProfile => 'Tidak dapat memuat profil.';
 }

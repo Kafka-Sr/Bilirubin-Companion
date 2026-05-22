@@ -40,10 +40,21 @@ const List<double> kNomogramXTicks = [
 ];
 
 // ── Audit event types ─────────────────────────────────────────────────────────
-const String kAuditExport = 'export';
-const String kAuditBabyEdit = 'baby_edit';
-const String kAuditBabyDelete = 'baby_delete';
+const String kAuditBabyCreate        = 'baby_create';
+const String kAuditBabyEdit          = 'baby_edit';
+const String kAuditBabyDelete        = 'baby_delete';
+const String kAuditMeasurementCreate = 'measurement_create';
 const String kAuditMeasurementDelete = 'measurement_delete';
+const String kAuditExport            = 'export';
+const String kAuditAccountCreate     = 'account_create';
+const String kAuditAccountDeactivate = 'account_deactivate';
+const String kAuditAccountReactivate = 'account_reactivate';
+const String kAuditParentLink        = 'parent_link';
+const String kAuditParentUnlink      = 'parent_unlink';
+const String kAuditDeviceAdd         = 'device_add';
+const String kAuditTransferCreate    = 'transfer_create';
+const String kAuditTransferAccept    = 'transfer_accept';
+const String kAuditTransferReject    = 'transfer_reject';
 
 // ── Secure storage keys ───────────────────────────────────────────────────────
 const String kImageKeyAlias = 'bilirubin_image_key_v1';

@@ -13,7 +13,7 @@ import 'package:bilirubin/utils/bhutani_classifier.dart' as classifier;
 class LatestResultCard extends ConsumerWidget {
   const LatestResultCard({super.key, required this.babyId, this.embedded = false});
 
-  final int babyId;
+  final String babyId;
   final bool embedded;
 
   @override
@@ -31,7 +31,7 @@ class LatestResultCard extends ConsumerWidget {
           children: [
             Expanded(
               child: Text(
-                '—',
+                l10n.noReadings,
                 style: theme.textTheme.headlineLarge?.copyWith(
                   color: dimColor,
                   fontWeight: FontWeight.bold,

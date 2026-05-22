@@ -2,6 +2,7 @@
 class Baby {
   const Baby({
     required this.babyId,
+    required this.hospitalId,
     required this.babyName,
     required this.babyDob,
     required this.babyWeight,
@@ -10,7 +11,8 @@ class Baby {
     this.isArchived = false,
   });
 
-  final int babyId;
+  final String babyId;
+  final String hospitalId;
   final String babyName;
   final DateTime babyDob;
   final double babyWeight;
@@ -25,7 +27,8 @@ class Baby {
   }
 
   Baby copyWith({
-    int? babyId,
+    String? babyId,
+    String? hospitalId,
     String? babyName,
     DateTime? babyDob,
     double? babyWeight,
@@ -35,6 +38,7 @@ class Baby {
   }) {
     return Baby(
       babyId: babyId ?? this.babyId,
+      hospitalId: hospitalId ?? this.hospitalId,
       babyName: babyName ?? this.babyName,
       babyDob: babyDob ?? this.babyDob,
       babyWeight: babyWeight ?? this.babyWeight,

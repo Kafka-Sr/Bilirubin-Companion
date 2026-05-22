@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:bilirubin/core/l10n/app_localizations.dart';
 import 'package:bilirubin/features/dashboard/widgets/baby_metadata_section.dart';
 import 'package:bilirubin/features/dashboard/widgets/baby_selector.dart';
@@ -9,6 +10,7 @@ import 'package:bilirubin/features/dashboard/widgets/empty_state.dart';
 import 'package:bilirubin/features/dashboard/widgets/image_carousel.dart';
 import 'package:bilirubin/features/dashboard/widgets/latest_result_card.dart';
 import 'package:bilirubin/features/dashboard/widgets/recommendation_card.dart';
+import 'package:bilirubin/providers/auth_providers.dart';
 import 'package:bilirubin/providers/baby_providers.dart';
 import 'package:bilirubin/providers/sync_providers.dart';
 
@@ -22,8 +24,25 @@ class DashboardScreen extends ConsumerWidget {
     final babiesAsync = ref.watch(babiesListProvider);
     final baby = ref.watch(selectedBabyProvider);
 
+    final isAdmin = ref.watch(isAdminProvider);
+
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.dashboardTitle)),
+      appBar: AppBar(
+        title: Text(l10n.dashboardTitle),
+        actions: [
+          if (isAdmin)
+            IconButton(
+              icon: const Icon(Icons.admin_panel_settings_outlined),
+              tooltip: 'Admin Panel',
+              onPressed: () => context.push('/admin'),
+            ),
+          IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            tooltip: 'Settings',
+            onPressed: () => context.push('/settings'),
+          ),
+        ],
+      ),
       body: babiesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),

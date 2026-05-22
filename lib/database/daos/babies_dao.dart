@@ -15,11 +15,11 @@ class BabiesDao extends DatabaseAccessor<AppDatabase> with _$BabiesDaoMixin {
       .watch();
 
   /// Returns a single baby by [id], or null if not found.
-  Future<Baby?> getBabyById(int id) =>
+  Future<Baby?> getBabyById(String id) =>
       (select(babies)..where((b) => b.babyId.equals(id))).getSingleOrNull();
 
   /// Inserts a new baby row.
-  Future<int> insertBaby(BabiesCompanion companion) =>
+  Future<void> insertBaby(BabiesCompanion companion) =>
       into(babies).insert(companion);
 
   /// Updates an existing baby row.
@@ -27,7 +27,7 @@ class BabiesDao extends DatabaseAccessor<AppDatabase> with _$BabiesDaoMixin {
       update(babies).replace(companion);
 
   /// Soft-deletes a baby by setting [isArchived] = true.
-  Future<void> archiveBaby(int id) => (update(babies)
+  Future<void> archiveBaby(String id) => (update(babies)
         ..where((b) => b.babyId.equals(id)))
       .write(
     const BabiesCompanion(isArchived: Value(true)),
@@ -40,7 +40,7 @@ class BabiesDao extends DatabaseAccessor<AppDatabase> with _$BabiesDaoMixin {
       .watch();
 
   /// Restores an archived baby by setting [isArchived] = false.
-  Future<void> restoreBaby(int id) => (update(babies)
+  Future<void> restoreBaby(String id) => (update(babies)
         ..where((b) => b.babyId.equals(id)))
       .write(
     const BabiesCompanion(isArchived: Value(false)),
@@ -56,6 +56,6 @@ class BabiesDao extends DatabaseAccessor<AppDatabase> with _$BabiesDaoMixin {
       into(babies).insert(companion, mode: InsertMode.insertOrIgnore);
 
   /// Permanently deletes a baby row by [id].
-  Future<void> deleteBaby(int id) =>
+  Future<void> deleteBaby(String id) =>
       (delete(babies)..where((b) => b.babyId.equals(id))).go();
 }

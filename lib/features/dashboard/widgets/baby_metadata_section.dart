@@ -57,12 +57,27 @@ class BabyMetadataSection extends StatelessWidget {
             const SizedBox(height: 10),
             _MetadataField(label: l10n.metadataAge, value: ageLabel),
             const SizedBox(height: 10),
-            _MetadataField(
-              label: l10n.metadataDob,
-              value:
-                  '${baby.babyDob.day.toString().padLeft(2, '0')}/'
-                  '${baby.babyDob.month.toString().padLeft(2, '0')}/'
-                  '${baby.babyDob.year}',
+            Row(
+              spacing: 10,
+              children: [
+                Expanded(
+                  child: _MetadataField(
+                    label: l10n.metadataDob,
+                    value:
+                        '${baby.babyDob.day.toString().padLeft(2, '0')}/'
+                        '${baby.babyDob.month.toString().padLeft(2, '0')}/'
+                        '${baby.babyDob.year}',
+                  ),
+                ),
+                Expanded(
+                  child: _MetadataField(
+                    label: l10n.metadataTob,
+                    value:
+                        '${baby.babyDob.hour.toString().padLeft(2, '0')}:'
+                        '${baby.babyDob.minute.toString().padLeft(2, '0')}',
+                  ),
+                ),
+              ],
             ),
           ],
         ),

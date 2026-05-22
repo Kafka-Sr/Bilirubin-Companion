@@ -10,13 +10,15 @@ class $BabiesTable extends Babies with TableInfo<$BabiesTable, Baby> {
   $BabiesTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _babyIdMeta = const VerificationMeta('babyId');
   @override
-  late final GeneratedColumn<int> babyId = GeneratedColumn<int>(
+  late final GeneratedColumn<String> babyId = GeneratedColumn<String>(
       'baby_id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _hospitalIdMeta =
+      const VerificationMeta('hospitalId');
+  @override
+  late final GeneratedColumn<String> hospitalId = GeneratedColumn<String>(
+      'hospital_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _babyNameMeta =
       const VerificationMeta('babyName');
   @override
@@ -64,8 +66,16 @@ class $BabiesTable extends Babies with TableInfo<$BabiesTable, Baby> {
           GeneratedColumn.constraintIsAlways('CHECK ("is_archived" IN (0, 1))'),
       defaultValue: const Constant(false));
   @override
-  List<GeneratedColumn> get $columns =>
-      [babyId, babyName, babyDob, babyWeight, createdAt, updatedAt, isArchived];
+  List<GeneratedColumn> get $columns => [
+        babyId,
+        hospitalId,
+        babyName,
+        babyDob,
+        babyWeight,
+        createdAt,
+        updatedAt,
+        isArchived
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -79,6 +89,16 @@ class $BabiesTable extends Babies with TableInfo<$BabiesTable, Baby> {
     if (data.containsKey('baby_id')) {
       context.handle(_babyIdMeta,
           babyId.isAcceptableOrUnknown(data['baby_id']!, _babyIdMeta));
+    } else if (isInserting) {
+      context.missing(_babyIdMeta);
+    }
+    if (data.containsKey('hospital_id')) {
+      context.handle(
+          _hospitalIdMeta,
+          hospitalId.isAcceptableOrUnknown(
+              data['hospital_id']!, _hospitalIdMeta));
+    } else if (isInserting) {
+      context.missing(_hospitalIdMeta);
     }
     if (data.containsKey('baby_name')) {
       context.handle(_babyNameMeta,
@@ -124,7 +144,9 @@ class $BabiesTable extends Babies with TableInfo<$BabiesTable, Baby> {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Baby(
       babyId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}baby_id'])!,
+          .read(DriftSqlType.string, data['${effectivePrefix}baby_id'])!,
+      hospitalId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}hospital_id'])!,
       babyName: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}baby_name'])!,
       babyDob: attachedDatabase.typeMapping
@@ -147,7 +169,8 @@ class $BabiesTable extends Babies with TableInfo<$BabiesTable, Baby> {
 }
 
 class Baby extends DataClass implements Insertable<Baby> {
-  final int babyId;
+  final String babyId;
+  final String hospitalId;
   final String babyName;
   final DateTime babyDob;
   final double babyWeight;
@@ -156,6 +179,7 @@ class Baby extends DataClass implements Insertable<Baby> {
   final bool isArchived;
   const Baby(
       {required this.babyId,
+      required this.hospitalId,
       required this.babyName,
       required this.babyDob,
       required this.babyWeight,
@@ -165,7 +189,8 @@ class Baby extends DataClass implements Insertable<Baby> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['baby_id'] = Variable<int>(babyId);
+    map['baby_id'] = Variable<String>(babyId);
+    map['hospital_id'] = Variable<String>(hospitalId);
     map['baby_name'] = Variable<String>(babyName);
     map['baby_dob'] = Variable<DateTime>(babyDob);
     map['baby_weight'] = Variable<double>(babyWeight);
@@ -178,6 +203,7 @@ class Baby extends DataClass implements Insertable<Baby> {
   BabiesCompanion toCompanion(bool nullToAbsent) {
     return BabiesCompanion(
       babyId: Value(babyId),
+      hospitalId: Value(hospitalId),
       babyName: Value(babyName),
       babyDob: Value(babyDob),
       babyWeight: Value(babyWeight),
@@ -191,7 +217,8 @@ class Baby extends DataClass implements Insertable<Baby> {
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Baby(
-      babyId: serializer.fromJson<int>(json['babyId']),
+      babyId: serializer.fromJson<String>(json['babyId']),
+      hospitalId: serializer.fromJson<String>(json['hospitalId']),
       babyName: serializer.fromJson<String>(json['babyName']),
       babyDob: serializer.fromJson<DateTime>(json['babyDob']),
       babyWeight: serializer.fromJson<double>(json['babyWeight']),
@@ -204,7 +231,8 @@ class Baby extends DataClass implements Insertable<Baby> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'babyId': serializer.toJson<int>(babyId),
+      'babyId': serializer.toJson<String>(babyId),
+      'hospitalId': serializer.toJson<String>(hospitalId),
       'babyName': serializer.toJson<String>(babyName),
       'babyDob': serializer.toJson<DateTime>(babyDob),
       'babyWeight': serializer.toJson<double>(babyWeight),
@@ -215,7 +243,8 @@ class Baby extends DataClass implements Insertable<Baby> {
   }
 
   Baby copyWith(
-          {int? babyId,
+          {String? babyId,
+          String? hospitalId,
           String? babyName,
           DateTime? babyDob,
           double? babyWeight,
@@ -224,6 +253,7 @@ class Baby extends DataClass implements Insertable<Baby> {
           bool? isArchived}) =>
       Baby(
         babyId: babyId ?? this.babyId,
+        hospitalId: hospitalId ?? this.hospitalId,
         babyName: babyName ?? this.babyName,
         babyDob: babyDob ?? this.babyDob,
         babyWeight: babyWeight ?? this.babyWeight,
@@ -234,6 +264,8 @@ class Baby extends DataClass implements Insertable<Baby> {
   Baby copyWithCompanion(BabiesCompanion data) {
     return Baby(
       babyId: data.babyId.present ? data.babyId.value : this.babyId,
+      hospitalId:
+          data.hospitalId.present ? data.hospitalId.value : this.hospitalId,
       babyName: data.babyName.present ? data.babyName.value : this.babyName,
       babyDob: data.babyDob.present ? data.babyDob.value : this.babyDob,
       babyWeight:
@@ -249,6 +281,7 @@ class Baby extends DataClass implements Insertable<Baby> {
   String toString() {
     return (StringBuffer('Baby(')
           ..write('babyId: $babyId, ')
+          ..write('hospitalId: $hospitalId, ')
           ..write('babyName: $babyName, ')
           ..write('babyDob: $babyDob, ')
           ..write('babyWeight: $babyWeight, ')
@@ -260,13 +293,14 @@ class Baby extends DataClass implements Insertable<Baby> {
   }
 
   @override
-  int get hashCode => Object.hash(
-      babyId, babyName, babyDob, babyWeight, createdAt, updatedAt, isArchived);
+  int get hashCode => Object.hash(babyId, hospitalId, babyName, babyDob,
+      babyWeight, createdAt, updatedAt, isArchived);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Baby &&
           other.babyId == this.babyId &&
+          other.hospitalId == this.hospitalId &&
           other.babyName == this.babyName &&
           other.babyDob == this.babyDob &&
           other.babyWeight == this.babyWeight &&
@@ -276,69 +310,85 @@ class Baby extends DataClass implements Insertable<Baby> {
 }
 
 class BabiesCompanion extends UpdateCompanion<Baby> {
-  final Value<int> babyId;
+  final Value<String> babyId;
+  final Value<String> hospitalId;
   final Value<String> babyName;
   final Value<DateTime> babyDob;
   final Value<double> babyWeight;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<bool> isArchived;
+  final Value<int> rowid;
   const BabiesCompanion({
     this.babyId = const Value.absent(),
+    this.hospitalId = const Value.absent(),
     this.babyName = const Value.absent(),
     this.babyDob = const Value.absent(),
     this.babyWeight = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.isArchived = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   BabiesCompanion.insert({
-    this.babyId = const Value.absent(),
+    required String babyId,
+    required String hospitalId,
     required String babyName,
     required DateTime babyDob,
     required double babyWeight,
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.isArchived = const Value.absent(),
-  })  : babyName = Value(babyName),
+    this.rowid = const Value.absent(),
+  })  : babyId = Value(babyId),
+        hospitalId = Value(hospitalId),
+        babyName = Value(babyName),
         babyDob = Value(babyDob),
         babyWeight = Value(babyWeight);
   static Insertable<Baby> custom({
-    Expression<int>? babyId,
+    Expression<String>? babyId,
+    Expression<String>? hospitalId,
     Expression<String>? babyName,
     Expression<DateTime>? babyDob,
     Expression<double>? babyWeight,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<bool>? isArchived,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (babyId != null) 'baby_id': babyId,
+      if (hospitalId != null) 'hospital_id': hospitalId,
       if (babyName != null) 'baby_name': babyName,
       if (babyDob != null) 'baby_dob': babyDob,
       if (babyWeight != null) 'baby_weight': babyWeight,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (isArchived != null) 'is_archived': isArchived,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
   BabiesCompanion copyWith(
-      {Value<int>? babyId,
+      {Value<String>? babyId,
+      Value<String>? hospitalId,
       Value<String>? babyName,
       Value<DateTime>? babyDob,
       Value<double>? babyWeight,
       Value<DateTime>? createdAt,
       Value<DateTime>? updatedAt,
-      Value<bool>? isArchived}) {
+      Value<bool>? isArchived,
+      Value<int>? rowid}) {
     return BabiesCompanion(
       babyId: babyId ?? this.babyId,
+      hospitalId: hospitalId ?? this.hospitalId,
       babyName: babyName ?? this.babyName,
       babyDob: babyDob ?? this.babyDob,
       babyWeight: babyWeight ?? this.babyWeight,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       isArchived: isArchived ?? this.isArchived,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -346,7 +396,10 @@ class BabiesCompanion extends UpdateCompanion<Baby> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (babyId.present) {
-      map['baby_id'] = Variable<int>(babyId.value);
+      map['baby_id'] = Variable<String>(babyId.value);
+    }
+    if (hospitalId.present) {
+      map['hospital_id'] = Variable<String>(hospitalId.value);
     }
     if (babyName.present) {
       map['baby_name'] = Variable<String>(babyName.value);
@@ -366,6 +419,9 @@ class BabiesCompanion extends UpdateCompanion<Baby> {
     if (isArchived.present) {
       map['is_archived'] = Variable<bool>(isArchived.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
@@ -373,12 +429,14 @@ class BabiesCompanion extends UpdateCompanion<Baby> {
   String toString() {
     return (StringBuffer('BabiesCompanion(')
           ..write('babyId: $babyId, ')
+          ..write('hospitalId: $hospitalId, ')
           ..write('babyName: $babyName, ')
           ..write('babyDob: $babyDob, ')
           ..write('babyWeight: $babyWeight, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
-          ..write('isArchived: $isArchived')
+          ..write('isArchived: $isArchived, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -398,9 +456,9 @@ class $MeasurementsTable extends Measurements
       type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _babyIdMeta = const VerificationMeta('babyId');
   @override
-  late final GeneratedColumn<int> babyId = GeneratedColumn<int>(
+  late final GeneratedColumn<String> babyId = GeneratedColumn<String>(
       'baby_id', aliasedName, false,
-      type: DriftSqlType.int,
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('REFERENCES babies (baby_id)'));
@@ -555,7 +613,7 @@ class $MeasurementsTable extends Measurements
       measurementId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}measurement_id'])!,
       babyId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}baby_id'])!,
+          .read(DriftSqlType.string, data['${effectivePrefix}baby_id'])!,
       capturedAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}captured_at'])!,
       receivedAt: attachedDatabase.typeMapping
@@ -586,7 +644,7 @@ class Measurement extends DataClass implements Insertable<Measurement> {
   final String measurementId;
 
   /// FK → babies.baby_id
-  final int babyId;
+  final String babyId;
 
   /// Timestamp from the device clock (may drift).
   final DateTime capturedAt;
@@ -626,7 +684,7 @@ class Measurement extends DataClass implements Insertable<Measurement> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['measurement_id'] = Variable<String>(measurementId);
-    map['baby_id'] = Variable<int>(babyId);
+    map['baby_id'] = Variable<String>(babyId);
     map['captured_at'] = Variable<DateTime>(capturedAt);
     map['received_at'] = Variable<DateTime>(receivedAt);
     map['age_hours'] = Variable<double>(ageHours);
@@ -670,7 +728,7 @@ class Measurement extends DataClass implements Insertable<Measurement> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Measurement(
       measurementId: serializer.fromJson<String>(json['measurementId']),
-      babyId: serializer.fromJson<int>(json['babyId']),
+      babyId: serializer.fromJson<String>(json['babyId']),
       capturedAt: serializer.fromJson<DateTime>(json['capturedAt']),
       receivedAt: serializer.fromJson<DateTime>(json['receivedAt']),
       ageHours: serializer.fromJson<double>(json['ageHours']),
@@ -687,7 +745,7 @@ class Measurement extends DataClass implements Insertable<Measurement> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'measurementId': serializer.toJson<String>(measurementId),
-      'babyId': serializer.toJson<int>(babyId),
+      'babyId': serializer.toJson<String>(babyId),
       'capturedAt': serializer.toJson<DateTime>(capturedAt),
       'receivedAt': serializer.toJson<DateTime>(receivedAt),
       'ageHours': serializer.toJson<double>(ageHours),
@@ -701,7 +759,7 @@ class Measurement extends DataClass implements Insertable<Measurement> {
 
   Measurement copyWith(
           {String? measurementId,
-          int? babyId,
+          String? babyId,
           DateTime? capturedAt,
           DateTime? receivedAt,
           double? ageHours,
@@ -797,7 +855,7 @@ class Measurement extends DataClass implements Insertable<Measurement> {
 
 class MeasurementsCompanion extends UpdateCompanion<Measurement> {
   final Value<String> measurementId;
-  final Value<int> babyId;
+  final Value<String> babyId;
   final Value<DateTime> capturedAt;
   final Value<DateTime> receivedAt;
   final Value<double> ageHours;
@@ -822,7 +880,7 @@ class MeasurementsCompanion extends UpdateCompanion<Measurement> {
   });
   MeasurementsCompanion.insert({
     required String measurementId,
-    required int babyId,
+    required String babyId,
     required DateTime capturedAt,
     required DateTime receivedAt,
     required double ageHours,
@@ -840,7 +898,7 @@ class MeasurementsCompanion extends UpdateCompanion<Measurement> {
         bilirubinMgdl = Value(bilirubinMgdl);
   static Insertable<Measurement> custom({
     Expression<String>? measurementId,
-    Expression<int>? babyId,
+    Expression<String>? babyId,
     Expression<DateTime>? capturedAt,
     Expression<DateTime>? receivedAt,
     Expression<double>? ageHours,
@@ -868,7 +926,7 @@ class MeasurementsCompanion extends UpdateCompanion<Measurement> {
 
   MeasurementsCompanion copyWith(
       {Value<String>? measurementId,
-      Value<int>? babyId,
+      Value<String>? babyId,
       Value<DateTime>? capturedAt,
       Value<DateTime>? receivedAt,
       Value<double>? ageHours,
@@ -900,7 +958,7 @@ class MeasurementsCompanion extends UpdateCompanion<Measurement> {
       map['measurement_id'] = Variable<String>(measurementId.value);
     }
     if (babyId.present) {
-      map['baby_id'] = Variable<int>(babyId.value);
+      map['baby_id'] = Variable<String>(babyId.value);
     }
     if (capturedAt.present) {
       map['captured_at'] = Variable<DateTime>(capturedAt.value);
@@ -1428,9 +1486,9 @@ class $AuditEventsTable extends AuditEvents
       type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _babyIdMeta = const VerificationMeta('babyId');
   @override
-  late final GeneratedColumn<int> babyId = GeneratedColumn<int>(
+  late final GeneratedColumn<String> babyId = GeneratedColumn<String>(
       'baby_id', aliasedName, true,
-      type: DriftSqlType.int, requiredDuringInsert: false);
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _measurementIdMeta =
       const VerificationMeta('measurementId');
   @override
@@ -1442,6 +1500,12 @@ class $AuditEventsTable extends AuditEvents
   @override
   late final GeneratedColumn<String> deviceId = GeneratedColumn<String>(
       'device_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _hospitalIdMeta =
+      const VerificationMeta('hospitalId');
+  @override
+  late final GeneratedColumn<String> hospitalId = GeneratedColumn<String>(
+      'hospital_id', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _detailsJsonMeta =
       const VerificationMeta('detailsJson');
@@ -1457,6 +1521,7 @@ class $AuditEventsTable extends AuditEvents
         babyId,
         measurementId,
         deviceId,
+        hospitalId,
         detailsJson
       ];
   @override
@@ -1501,6 +1566,12 @@ class $AuditEventsTable extends AuditEvents
       context.handle(_deviceIdMeta,
           deviceId.isAcceptableOrUnknown(data['device_id']!, _deviceIdMeta));
     }
+    if (data.containsKey('hospital_id')) {
+      context.handle(
+          _hospitalIdMeta,
+          hospitalId.isAcceptableOrUnknown(
+              data['hospital_id']!, _hospitalIdMeta));
+    }
     if (data.containsKey('details_json')) {
       context.handle(
           _detailsJsonMeta,
@@ -1523,11 +1594,13 @@ class $AuditEventsTable extends AuditEvents
       eventType: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}event_type'])!,
       babyId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}baby_id']),
+          .read(DriftSqlType.string, data['${effectivePrefix}baby_id']),
       measurementId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}measurement_id']),
       deviceId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}device_id']),
+      hospitalId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}hospital_id']),
       detailsJson: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}details_json']),
     );
@@ -1546,9 +1619,12 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
 
   /// Event type constant — see core/constants.dart kAudit* values.
   final String eventType;
-  final int? babyId;
+  final String? babyId;
   final String? measurementId;
   final String? deviceId;
+
+  /// Hospital this event belongs to (for cloud-side RLS filtering).
+  final String? hospitalId;
 
   /// Arbitrary JSON payload for additional context.
   final String? detailsJson;
@@ -1559,6 +1635,7 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
       this.babyId,
       this.measurementId,
       this.deviceId,
+      this.hospitalId,
       this.detailsJson});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1567,13 +1644,16 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
     map['created_at'] = Variable<DateTime>(createdAt);
     map['event_type'] = Variable<String>(eventType);
     if (!nullToAbsent || babyId != null) {
-      map['baby_id'] = Variable<int>(babyId);
+      map['baby_id'] = Variable<String>(babyId);
     }
     if (!nullToAbsent || measurementId != null) {
       map['measurement_id'] = Variable<String>(measurementId);
     }
     if (!nullToAbsent || deviceId != null) {
       map['device_id'] = Variable<String>(deviceId);
+    }
+    if (!nullToAbsent || hospitalId != null) {
+      map['hospital_id'] = Variable<String>(hospitalId);
     }
     if (!nullToAbsent || detailsJson != null) {
       map['details_json'] = Variable<String>(detailsJson);
@@ -1594,6 +1674,9 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
       deviceId: deviceId == null && nullToAbsent
           ? const Value.absent()
           : Value(deviceId),
+      hospitalId: hospitalId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(hospitalId),
       detailsJson: detailsJson == null && nullToAbsent
           ? const Value.absent()
           : Value(detailsJson),
@@ -1607,9 +1690,10 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
       auditEventId: serializer.fromJson<String>(json['auditEventId']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       eventType: serializer.fromJson<String>(json['eventType']),
-      babyId: serializer.fromJson<int?>(json['babyId']),
+      babyId: serializer.fromJson<String?>(json['babyId']),
       measurementId: serializer.fromJson<String?>(json['measurementId']),
       deviceId: serializer.fromJson<String?>(json['deviceId']),
+      hospitalId: serializer.fromJson<String?>(json['hospitalId']),
       detailsJson: serializer.fromJson<String?>(json['detailsJson']),
     );
   }
@@ -1620,9 +1704,10 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
       'auditEventId': serializer.toJson<String>(auditEventId),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'eventType': serializer.toJson<String>(eventType),
-      'babyId': serializer.toJson<int?>(babyId),
+      'babyId': serializer.toJson<String?>(babyId),
       'measurementId': serializer.toJson<String?>(measurementId),
       'deviceId': serializer.toJson<String?>(deviceId),
+      'hospitalId': serializer.toJson<String?>(hospitalId),
       'detailsJson': serializer.toJson<String?>(detailsJson),
     };
   }
@@ -1631,9 +1716,10 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
           {String? auditEventId,
           DateTime? createdAt,
           String? eventType,
-          Value<int?> babyId = const Value.absent(),
+          Value<String?> babyId = const Value.absent(),
           Value<String?> measurementId = const Value.absent(),
           Value<String?> deviceId = const Value.absent(),
+          Value<String?> hospitalId = const Value.absent(),
           Value<String?> detailsJson = const Value.absent()}) =>
       AuditEvent(
         auditEventId: auditEventId ?? this.auditEventId,
@@ -1643,6 +1729,7 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
         measurementId:
             measurementId.present ? measurementId.value : this.measurementId,
         deviceId: deviceId.present ? deviceId.value : this.deviceId,
+        hospitalId: hospitalId.present ? hospitalId.value : this.hospitalId,
         detailsJson: detailsJson.present ? detailsJson.value : this.detailsJson,
       );
   AuditEvent copyWithCompanion(AuditEventsCompanion data) {
@@ -1657,6 +1744,8 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
           ? data.measurementId.value
           : this.measurementId,
       deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+      hospitalId:
+          data.hospitalId.present ? data.hospitalId.value : this.hospitalId,
       detailsJson:
           data.detailsJson.present ? data.detailsJson.value : this.detailsJson,
     );
@@ -1671,6 +1760,7 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
           ..write('babyId: $babyId, ')
           ..write('measurementId: $measurementId, ')
           ..write('deviceId: $deviceId, ')
+          ..write('hospitalId: $hospitalId, ')
           ..write('detailsJson: $detailsJson')
           ..write(')'))
         .toString();
@@ -1678,7 +1768,7 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
 
   @override
   int get hashCode => Object.hash(auditEventId, createdAt, eventType, babyId,
-      measurementId, deviceId, detailsJson);
+      measurementId, deviceId, hospitalId, detailsJson);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1689,6 +1779,7 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
           other.babyId == this.babyId &&
           other.measurementId == this.measurementId &&
           other.deviceId == this.deviceId &&
+          other.hospitalId == this.hospitalId &&
           other.detailsJson == this.detailsJson);
 }
 
@@ -1696,9 +1787,10 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
   final Value<String> auditEventId;
   final Value<DateTime> createdAt;
   final Value<String> eventType;
-  final Value<int?> babyId;
+  final Value<String?> babyId;
   final Value<String?> measurementId;
   final Value<String?> deviceId;
+  final Value<String?> hospitalId;
   final Value<String?> detailsJson;
   final Value<int> rowid;
   const AuditEventsCompanion({
@@ -1708,6 +1800,7 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
     this.babyId = const Value.absent(),
     this.measurementId = const Value.absent(),
     this.deviceId = const Value.absent(),
+    this.hospitalId = const Value.absent(),
     this.detailsJson = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -1718,6 +1811,7 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
     this.babyId = const Value.absent(),
     this.measurementId = const Value.absent(),
     this.deviceId = const Value.absent(),
+    this.hospitalId = const Value.absent(),
     this.detailsJson = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : auditEventId = Value(auditEventId),
@@ -1726,9 +1820,10 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
     Expression<String>? auditEventId,
     Expression<DateTime>? createdAt,
     Expression<String>? eventType,
-    Expression<int>? babyId,
+    Expression<String>? babyId,
     Expression<String>? measurementId,
     Expression<String>? deviceId,
+    Expression<String>? hospitalId,
     Expression<String>? detailsJson,
     Expression<int>? rowid,
   }) {
@@ -1739,6 +1834,7 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
       if (babyId != null) 'baby_id': babyId,
       if (measurementId != null) 'measurement_id': measurementId,
       if (deviceId != null) 'device_id': deviceId,
+      if (hospitalId != null) 'hospital_id': hospitalId,
       if (detailsJson != null) 'details_json': detailsJson,
       if (rowid != null) 'rowid': rowid,
     });
@@ -1748,9 +1844,10 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
       {Value<String>? auditEventId,
       Value<DateTime>? createdAt,
       Value<String>? eventType,
-      Value<int?>? babyId,
+      Value<String?>? babyId,
       Value<String?>? measurementId,
       Value<String?>? deviceId,
+      Value<String?>? hospitalId,
       Value<String?>? detailsJson,
       Value<int>? rowid}) {
     return AuditEventsCompanion(
@@ -1760,6 +1857,7 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
       babyId: babyId ?? this.babyId,
       measurementId: measurementId ?? this.measurementId,
       deviceId: deviceId ?? this.deviceId,
+      hospitalId: hospitalId ?? this.hospitalId,
       detailsJson: detailsJson ?? this.detailsJson,
       rowid: rowid ?? this.rowid,
     );
@@ -1778,13 +1876,16 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
       map['event_type'] = Variable<String>(eventType.value);
     }
     if (babyId.present) {
-      map['baby_id'] = Variable<int>(babyId.value);
+      map['baby_id'] = Variable<String>(babyId.value);
     }
     if (measurementId.present) {
       map['measurement_id'] = Variable<String>(measurementId.value);
     }
     if (deviceId.present) {
       map['device_id'] = Variable<String>(deviceId.value);
+    }
+    if (hospitalId.present) {
+      map['hospital_id'] = Variable<String>(hospitalId.value);
     }
     if (detailsJson.present) {
       map['details_json'] = Variable<String>(detailsJson.value);
@@ -1804,6 +1905,7 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
           ..write('babyId: $babyId, ')
           ..write('measurementId: $measurementId, ')
           ..write('deviceId: $deviceId, ')
+          ..write('hospitalId: $hospitalId, ')
           ..write('detailsJson: $detailsJson, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -1832,22 +1934,26 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 }
 
 typedef $$BabiesTableCreateCompanionBuilder = BabiesCompanion Function({
-  Value<int> babyId,
+  required String babyId,
+  required String hospitalId,
   required String babyName,
   required DateTime babyDob,
   required double babyWeight,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
   Value<bool> isArchived,
+  Value<int> rowid,
 });
 typedef $$BabiesTableUpdateCompanionBuilder = BabiesCompanion Function({
-  Value<int> babyId,
+  Value<String> babyId,
+  Value<String> hospitalId,
   Value<String> babyName,
   Value<DateTime> babyDob,
   Value<double> babyWeight,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
   Value<bool> isArchived,
+  Value<int> rowid,
 });
 
 final class $$BabiesTableReferences
@@ -1863,7 +1969,7 @@ final class $$BabiesTableReferences
   $$MeasurementsTableProcessedTableManager get measurementsRefs {
     final manager = $$MeasurementsTableTableManager($_db, $_db.measurements)
         .filter(
-            (f) => f.babyId.babyId.sqlEquals($_itemColumn<int>('baby_id')!));
+            (f) => f.babyId.babyId.sqlEquals($_itemColumn<String>('baby_id')!));
 
     final cache = $_typedResult.readTableOrNull(_measurementsRefsTable($_db));
     return ProcessedTableManager(
@@ -1880,8 +1986,11 @@ class $$BabiesTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<int> get babyId => $composableBuilder(
+  ColumnFilters<String> get babyId => $composableBuilder(
       column: $table.babyId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get hospitalId => $composableBuilder(
+      column: $table.hospitalId, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get babyName => $composableBuilder(
       column: $table.babyName, builder: (column) => ColumnFilters(column));
@@ -1932,8 +2041,11 @@ class $$BabiesTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<int> get babyId => $composableBuilder(
+  ColumnOrderings<String> get babyId => $composableBuilder(
       column: $table.babyId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get hospitalId => $composableBuilder(
+      column: $table.hospitalId, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<String> get babyName => $composableBuilder(
       column: $table.babyName, builder: (column) => ColumnOrderings(column));
@@ -1963,8 +2075,11 @@ class $$BabiesTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<int> get babyId =>
+  GeneratedColumn<String> get babyId =>
       $composableBuilder(column: $table.babyId, builder: (column) => column);
+
+  GeneratedColumn<String> get hospitalId => $composableBuilder(
+      column: $table.hospitalId, builder: (column) => column);
 
   GeneratedColumn<String> get babyName =>
       $composableBuilder(column: $table.babyName, builder: (column) => column);
@@ -2029,40 +2144,48 @@ class $$BabiesTableTableManager extends RootTableManager<
           createComputedFieldComposer: () =>
               $$BabiesTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
-            Value<int> babyId = const Value.absent(),
+            Value<String> babyId = const Value.absent(),
+            Value<String> hospitalId = const Value.absent(),
             Value<String> babyName = const Value.absent(),
             Value<DateTime> babyDob = const Value.absent(),
             Value<double> babyWeight = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
             Value<bool> isArchived = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
           }) =>
               BabiesCompanion(
             babyId: babyId,
+            hospitalId: hospitalId,
             babyName: babyName,
             babyDob: babyDob,
             babyWeight: babyWeight,
             createdAt: createdAt,
             updatedAt: updatedAt,
             isArchived: isArchived,
+            rowid: rowid,
           ),
           createCompanionCallback: ({
-            Value<int> babyId = const Value.absent(),
+            required String babyId,
+            required String hospitalId,
             required String babyName,
             required DateTime babyDob,
             required double babyWeight,
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
             Value<bool> isArchived = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
           }) =>
               BabiesCompanion.insert(
             babyId: babyId,
+            hospitalId: hospitalId,
             babyName: babyName,
             babyDob: babyDob,
             babyWeight: babyWeight,
             createdAt: createdAt,
             updatedAt: updatedAt,
             isArchived: isArchived,
+            rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
               .map((e) =>
@@ -2109,7 +2232,7 @@ typedef $$BabiesTableProcessedTableManager = ProcessedTableManager<
 typedef $$MeasurementsTableCreateCompanionBuilder = MeasurementsCompanion
     Function({
   required String measurementId,
-  required int babyId,
+  required String babyId,
   required DateTime capturedAt,
   required DateTime receivedAt,
   required double ageHours,
@@ -2123,7 +2246,7 @@ typedef $$MeasurementsTableCreateCompanionBuilder = MeasurementsCompanion
 typedef $$MeasurementsTableUpdateCompanionBuilder = MeasurementsCompanion
     Function({
   Value<String> measurementId,
-  Value<int> babyId,
+  Value<String> babyId,
   Value<DateTime> capturedAt,
   Value<DateTime> receivedAt,
   Value<double> ageHours,
@@ -2143,7 +2266,7 @@ final class $$MeasurementsTableReferences
       $_aliasNameGenerator(db.measurements.babyId, db.babies.babyId));
 
   $$BabiesTableProcessedTableManager get babyId {
-    final $_column = $_itemColumn<int>('baby_id')!;
+    final $_column = $_itemColumn<String>('baby_id')!;
 
     final manager = $$BabiesTableTableManager($_db, $_db.babies)
         .filter((f) => f.babyId.sqlEquals($_column));
@@ -2354,7 +2477,7 @@ class $$MeasurementsTableTableManager extends RootTableManager<
               $$MeasurementsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> measurementId = const Value.absent(),
-            Value<int> babyId = const Value.absent(),
+            Value<String> babyId = const Value.absent(),
             Value<DateTime> capturedAt = const Value.absent(),
             Value<DateTime> receivedAt = const Value.absent(),
             Value<double> ageHours = const Value.absent(),
@@ -2380,7 +2503,7 @@ class $$MeasurementsTableTableManager extends RootTableManager<
           ),
           createCompanionCallback: ({
             required String measurementId,
-            required int babyId,
+            required String babyId,
             required DateTime capturedAt,
             required DateTime receivedAt,
             required double ageHours,
@@ -2677,9 +2800,10 @@ typedef $$AuditEventsTableCreateCompanionBuilder = AuditEventsCompanion
   required String auditEventId,
   Value<DateTime> createdAt,
   required String eventType,
-  Value<int?> babyId,
+  Value<String?> babyId,
   Value<String?> measurementId,
   Value<String?> deviceId,
+  Value<String?> hospitalId,
   Value<String?> detailsJson,
   Value<int> rowid,
 });
@@ -2688,9 +2812,10 @@ typedef $$AuditEventsTableUpdateCompanionBuilder = AuditEventsCompanion
   Value<String> auditEventId,
   Value<DateTime> createdAt,
   Value<String> eventType,
-  Value<int?> babyId,
+  Value<String?> babyId,
   Value<String?> measurementId,
   Value<String?> deviceId,
+  Value<String?> hospitalId,
   Value<String?> detailsJson,
   Value<int> rowid,
 });
@@ -2713,7 +2838,7 @@ class $$AuditEventsTableFilterComposer
   ColumnFilters<String> get eventType => $composableBuilder(
       column: $table.eventType, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<int> get babyId => $composableBuilder(
+  ColumnFilters<String> get babyId => $composableBuilder(
       column: $table.babyId, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get measurementId => $composableBuilder(
@@ -2721,6 +2846,9 @@ class $$AuditEventsTableFilterComposer
 
   ColumnFilters<String> get deviceId => $composableBuilder(
       column: $table.deviceId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get hospitalId => $composableBuilder(
+      column: $table.hospitalId, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get detailsJson => $composableBuilder(
       column: $table.detailsJson, builder: (column) => ColumnFilters(column));
@@ -2745,7 +2873,7 @@ class $$AuditEventsTableOrderingComposer
   ColumnOrderings<String> get eventType => $composableBuilder(
       column: $table.eventType, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<int> get babyId => $composableBuilder(
+  ColumnOrderings<String> get babyId => $composableBuilder(
       column: $table.babyId, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<String> get measurementId => $composableBuilder(
@@ -2754,6 +2882,9 @@ class $$AuditEventsTableOrderingComposer
 
   ColumnOrderings<String> get deviceId => $composableBuilder(
       column: $table.deviceId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get hospitalId => $composableBuilder(
+      column: $table.hospitalId, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<String> get detailsJson => $composableBuilder(
       column: $table.detailsJson, builder: (column) => ColumnOrderings(column));
@@ -2777,7 +2908,7 @@ class $$AuditEventsTableAnnotationComposer
   GeneratedColumn<String> get eventType =>
       $composableBuilder(column: $table.eventType, builder: (column) => column);
 
-  GeneratedColumn<int> get babyId =>
+  GeneratedColumn<String> get babyId =>
       $composableBuilder(column: $table.babyId, builder: (column) => column);
 
   GeneratedColumn<String> get measurementId => $composableBuilder(
@@ -2785,6 +2916,9 @@ class $$AuditEventsTableAnnotationComposer
 
   GeneratedColumn<String> get deviceId =>
       $composableBuilder(column: $table.deviceId, builder: (column) => column);
+
+  GeneratedColumn<String> get hospitalId => $composableBuilder(
+      column: $table.hospitalId, builder: (column) => column);
 
   GeneratedColumn<String> get detailsJson => $composableBuilder(
       column: $table.detailsJson, builder: (column) => column);
@@ -2816,9 +2950,10 @@ class $$AuditEventsTableTableManager extends RootTableManager<
             Value<String> auditEventId = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<String> eventType = const Value.absent(),
-            Value<int?> babyId = const Value.absent(),
+            Value<String?> babyId = const Value.absent(),
             Value<String?> measurementId = const Value.absent(),
             Value<String?> deviceId = const Value.absent(),
+            Value<String?> hospitalId = const Value.absent(),
             Value<String?> detailsJson = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
@@ -2829,6 +2964,7 @@ class $$AuditEventsTableTableManager extends RootTableManager<
             babyId: babyId,
             measurementId: measurementId,
             deviceId: deviceId,
+            hospitalId: hospitalId,
             detailsJson: detailsJson,
             rowid: rowid,
           ),
@@ -2836,9 +2972,10 @@ class $$AuditEventsTableTableManager extends RootTableManager<
             required String auditEventId,
             Value<DateTime> createdAt = const Value.absent(),
             required String eventType,
-            Value<int?> babyId = const Value.absent(),
+            Value<String?> babyId = const Value.absent(),
             Value<String?> measurementId = const Value.absent(),
             Value<String?> deviceId = const Value.absent(),
+            Value<String?> hospitalId = const Value.absent(),
             Value<String?> detailsJson = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
@@ -2849,6 +2986,7 @@ class $$AuditEventsTableTableManager extends RootTableManager<
             babyId: babyId,
             measurementId: measurementId,
             deviceId: deviceId,
+            hospitalId: hospitalId,
             detailsJson: detailsJson,
             rowid: rowid,
           ),

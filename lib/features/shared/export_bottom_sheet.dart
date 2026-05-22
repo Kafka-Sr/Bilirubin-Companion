@@ -13,8 +13,7 @@ import 'package:printing/printing.dart';
 import 'package:bilirubin/core/l10n/app_localizations.dart';
 import 'package:bilirubin/models/baby.dart';
 import 'package:bilirubin/models/measurement.dart';
-import 'package:bilirubin/providers/database_provider.dart';
-import 'package:bilirubin/repositories/audit_repository.dart';
+import 'package:bilirubin/providers/audit_providers.dart';
 import 'package:bilirubin/utils/bhutani_classifier.dart' as classifier;
 import 'package:bilirubin/utils/safe_file_export.dart';
 
@@ -112,8 +111,7 @@ class _ExportSheetState extends State<_ExportSheet> {
         final filename =
             'bilirubin_${sanitiseFilename(widget.baby.babyName)}.pdf';
         await Printing.sharePdf(bytes: bytes, filename: filename);
-        final db = widget.ref.read(appDatabaseProvider);
-        await AuditRepository(db).logExport(widget.baby.babyId);
+        widget.ref.read(auditRepositoryProvider).logExport(widget.baby.babyId);
       } finally {
         if (mounted) setState(() => _exporting = false);
       }
@@ -141,8 +139,7 @@ class _ExportSheetState extends State<_ExportSheet> {
 
       await file.writeAsString(content);
 
-      final db = widget.ref.read(appDatabaseProvider);
-      await AuditRepository(db).logExport(widget.baby.babyId);
+      widget.ref.read(auditRepositoryProvider).logExport(widget.baby.babyId);
 
       if (context.mounted) {
         Navigator.of(context).pop();

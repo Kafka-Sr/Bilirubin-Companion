@@ -90,6 +90,15 @@ class SyncService {
             value: id));
     }
 
+    final auditUpsertBatch = entries
+        .where((e) => e.table == 'audit_events' && e.action == 'upsert')
+        .toList();
+    await attempt(auditUpsertBatch, () => _cloud.upsertRows(
+          table: 'audit_events',
+          rows: auditUpsertBatch.map((e) => e.payload).toList(),
+          onConflict: 'audit_event_id',
+        ));
+
     await _outbox.removeIds(toRemove);
     if (hasNetworkError) throw Exception('Sync incomplete — some entries kept for retry.');
   }
@@ -102,12 +111,13 @@ class SyncService {
           await _cloud.fetchRows(table: 'babies', orderBy: 'updated_at');
       for (final row in babyRows) {
         final cloudUpdatedAt = DateTime.parse(row['updated_at'] as String);
-        final existing = await _db.babiesDao.getBabyById(row['baby_id'] as int);
+        final existing = await _db.babiesDao.getBabyById(row['baby_id'] as String);
         if (existing != null && !cloudUpdatedAt.isAfter(existing.updatedAt)) {
           continue;
         }
         await _db.babiesDao.upsertBaby(BabiesCompanion(
-          babyId: Value(row['baby_id'] as int),
+          babyId: Value(row['baby_id'] as String),
+          hospitalId: Value(row['hospital_id'] as String),
           babyName: Value(row['baby_name'] as String),
           babyDob: Value(DateTime.parse(row['baby_dob'] as String)),
           babyWeight: Value((row['baby_weight'] as num).toDouble()),
@@ -122,7 +132,7 @@ class SyncService {
       for (final row in measurementRows) {
         await _db.measurementsDao.upsertMeasurement(MeasurementsCompanion(
           measurementId: Value(row['measurement_id'] as String),
-          babyId: Value(row['baby_id'] as int),
+          babyId: Value(row['baby_id'] as String),
           capturedAt: Value(DateTime.parse(row['captured_at'] as String)),
           receivedAt: Value(DateTime.parse(row['received_at'] as String)),
           ageHours: Value((row['age_hours'] as num).toDouble()),

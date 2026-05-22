@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bilirubin/models/measurement.dart';
+import 'package:bilirubin/providers/audit_providers.dart';
 import 'package:bilirubin/providers/baby_providers.dart';
 import 'package:bilirubin/providers/database_provider.dart';
 import 'package:bilirubin/providers/sync_providers.dart';
@@ -23,12 +24,13 @@ final measurementRepositoryProvider = Provider<MeasurementRepository>((ref) {
     outbox: ref.watch(localSyncOutboxProvider),
     onQueued: () => sync.drainOutbox().catchError((_) {}),
     supabase: ref.watch(supabaseClientProvider),
+    audit: ref.watch(auditRepositoryProvider),
   );
 });
 
 /// Stream of all measurements for [babyId], newest first.
 final measurementsProvider =
-    StreamProvider.family<List<Measurement>, int>((ref, babyId) {
+    StreamProvider.family<List<Measurement>, String>((ref, babyId) {
   return ref.watch(measurementRepositoryProvider).watchByBaby(babyId);
 });
 
