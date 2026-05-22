@@ -4,6 +4,7 @@ import 'package:bilirubin/device/null_device_repository.dart';
 import 'package:bilirubin/device/pi_device_repository.dart';
 import 'package:bilirubin/models/device_connection_state.dart';
 import 'package:bilirubin/models/device_info.dart';
+import 'package:bilirubin/providers/audit_providers.dart';
 import 'package:bilirubin/providers/pi_discovery_providers.dart';
 import 'package:bilirubin/providers/baby_providers.dart';
 import 'package:bilirubin/providers/measurement_providers.dart';
@@ -62,7 +63,7 @@ final showHistoryProvider = StateProvider<bool>((ref) => false);
 final showOutsideRangeProvider = StateProvider<bool>((ref) => false);
 
 /// Bridge: listens to incoming device measurements and persists them
-/// for the currently selected baby.
+/// for the currently selected baby. Also logs device connections to audit.
 ///
 /// This provider must be eagerly activated in [main.dart] via
 /// `ref.read(measurementBridgeProvider)` so that measurements are
@@ -70,10 +71,22 @@ final showOutsideRangeProvider = StateProvider<bool>((ref) => false);
 final measurementBridgeProvider = Provider<void>((ref) {
   final repo = ref.watch(deviceRepositoryProvider);
   final measurementRepo = ref.watch(measurementRepositoryProvider);
+  String? loggedDeviceId;
 
   ref.listen<AsyncValue<DeviceConnectionState>>(
     connectionStateProvider,
-    (_, __) {}, // just keep the stream alive
+    (_, next) {
+      final state = next.valueOrNull;
+      if (state == DeviceConnectionState.connected) {
+        final info = ref.read(deviceInfoProvider).valueOrNull;
+        if (info != null && info.deviceId != loggedDeviceId) {
+          loggedDeviceId = info.deviceId;
+          ref.read(auditRepositoryProvider).logDeviceAdd(info.deviceId);
+        }
+      } else {
+        loggedDeviceId = null;
+      }
+    },
   );
 
   // Subscribe to incoming measurements from the device.

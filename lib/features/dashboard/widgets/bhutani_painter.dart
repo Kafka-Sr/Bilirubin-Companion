@@ -16,29 +16,18 @@ class BhutaniPainter extends CustomPainter {
     required this.showHistory,
     required this.showOutsideRange,
     required this.maxY,
+    required this.isDark,
     this.selectedMeasurementId,
-  }) {
-    final color = Theme.of(context).colorScheme.onSurfaceVariant;
-    for (double y = 0; y <= maxY; y += 5) {
-      _yLabels[y] = TextPainter(
-        text: TextSpan(
-          text: y.toInt().toString(),
-          style: TextStyle(fontSize: 10, color: color),
-        ),
-        textDirection: TextDirection.ltr,
-      )..layout();
-    }
-  }
+  });
 
   final BuildContext context;
   final List<Measurement> measurements;
   final bool showHistory;
   final bool showOutsideRange;
   final double maxY;
+  final bool isDark;
   /// When non-null, highlights this measurement instead of measurements.first.
   final String? selectedMeasurementId;
-
-  final _yLabels = <double, TextPainter>{};
 
   // Chart margins (left is larger to allow Y-axis number labels)
   static const double _left = 36;
@@ -47,11 +36,18 @@ class BhutaniPainter extends CustomPainter {
   static const double _bottom = 28;
 
   // Zone fill colours: low → lowIntermediate → highIntermediate → high
-  static const List<Color> _zoneColors = [
+  static const List<Color> _lightZoneColors = [
     Color(0xFFBBF7D0), // green
     Color(0xFFFEF08A), // yellow
     Color(0xFFFECACA), // light red
     Color(0xFFFCA5A5), // red
+  ];
+
+  static const List<Color> _darkZoneColors = [
+    Color(0xFF14532D), // dark green
+    Color(0xFF713F12), // dark amber
+    Color(0xFF7F1D1D), // dark red
+    Color(0xFF450A0A), // darker red
   ];
 
   static List<String> _zoneLabels(AppLocalizations l10n) => [
@@ -114,10 +110,11 @@ class BhutaniPainter extends CustomPainter {
       [(kNomogramMinHours, maxY + 2), (kNomogramMaxHours, maxY + 2)],
     ];
 
-    for (var i = 0; i < _zoneColors.length; i++) {
+    final zoneColors = isDark ? _darkZoneColors : _lightZoneColors;
+    for (var i = 0; i < zoneColors.length; i++) {
       final lower = lowerCurves[i];
       final upper = upperCurves[i];
-      final color = _zoneColors[i];
+      final color = zoneColors[i];
 
       final path = Path()
         ..moveTo(pxX(lower.first.$1), pxY(lower.first.$2));
@@ -184,10 +181,17 @@ class BhutaniPainter extends CustomPainter {
     }
 
     // Y-axis ticks every 5 mg/dL
+    final labelColor = colorScheme.onSurfaceVariant;
     for (double y = 0; y <= maxY; y += 5) {
       final py = pxY(y);
       canvas.drawLine(Offset(chartRect.left, py), Offset(chartRect.right, py), gridPaint);
-      final tp = _yLabels[y]!;
+      final tp = TextPainter(
+        text: TextSpan(
+          text: y.toInt().toString(),
+          style: TextStyle(fontSize: 10, color: labelColor),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
       tp.paint(canvas, Offset(chartRect.left - tp.width - 3, py - tp.height / 2));
     }
   }
@@ -342,5 +346,6 @@ class BhutaniPainter extends CustomPainter {
       old.showHistory != showHistory ||
       old.showOutsideRange != showOutsideRange ||
       old.maxY != maxY ||
+      old.isDark != isDark ||
       old.selectedMeasurementId != selectedMeasurementId;
 }

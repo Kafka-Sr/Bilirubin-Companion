@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:bilirubin/core/app_theme.dart';
 import 'package:bilirubin/core/l10n/app_localizations.dart';
+import 'package:bilirubin/features/shared/pairing_status_icon.dart';
 import 'package:bilirubin/models/device_connection_state.dart';
 import 'package:bilirubin/models/device_info.dart';
 import 'package:bilirubin/providers/device_providers.dart';
@@ -38,11 +38,7 @@ class DeviceStrip extends ConsumerWidget {
           // Row 1: Gun connection status
           Row(
             children: [
-              Icon(
-                _deviceIcon(connectionState, info),
-                size: 20,
-                color: _deviceColor(connectionState, cs),
-              ),
+              PairingStatusIcon(state: _pairingState(connectionState), size: 20),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -104,14 +100,18 @@ class DeviceStrip extends ConsumerWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: FilledButton.tonal(
-                  onPressed: () => context.push('/settings'),
+                  onPressed: () {
+                    final syncService = ref.read(syncServiceProvider);
+                    syncService.drainOutbox().catchError((_) {});
+                    syncService.pullChanges().catchError((_) {});
+                  },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.settings_outlined, size: 16),
+                      const Icon(Icons.sync, size: 16),
                       const SizedBox(width: 8),
-                      Text(l10n.settingsTitle),
+                      Text(l10n.syncButton),
                     ],
                   ),
                 ),
@@ -132,20 +132,12 @@ class DeviceStrip extends ConsumerWidget {
     }
   }
 
-  IconData _deviceIcon(DeviceConnectionState? state, DeviceInfo? info) {
-    if (state == DeviceConnectionState.connected && info != null) {
-      return Icons.router_outlined;
-    }
-    return Icons.signal_wifi_off_rounded;
-  }
-
-  Color _deviceColor(DeviceConnectionState? state, ColorScheme cs) {
-    if (state == DeviceConnectionState.connected) return AppColors.connected;
+  PairingState _pairingState(DeviceConnectionState? state) {
+    if (state == DeviceConnectionState.connected) { return PairingState.paired; }
     if (state == DeviceConnectionState.connecting ||
-        state == DeviceConnectionState.scanning) {
-      return Colors.amber;
-    }
-    return cs.error;
+        state == DeviceConnectionState.scanning) { return PairingState.pairing; }
+    if (state == DeviceConnectionState.error) { return PairingState.error; }
+    return PairingState.notPaired;
   }
 
   String _deviceText(

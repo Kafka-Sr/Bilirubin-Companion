@@ -10,7 +10,7 @@ class Measurements extends Table {
   TextColumn get measurementId => text()();
 
   /// FK → babies.baby_id
-  IntColumn get babyId => integer().references(Babies, #babyId)();
+  TextColumn get babyId => text().references(Babies, #babyId)();
 
   /// Timestamp from the device clock (may drift).
   DateTimeColumn get capturedAt => dateTime()();

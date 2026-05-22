@@ -2,7 +2,8 @@ import 'package:drift/drift.dart';
 
 /// Drift table definition for registered babies.
 class Babies extends Table {
-  IntColumn get babyId => integer().autoIncrement()();
+  TextColumn get babyId => text()();
+  TextColumn get hospitalId => text()();
   TextColumn get babyName => text().withLength(max: 100)();
   DateTimeColumn get babyDob => dateTime()();
   RealColumn get babyWeight => real()();
@@ -10,4 +11,7 @@ class Babies extends Table {
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
   BoolColumn get isArchived =>
       boolean().withDefault(const Constant(false))();
+
+  @override
+  Set<Column> get primaryKey => {babyId};
 }

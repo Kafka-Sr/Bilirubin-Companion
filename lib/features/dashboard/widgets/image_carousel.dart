@@ -43,7 +43,7 @@ void _showFullscreen(BuildContext context, ImageProvider image) {
 class ImageCarousel extends ConsumerStatefulWidget {
   const ImageCarousel({super.key, required this.babyId, this.embedded = false});
 
-  final int babyId;
+  final String babyId;
   final bool embedded;
 
   @override

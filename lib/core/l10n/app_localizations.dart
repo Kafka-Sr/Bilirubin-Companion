@@ -143,7 +143,7 @@ abstract class AppLocalizations {
   /// No description provided for @deviceDisconnected.
   ///
   /// In en, this message translates to:
-  /// **'Not connected'**
+  /// **'Not paired'**
   String get deviceDisconnected;
 
   /// No description provided for @bhutaniChartTitle.
@@ -419,13 +419,13 @@ abstract class AppLocalizations {
   /// No description provided for @settingsPiSave.
   ///
   /// In en, this message translates to:
-  /// **'Save & Connect'**
+  /// **'Connect'**
   String get settingsPiSave;
 
   /// No description provided for @settingsPiClear.
   ///
   /// In en, this message translates to:
-  /// **'Clear & Disconnect'**
+  /// **'Disconnect'**
   String get settingsPiClear;
 
   /// No description provided for @settingsPiBeaconUse.
@@ -611,7 +611,7 @@ abstract class AppLocalizations {
   /// No description provided for @deviceConnecting.
   ///
   /// In en, this message translates to:
-  /// **'Connecting…'**
+  /// **'Pairing…'**
   String get deviceConnecting;
 
   /// No description provided for @deviceConnectedLabel.
@@ -635,13 +635,13 @@ abstract class AppLocalizations {
   /// No description provided for @deviceConnectedTo.
   ///
   /// In en, this message translates to:
-  /// **'Connected to {displayName}'**
+  /// **'Paired with {displayName}'**
   String deviceConnectedTo(String displayName);
 
   /// No description provided for @deviceConnectionError.
   ///
   /// In en, this message translates to:
-  /// **'Connection failed'**
+  /// **'Failed to pair'**
   String get deviceConnectionError;
 
   /// No description provided for @selectBaby.
@@ -805,6 +805,558 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Synced'**
   String get cloudSynced;
+
+  /// No description provided for @noReadings.
+  ///
+  /// In en, this message translates to:
+  /// **'No Readings'**
+  String get noReadings;
+
+  /// No description provided for @syncButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Synchronise'**
+  String get syncButton;
+
+  /// No description provided for @metadataTob.
+  ///
+  /// In en, this message translates to:
+  /// **'Time of Birth'**
+  String get metadataTob;
+
+  /// No description provided for @errorAccountDeactivated.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has been deactivated. Contact your hospital administrator.'**
+  String get errorAccountDeactivated;
+
+  /// No description provided for @loginSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to continue'**
+  String get loginSubtitle;
+
+  /// No description provided for @loginEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get loginEmailLabel;
+
+  /// No description provided for @loginPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get loginPasswordLabel;
+
+  /// No description provided for @loginSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get loginSignIn;
+
+  /// No description provided for @loginEmailValidation.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email'**
+  String get loginEmailValidation;
+
+  /// No description provided for @loginPasswordValidation.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password'**
+  String get loginPasswordValidation;
+
+  /// No description provided for @loginContactAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact your hospital administrator to get an account.'**
+  String get loginContactAdmin;
+
+  /// No description provided for @loginUnexpectedError.
+  ///
+  /// In en, this message translates to:
+  /// **'An unexpected error occurred.'**
+  String get loginUnexpectedError;
+
+  /// No description provided for @adminPanelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Panel'**
+  String get adminPanelTitle;
+
+  /// No description provided for @adminUserManagementTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'User Management'**
+  String get adminUserManagementTitle;
+
+  /// No description provided for @adminUserManagementSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage all accounts — staff, admin, and parent'**
+  String get adminUserManagementSubtitle;
+
+  /// No description provided for @adminParentAccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent Access'**
+  String get adminParentAccessTitle;
+
+  /// No description provided for @adminParentAccessSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Link and unlink parents to babies'**
+  String get adminParentAccessSubtitle;
+
+  /// No description provided for @adminTransfersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Baby Transfers'**
+  String get adminTransfersTitle;
+
+  /// No description provided for @adminTransfersSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Initiate and manage inter-hospital transfers'**
+  String get adminTransfersSubtitle;
+
+  /// No description provided for @adminAuditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Audit Events Log'**
+  String get adminAuditTitle;
+
+  /// No description provided for @adminAuditSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View a log of sensitive actions in your hospital'**
+  String get adminAuditSubtitle;
+
+  /// No description provided for @userManagementTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'User Management'**
+  String get userManagementTitle;
+
+  /// No description provided for @addAccountFab.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Account'**
+  String get addAccountFab;
+
+  /// No description provided for @noAccountsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No accounts found.'**
+  String get noAccountsFound;
+
+  /// No description provided for @roleAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get roleAll;
+
+  /// No description provided for @roleAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get roleAdmin;
+
+  /// No description provided for @roleStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get roleStaff;
+
+  /// No description provided for @roleParent.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent'**
+  String get roleParent;
+
+  /// No description provided for @deactivateAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivate Account'**
+  String get deactivateAccountTitle;
+
+  /// No description provided for @reactivateAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reactivate Account'**
+  String get reactivateAccountTitle;
+
+  /// No description provided for @deactivateConfirmContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivate {name} ({role})? They will lose access immediately.'**
+  String deactivateConfirmContent(String name, String role);
+
+  /// No description provided for @reactivateConfirmContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Reactivate {name} ({role})? They will regain access.'**
+  String reactivateConfirmContent(String name, String role);
+
+  /// No description provided for @deactivatedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivated'**
+  String get deactivatedLabel;
+
+  /// No description provided for @selfLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'(you)'**
+  String get selfLabel;
+
+  /// No description provided for @addAccountDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Account'**
+  String get addAccountDialogTitle;
+
+  /// No description provided for @fullNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Name'**
+  String get fullNameLabel;
+
+  /// No description provided for @roleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get roleLabel;
+
+  /// No description provided for @passwordMinLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Min 8 characters'**
+  String get passwordMinLength;
+
+  /// No description provided for @createLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get createLabel;
+
+  /// No description provided for @loadingUsersError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading users: {error}'**
+  String loadingUsersError(String error);
+
+  /// No description provided for @parentAccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent Access'**
+  String get parentAccessTitle;
+
+  /// No description provided for @currentLinksTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Links'**
+  String get currentLinksTitle;
+
+  /// No description provided for @noParentLinksYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No parent links yet.'**
+  String get noParentLinksYet;
+
+  /// No description provided for @linkParentSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Link a Parent to a Baby'**
+  String get linkParentSectionTitle;
+
+  /// No description provided for @findParentStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Step 1: Find parent account'**
+  String get findParentStep;
+
+  /// No description provided for @parentEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent email'**
+  String get parentEmailLabel;
+
+  /// No description provided for @searchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get searchLabel;
+
+  /// No description provided for @selectBabyStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Step 2: Select baby'**
+  String get selectBabyStep;
+
+  /// No description provided for @linkParentButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Link Parent to Baby'**
+  String get linkParentButton;
+
+  /// No description provided for @unlinkParentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlink Parent'**
+  String get unlinkParentTitle;
+
+  /// No description provided for @unlinkConfirmContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {parent}\'s access to {baby}?'**
+  String unlinkConfirmContent(String parent, String baby);
+
+  /// No description provided for @parentLinkedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent linked successfully.'**
+  String get parentLinkedSuccess;
+
+  /// No description provided for @babyTransfersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Baby Transfers'**
+  String get babyTransfersTitle;
+
+  /// No description provided for @outgoingTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Outgoing'**
+  String get outgoingTab;
+
+  /// No description provided for @incomingTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Incoming'**
+  String get incomingTab;
+
+  /// No description provided for @initiateTransferFab.
+  ///
+  /// In en, this message translates to:
+  /// **'Initiate Transfer'**
+  String get initiateTransferFab;
+
+  /// No description provided for @noOutgoingTransfers.
+  ///
+  /// In en, this message translates to:
+  /// **'No outgoing transfers.'**
+  String get noOutgoingTransfers;
+
+  /// No description provided for @noIncomingTransfers.
+  ///
+  /// In en, this message translates to:
+  /// **'No incoming transfers.'**
+  String get noIncomingTransfers;
+
+  /// No description provided for @acceptLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get acceptLabel;
+
+  /// No description provided for @rejectLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get rejectLabel;
+
+  /// No description provided for @initiateTransferDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Initiate Transfer'**
+  String get initiateTransferDialogTitle;
+
+  /// No description provided for @babyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Baby'**
+  String get babyLabel;
+
+  /// No description provided for @targetHospitalCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Target Hospital Code'**
+  String get targetHospitalCodeLabel;
+
+  /// No description provided for @hospitalCodeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. RSU-01'**
+  String get hospitalCodeHint;
+
+  /// No description provided for @sendLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get sendLabel;
+
+  /// No description provided for @auditEventsLogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Audit Events Log'**
+  String get auditEventsLogTitle;
+
+  /// No description provided for @auditAllFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get auditAllFilter;
+
+  /// No description provided for @auditNoEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'No events found.'**
+  String get auditNoEvents;
+
+  /// No description provided for @auditEventBabyCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Baby Created'**
+  String get auditEventBabyCreate;
+
+  /// No description provided for @auditEventBabyEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Baby Edited'**
+  String get auditEventBabyEdit;
+
+  /// No description provided for @auditEventBabyDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Baby Deleted'**
+  String get auditEventBabyDelete;
+
+  /// No description provided for @auditEventMeasurementCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Measurement Recorded'**
+  String get auditEventMeasurementCreate;
+
+  /// No description provided for @auditEventMeasurementDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Measurement Deleted'**
+  String get auditEventMeasurementDelete;
+
+  /// No description provided for @auditEventExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Data Export'**
+  String get auditEventExport;
+
+  /// No description provided for @auditEventAccountCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Created'**
+  String get auditEventAccountCreate;
+
+  /// No description provided for @auditEventAccountDeactivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Deactivated'**
+  String get auditEventAccountDeactivate;
+
+  /// No description provided for @auditEventAccountReactivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Reactivated'**
+  String get auditEventAccountReactivate;
+
+  /// No description provided for @auditEventParentLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent Linked'**
+  String get auditEventParentLink;
+
+  /// No description provided for @auditEventParentUnlink.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent Unlinked'**
+  String get auditEventParentUnlink;
+
+  /// No description provided for @auditEventDeviceAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Device Connected'**
+  String get auditEventDeviceAdd;
+
+  /// No description provided for @auditEventTransferCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer Initiated'**
+  String get auditEventTransferCreate;
+
+  /// No description provided for @auditEventTransferAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer Accepted'**
+  String get auditEventTransferAccept;
+
+  /// No description provided for @auditEventTransferReject.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer Rejected'**
+  String get auditEventTransferReject;
+
+  /// No description provided for @parentDashboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My Baby'**
+  String get parentDashboardTitle;
+
+  /// No description provided for @signOutTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Out'**
+  String get signOutTooltip;
+
+  /// No description provided for @awaitingLinkageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting linkage'**
+  String get awaitingLinkageTitle;
+
+  /// No description provided for @awaitingLinkageBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account ({email}) has not yet been linked to a baby by the hospital. Please contact your hospital staff.'**
+  String awaitingLinkageBody(String email);
+
+  /// No description provided for @measurementsSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Measurements'**
+  String get measurementsSectionTitle;
+
+  /// No description provided for @noMeasurementsParent.
+  ///
+  /// In en, this message translates to:
+  /// **'No measurements yet.'**
+  String get noMeasurementsParent;
+
+  /// No description provided for @settingsAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get settingsAccountTitle;
+
+  /// No description provided for @signOutLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Out'**
+  String get signOutLabel;
+
+  /// No description provided for @couldNotLoadProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load profile.'**
+  String get couldNotLoadProfile;
 }
 
 class _AppLocalizationsDelegate

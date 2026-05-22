@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bilirubin/models/baby.dart';
+import 'package:bilirubin/providers/audit_providers.dart';
 import 'package:bilirubin/providers/database_provider.dart';
 import 'package:bilirubin/providers/sync_providers.dart';
 import 'package:bilirubin/repositories/baby_repository.dart';
@@ -13,6 +14,7 @@ final babyRepositoryProvider = Provider<BabyRepository>((ref) {
     ref.watch(appDatabaseProvider),
     outbox: ref.watch(localSyncOutboxProvider),
     onQueued: () => sync.drainOutbox().catchError((_) {}),
+    audit: ref.watch(auditRepositoryProvider),
   );
 });
 
@@ -27,7 +29,7 @@ final archivedBabiesListProvider = StreamProvider<List<Baby>>((ref) {
 });
 
 /// The currently selected baby's ID. Null means "none selected".
-final selectedBabyIdProvider = StateProvider<int?>((ref) => null);
+final selectedBabyIdProvider = StateProvider<String?>((ref) => null);
 
 /// The currently selected [Baby] object, or null if none is selected or
 /// the list hasn't loaded yet.

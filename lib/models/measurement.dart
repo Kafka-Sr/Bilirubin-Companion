@@ -17,7 +17,7 @@ class Measurement {
   final String measurementId;
 
   /// FK → babies.baby_id
-  final int babyId;
+  final String babyId;
 
   /// When the device took the measurement (device clock; may drift).
   final DateTime capturedAt;
@@ -46,7 +46,7 @@ class Measurement {
 
   Measurement copyWith({
     String? measurementId,
-    int? babyId,
+    String? babyId,
     DateTime? capturedAt,
     DateTime? receivedAt,
     double? ageHours,

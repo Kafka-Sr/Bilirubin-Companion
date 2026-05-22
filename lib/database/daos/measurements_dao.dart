@@ -10,14 +10,14 @@ class MeasurementsDao extends DatabaseAccessor<AppDatabase>
   MeasurementsDao(super.db);
 
   /// Stream of all measurements for [babyId], newest first.
-  Stream<List<Measurement>> watchByBaby(int babyId) =>
+  Stream<List<Measurement>> watchByBaby(String babyId) =>
       (select(measurements)
             ..where((m) => m.babyId.equals(babyId))
             ..orderBy([(m) => OrderingTerm.desc(m.capturedAt)]))
           .watch();
 
   /// Returns the most recent measurement for [babyId], or null.
-  Future<Measurement?> getLatest(int babyId) =>
+  Future<Measurement?> getLatest(String babyId) =>
       (select(measurements)
             ..where((m) => m.babyId.equals(babyId))
             ..orderBy([(m) => OrderingTerm.desc(m.capturedAt)])

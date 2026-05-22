@@ -64,7 +64,7 @@ class _BabyDropdown extends ConsumerStatefulWidget {
   const _BabyDropdown({required this.babies, required this.selectedId});
 
   final List<Baby> babies;
-  final int? selectedId;
+  final String? selectedId;
 
   @override
   ConsumerState<_BabyDropdown> createState() => _BabyDropdownState();
@@ -273,7 +273,7 @@ class _BabySearchSheet extends ConsumerStatefulWidget {
   const _BabySearchSheet({required this.babies, required this.onSelect});
 
   final List<Baby> babies;
-  final ValueChanged<int> onSelect;
+  final ValueChanged<String> onSelect;
 
   @override
   ConsumerState<_BabySearchSheet> createState() => _BabySearchSheetState();

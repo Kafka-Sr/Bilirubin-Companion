@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:bilirubin/core/app_theme.dart';
 import 'package:bilirubin/core/l10n/app_localizations.dart';
+import 'package:bilirubin/features/shared/pairing_status_icon.dart';
 import 'package:bilirubin/models/device_connection_state.dart';
 import 'package:bilirubin/models/pi_beacon.dart';
 import 'package:bilirubin/features/shared/pin_lock_screen.dart';
+import 'package:bilirubin/providers/auth_providers.dart';
 import 'package:bilirubin/providers/device_providers.dart';
 import 'package:bilirubin/providers/pi_discovery_providers.dart';
 import 'package:bilirubin/providers/settings_providers.dart';
+import 'package:bilirubin/providers/supabase_providers.dart';
 import 'package:bilirubin/security/app_lock_service.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -17,6 +21,7 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final isStaffOrAdmin = ref.watch(isStaffOrAdminProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -28,13 +33,85 @@ class SettingsScreen extends ConsumerWidget {
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8),
-        children: const [
-          _HotspotSection(),
-          _LanguageSection(),
-          _ThemeSection(),
-          _AppLockSection(),
+        children: [
+          const _AccountSection(),
+          if (isStaffOrAdmin) const _HotspotSection(),
+          const _LanguageSection(),
+          const _ThemeSection(),
+          if (isStaffOrAdmin) const _AppLockSection(),
         ],
       ),
+    );
+  }
+}
+
+// ── Account ───────────────────────────────────────────────────────────────────
+
+class _AccountSection extends ConsumerWidget {
+  const _AccountSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final profileAsync = ref.watch(userProfileProvider);
+    final user = ref.watch(supabaseUserProvider);
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
+    return _Section(
+      title: l10n.settingsAccountTitle,
+      icon: Icons.account_circle_outlined,
+      children: [
+        profileAsync.when(
+          loading: () => const LinearProgressIndicator(),
+          error: (_, __) => Text(l10n.couldNotLoadProfile),
+          data: (profile) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                profile?.fullName ?? user?.email ?? '—',
+                style: theme.textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 4),
+              Row(children: [
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: cs.primaryContainer,
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                  child: Text(
+                    (profile?.role ?? 'unknown').toUpperCase(),
+                    style: theme.textTheme.labelSmall
+                        ?.copyWith(color: cs.onPrimaryContainer),
+                  ),
+                ),
+              ]),
+              if (user?.email != null) ...[
+                const SizedBox(height: 4),
+                Text(user!.email!,
+                    style: theme.textTheme.bodySmall
+                        ?.copyWith(color: cs.outline)),
+              ],
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        OutlinedButton.icon(
+          icon: const Icon(Icons.logout, size: 18),
+          label: Text(l10n.signOutLabel),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: cs.error,
+            side: BorderSide(color: cs.error),
+          ),
+          onPressed: () async {
+            await Supabase.instance.client.auth.signOut();
+            // Router redirect will send to /login automatically.
+          },
+        ),
+      ],
     );
   }
 }
@@ -50,16 +127,22 @@ class _HotspotSection extends ConsumerStatefulWidget {
 
 class _HotspotSectionState extends ConsumerState<_HotspotSection> {
   late final TextEditingController _baseUrlCtrl;
+  late final FocusNode _urlFocus;
 
   @override
   void initState() {
     super.initState();
-    _baseUrlCtrl = TextEditingController(text: ref.read(piBaseUrlProvider));
+    final stored = ref.read(piBaseUrlProvider);
+    _baseUrlCtrl = TextEditingController(
+      text: stored.replaceFirst(RegExp(r'^https?://'), ''),
+    );
+    _urlFocus = FocusNode();
   }
 
   @override
   void dispose() {
     _baseUrlCtrl.dispose();
+    _urlFocus.dispose();
     super.dispose();
   }
 
@@ -67,8 +150,6 @@ class _HotspotSectionState extends ConsumerState<_HotspotSection> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
-    // Keep the text field in sync with the stored URL (e.g. after normalization
-    // on save, or when the Clear button wipes piBaseUrlProvider).
     ref.listen<String>(piBaseUrlProvider, (_, next) {
       if (_baseUrlCtrl.text != next) {
         _baseUrlCtrl.text = next;
@@ -101,27 +182,54 @@ class _HotspotSectionState extends ConsumerState<_HotspotSection> {
         ],
         TextField(
           controller: _baseUrlCtrl,
+          focusNode: _urlFocus,
           keyboardType: TextInputType.url,
+          onTap: () {
+            if (_urlFocus.hasFocus && _baseUrlCtrl.text.isEmpty) {
+              final hint = l10n.settingsPiAddressHint;
+              _baseUrlCtrl.text = hint;
+              _baseUrlCtrl.selection = TextSelection.collapsed(
+                offset: hint.length,
+              );
+            }
+          },
           decoration: InputDecoration(
             labelText: l10n.settingsPiAddressLabel,
             hintText: l10n.settingsPiAddressHint,
+            prefixText: 'http://',
+            suffixIcon: Consumer(
+              builder: (context, ref, _) {
+                final state = ref.watch(connectionStateProvider).valueOrNull;
+                final PairingState ps;
+                if (state == DeviceConnectionState.connected) {
+                  ps = PairingState.paired;
+                } else if (state == DeviceConnectionState.connecting ||
+                    state == DeviceConnectionState.scanning) {
+                  ps = PairingState.pairing;
+                } else if (state == DeviceConnectionState.error) {
+                  ps = PairingState.error;
+                } else {
+                  ps = PairingState.notPaired;
+                }
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: PairingStatusIcon(state: ps),
+                );
+              },
+            ),
           ),
         ),
         const SizedBox(height: 12),
         Row(
           children: [
             FilledButton.icon(
-              icon: const Icon(Icons.save_outlined),
+              icon: const Icon(Icons.link_rounded),
               label: Text(l10n.settingsPiSave),
               onPressed: () {
-                // Fall back to the hint address if the field was left empty
-                // (user saw the hint text and assumed it was pre-filled).
-                final text = _baseUrlCtrl.text.trim().isEmpty
+                final host = _baseUrlCtrl.text.trim().isEmpty
                     ? l10n.settingsPiAddressHint
-                    : _baseUrlCtrl.text;
-                ref.read(piBaseUrlProvider.notifier).set(text);
-                // If URL unchanged the provider won't rebuild — connect directly.
-                // _connecting guard in PiDeviceRepository prevents double-connect.
+                    : _baseUrlCtrl.text.trim();
+                ref.read(piBaseUrlProvider.notifier).set('http://$host');
                 Future.microtask(
                     () => ref.read(deviceRepositoryProvider).connect());
               },
