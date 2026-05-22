@@ -287,7 +287,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deviceConnectedLabel => 'Connected:';
 
   @override
-  String get deviceConnect => 'Connect';
+  String get deviceConnect => 'Pair';
 
   @override
   String get deviceDisconnect => 'Disconnect';
@@ -379,7 +379,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cloudNotConfigured => 'Can\'t connect to the server';
 
   @override
-  String get cloudSyncing => 'Syncing…';
+  String get cloudSyncing => 'Syncing to server…';
 
   @override
   String get cloudSyncError => 'Sync error';
@@ -392,6 +392,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get syncButton => 'Synchronise';
+
+  @override
+  String get syncButtonSyncing => 'Syncing…';
 
   @override
   String get metadataTob => 'Time of Birth';

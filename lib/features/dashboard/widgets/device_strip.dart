@@ -24,6 +24,7 @@ class DeviceStrip extends ConsumerWidget {
     final isConnected = connectionState == DeviceConnectionState.connected;
     final isConnecting = connectionState == DeviceConnectionState.connecting ||
         connectionState == DeviceConnectionState.scanning;
+    final isSyncing = syncStatus == SyncStatus.syncing;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -100,10 +101,14 @@ class DeviceStrip extends ConsumerWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: FilledButton.tonal(
-                  onPressed: () {
+                  onPressed: isSyncing ? null : () {
+                    final notifier = ref.read(syncStatusProvider.notifier);
                     final syncService = ref.read(syncServiceProvider);
-                    syncService.drainOutbox().catchError((_) {});
-                    syncService.pullChanges().catchError((_) {});
+                    notifier.set(SyncStatus.syncing);
+                    syncService.drainOutbox()
+                        .then((_) => syncService.pullChanges())
+                        .then((_) => notifier.set(SyncStatus.idle))
+                        .catchError((_) => notifier.set(SyncStatus.error));
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -111,7 +116,7 @@ class DeviceStrip extends ConsumerWidget {
                     children: [
                       const Icon(Icons.sync, size: 16),
                       const SizedBox(width: 8),
-                      Text(l10n.syncButton),
+                      Text(isSyncing ? l10n.syncButtonSyncing : l10n.syncButton),
                     ],
                   ),
                 ),

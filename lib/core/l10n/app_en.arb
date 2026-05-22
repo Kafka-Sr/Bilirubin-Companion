@@ -123,7 +123,7 @@
 
   "deviceConnecting": "Pairing\u2026",
   "deviceConnectedLabel": "Connected:",
-  "deviceConnect": "Connect",
+  "deviceConnect": "Pair",
   "deviceDisconnect": "Disconnect",
   "deviceConnectedTo": "Paired with {displayName}",
   "@deviceConnectedTo": {
@@ -174,12 +174,13 @@
   "pdfColDevice": "Device",
 
   "cloudNotConfigured": "Can't connect to the server",
-  "cloudSyncing": "Syncing…",
+  "cloudSyncing": "Syncing to server…",
   "cloudSyncError": "Sync error",
   "cloudSynced": "Synced",
 
   "noReadings": "No Readings",
   "syncButton": "Synchronise",
+  "syncButtonSyncing": "Syncing…",
   "metadataTob": "Time of Birth",
   "errorAccountDeactivated": "Your account has been deactivated. Contact your hospital administrator.",
 

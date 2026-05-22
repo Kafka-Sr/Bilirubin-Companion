@@ -290,7 +290,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get deviceConnectedLabel => 'Terhubung:';
 
   @override
-  String get deviceConnect => 'Hubungkan';
+  String get deviceConnect => 'Pasangkan';
 
   @override
   String get deviceDisconnect => 'Putuskan';
@@ -382,7 +382,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get cloudNotConfigured => 'Tidak dapat terhubung ke server';
 
   @override
-  String get cloudSyncing => 'Menyinkronkan…';
+  String get cloudSyncing => 'Menyinkronkan ke server…';
 
   @override
   String get cloudSyncError => 'Gagal sinkronisasi';
@@ -395,6 +395,9 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get syncButton => 'Sinkronisasi';
+
+  @override
+  String get syncButtonSyncing => 'Menyinkron…';
 
   @override
   String get metadataTob => 'Waktu Lahir';

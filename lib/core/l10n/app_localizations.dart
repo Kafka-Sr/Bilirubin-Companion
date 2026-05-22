@@ -623,7 +623,7 @@ abstract class AppLocalizations {
   /// No description provided for @deviceConnect.
   ///
   /// In en, this message translates to:
-  /// **'Connect'**
+  /// **'Pair'**
   String get deviceConnect;
 
   /// No description provided for @deviceDisconnect.
@@ -791,7 +791,7 @@ abstract class AppLocalizations {
   /// No description provided for @cloudSyncing.
   ///
   /// In en, this message translates to:
-  /// **'Syncing…'**
+  /// **'Syncing to server…'**
   String get cloudSyncing;
 
   /// No description provided for @cloudSyncError.
@@ -817,6 +817,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Synchronise'**
   String get syncButton;
+
+  /// No description provided for @syncButtonSyncing.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing…'**
+  String get syncButtonSyncing;
 
   /// No description provided for @metadataTob.
   ///

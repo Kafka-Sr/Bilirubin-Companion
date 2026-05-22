@@ -103,7 +103,7 @@
 
   "deviceConnecting": "Memasangkan\u2026",
   "deviceConnectedLabel": "Terhubung:",
-  "deviceConnect": "Hubungkan",
+  "deviceConnect": "Pasangkan",
   "deviceDisconnect": "Putuskan",
   "deviceConnectedTo": "Berpasangan dengan {displayName}",
   "deviceConnectionError": "Gagal memasangkan",
@@ -134,12 +134,13 @@
   "pdfColDevice": "Perangkat",
 
   "cloudNotConfigured": "Tidak dapat terhubung ke server",
-  "cloudSyncing": "Menyinkronkan…",
+  "cloudSyncing": "Menyinkronkan ke server…",
   "cloudSyncError": "Gagal sinkronisasi",
   "cloudSynced": "Tersinkronisasi",
 
   "noReadings": "Belum Ada Bacaan",
   "syncButton": "Sinkronisasi",
+  "syncButtonSyncing": "Menyinkron…",
   "metadataTob": "Waktu Lahir",
   "errorAccountDeactivated": "Akun Anda telah dinonaktifkan. Hubungi administrator rumah sakit Anda.",
 
