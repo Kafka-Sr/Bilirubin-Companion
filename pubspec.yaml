@@ -1,0 +1,81 @@
+name: bilirubin
+description: Offline-first companion app for handheld bilirubin measurement device.
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.4.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
+
+  # State management
+  flutter_riverpod: ^2.6.1
+
+  # Environment config
+  flutter_dotenv: ^5.2.1
+
+  # Cloud backend
+  supabase_flutter: ^2.8.0
+
+  # Navigation
+  go_router: ^14.6.2
+
+  # Database
+  drift: ^2.20.2
+  drift_flutter: ^0.2.2
+
+  # Encryption
+  pointycastle: ^3.9.1
+  flutter_secure_storage: ^9.2.2
+
+  # Biometric / PIN
+  local_auth: ^2.3.0
+
+  # Utilities
+  http: ^1.2.2
+  uuid: ^4.5.1
+  path_provider: ^2.1.5
+  path: ^1.9.0
+  shared_preferences: ^2.3.2
+  file_picker: ^8.1.2
+
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  drift_dev: ^2.20.2
+  build_runner: ^2.4.12
+  mockito: ^5.4.4
+  build_verify: ^3.1.0
+  flutter_launcher_icons: ^0.14.1
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/icon.png"
+  min_sdk_android: 21
+
+flutter:
+  uses-material-design: true
+  generate: true
+
+  fonts:
+  - family: PlusJakartaSans
+    fonts:
+      - asset: assets/fonts/PlusJakartaSans-Regular.ttf
+        weight: 400
+      - asset: assets/fonts/PlusJakartaSans-Bold.ttf
+        weight: 700
+
+  assets:
+    - assets/images/
+    - .env
+    
