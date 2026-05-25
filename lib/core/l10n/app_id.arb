@@ -62,7 +62,7 @@
   "settingsPiAddressLabel": "Alamat Biligun atau URL",
   "settingsPiAddressHint": "10.42.0.1:7878",
   "settingsHotspotTitle": "Pairing Biligun",
-  "settingsHotspotInstructions": "Hubungkan ponsel Anda ke hotspot Wi-Fi Biligun, lalu masukkan alamatnya di bawah.",
+  "settingsHotspotInstructions": "Saat ponsel dan Biligun terhubung ke jaringan Wi-Fi yang sama, aplikasi akan menemukan perangkat secara otomatis.",
   "settingsPiSave": "Hubungkan",
   "settingsPiClear": "Putuskan",
   "settingsPiBeaconUse": "Gunakan",

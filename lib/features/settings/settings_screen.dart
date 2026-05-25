@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:bilirubin/core/l10n/app_localizations.dart';
-import 'package:bilirubin/features/shared/pairing_status_icon.dart';
 import 'package:bilirubin/models/device_connection_state.dart';
 import 'package:bilirubin/models/pi_beacon.dart';
 import 'package:bilirubin/features/shared/pin_lock_screen.dart';
@@ -125,37 +124,10 @@ class _HotspotSection extends ConsumerStatefulWidget {
 }
 
 class _HotspotSectionState extends ConsumerState<_HotspotSection> {
-  late final TextEditingController _baseUrlCtrl;
-  late final FocusNode _urlFocus;
-
-  @override
-  void initState() {
-    super.initState();
-    final stored = ref.read(piBaseUrlProvider);
-    _baseUrlCtrl = TextEditingController(
-      text: stored.replaceFirst(RegExp(r'^https?://'), ''),
-    );
-    _urlFocus = FocusNode();
-  }
-
-  @override
-  void dispose() {
-    _baseUrlCtrl.dispose();
-    _urlFocus.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-
-    ref.listen<String>(piBaseUrlProvider, (_, next) {
-      final stripped = next.replaceFirst(RegExp(r'^https?://'), '');
-      if (_baseUrlCtrl.text != stripped) {
-        _baseUrlCtrl.text = stripped;
-      }
-    });
-
+    final connectionState = ref.watch(connectionStateProvider).valueOrNull;
     final beaconsAsync = ref.watch(piBeaconListProvider);
     final beacons = beaconsAsync.valueOrNull ?? const <PiBeacon>[];
 
@@ -170,81 +142,28 @@ class _HotspotSectionState extends ConsumerState<_HotspotSection> {
               ),
         ),
         const SizedBox(height: 12),
-        if (beacons.isNotEmpty) ...[
+        if (beacons.isEmpty) ...[
+          Text(
+            l10n.settingsPiBeaconDescription,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ] else ...[
           _BeaconList(
             beacons: beacons,
             onUseBeacon: (beacon) {
-              _baseUrlCtrl.text = beacon.baseUrl;
               ref.read(piBaseUrlProvider.notifier).set(beacon.baseUrl);
             },
           ),
           const SizedBox(height: 12),
-        ],
-        TextField(
-          controller: _baseUrlCtrl,
-          focusNode: _urlFocus,
-          keyboardType: TextInputType.url,
-          onTap: () {
-            if (_urlFocus.hasFocus && _baseUrlCtrl.text.isEmpty) {
-              final hint = l10n.settingsPiAddressHint;
-              _baseUrlCtrl.text = hint;
-              _baseUrlCtrl.selection = TextSelection.collapsed(
-                offset: hint.length,
-              );
-            }
-          },
-          decoration: InputDecoration(
-            labelText: l10n.settingsPiAddressLabel,
-            hintText: l10n.settingsPiAddressHint,
-            prefixText: 'http://',
-            suffixIcon: Consumer(
-              builder: (context, ref, _) {
-                final state = ref.watch(connectionStateProvider).valueOrNull;
-                final PairingState ps;
-                if (state == DeviceConnectionState.connected) {
-                  ps = PairingState.paired;
-                } else if (state == DeviceConnectionState.connecting ||
-                    state == DeviceConnectionState.scanning) {
-                  ps = PairingState.pairing;
-                } else if (state == DeviceConnectionState.error) {
-                  ps = PairingState.error;
-                } else {
-                  ps = PairingState.notPaired;
-                }
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: PairingStatusIcon(state: ps),
-                );
-              },
-            ),
+          Text(
+            connectionState == DeviceConnectionState.connected
+                ? 'Connected to Pi'
+                : 'Waiting for connection...',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.outline,
+                ),
           ),
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            FilledButton.icon(
-              icon: const Icon(Icons.link_rounded),
-              label: Text(l10n.settingsPiSave),
-              onPressed: () {
-                final host = _baseUrlCtrl.text.trim().isEmpty
-                    ? l10n.settingsPiAddressHint
-                    : _baseUrlCtrl.text.trim();
-                ref.read(piBaseUrlProvider.notifier).set('http://$host');
-                Future.microtask(
-                    () => ref.read(deviceRepositoryProvider).connect());
-              },
-            ),
-            const SizedBox(width: 12),
-            TextButton(
-              onPressed: () {
-                _baseUrlCtrl.clear();
-                ref.read(deviceRepositoryProvider).disconnect();
-                ref.read(piBaseUrlProvider.notifier).clear();
-              },
-              child: Text(l10n.settingsPiClear),
-            ),
-          ],
-        ),
+        ],
       ],
     );
   }

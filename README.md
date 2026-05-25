@@ -31,7 +31,11 @@ The Pi service is expected to expose these endpoints:
 
 - `GET /health` returns `200 OK`
 - `GET /device` returns JSON with `deviceId`, `displayName`, and optional `firmwareVersion`
-- `GET /measurements?after=<iso8601>` returns a JSON array of measurement events
+- `GET /api/sync/status` returns JSON with `success: true` and `device_id`
+- `GET /api/history` returns a JSON array of measurement events
+- `GET /api/history?after=<iso8601>` returns a filtered JSON array of measurement events
+
+A sample Raspberry Pi implementation is included in `pi_service.py`.
 
 For beacon discovery, the Pi should broadcast a small JSON packet on UDP port `4040` with:
 

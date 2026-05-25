@@ -178,7 +178,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsHotspotInstructions =>
-      'Connect your phone to the Biligun\'s Wi-Fi hotspot, then enter its address below.';
+      'When the phone and Biligun are on the same Wi-Fi network, the app will discover the device automatically.';
 
   @override
   String get settingsPiSave => 'Connect';

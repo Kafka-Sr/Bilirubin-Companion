@@ -181,7 +181,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get settingsHotspotInstructions =>
-      'Hubungkan ponsel Anda ke hotspot Wi-Fi Biligun, lalu masukkan alamatnya di bawah.';
+      'Saat ponsel dan Biligun terhubung ke jaringan Wi-Fi yang sama, aplikasi akan menemukan perangkat secara otomatis.';
 
   @override
   String get settingsPiSave => 'Hubungkan';
