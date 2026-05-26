@@ -42,7 +42,7 @@ class ParentDashboardScreen extends ConsumerWidget {
   }
 }
 
-// ── Not linked ────────────────────────────────────────────────────────────────
+// Not linked
 
 class _NotLinkedView extends StatelessWidget {
   const _NotLinkedView({required this.email});
@@ -78,7 +78,7 @@ class _NotLinkedView extends StatelessWidget {
   }
 }
 
-// ── Linked ────────────────────────────────────────────────────────────────────
+// Linked
 
 class _LinkedView extends ConsumerWidget {
   const _LinkedView({required this.babyId});

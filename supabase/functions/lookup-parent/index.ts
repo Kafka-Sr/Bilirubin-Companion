@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
     // .single() doesn't fail when RLS returns the full hospital roster
     const { data: callerProfile, error: profileErr } = await callerClient
       .from('user_profiles')
-      .select('role')
+      .select('role, hospital_id')
       .eq('user_id', callerUser.id)
       .single()
 
@@ -54,6 +54,8 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
+
+    const callerHospitalId = callerProfile.hospital_id
 
     const { email } = await req.json()
     if (!email) {
@@ -82,12 +84,13 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Verify they have a parent profile
+    // Verify they have a parent profile in the same hospital
     const { data: profile } = await adminClient
       .from('user_profiles')
       .select('full_name, role')
       .eq('user_id', matchedUser.id)
       .eq('role', 'parent')
+      .eq('hospital_id', callerHospitalId)
       .maybeSingle()
 
     if (!profile) {

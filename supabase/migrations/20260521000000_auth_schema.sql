@@ -85,9 +85,9 @@ CREATE TABLE public.parent_access (
   hospital_id uuid        NOT NULL,
   granted_by  uuid,
   linked_at   timestamptz NOT NULL DEFAULT now(),
-  CONSTRAINT parent_access_pkey              PRIMARY KEY (parent_id, baby_id),
-  CONSTRAINT parent_access_parent_id_fkey    FOREIGN KEY (parent_id)   REFERENCES auth.users(id),
-  CONSTRAINT parent_access_baby_id_fkey      FOREIGN KEY (baby_id)     REFERENCES public.babies(baby_id) ON DELETE CASCADE,
+  CONSTRAINT parent_access_pkey                PRIMARY KEY (parent_id, baby_id),
+  CONSTRAINT parent_access_parent_profile_fkey FOREIGN KEY (parent_id) REFERENCES public.user_profiles(user_id),
+  CONSTRAINT parent_access_baby_id_fkey        FOREIGN KEY (baby_id)   REFERENCES public.babies(baby_id) ON DELETE CASCADE,
   CONSTRAINT parent_access_hospital_id_fkey  FOREIGN KEY (hospital_id) REFERENCES public.hospitals(hospital_id),
   CONSTRAINT parent_access_granted_by_fkey   FOREIGN KEY (granted_by)  REFERENCES auth.users(id)
 );

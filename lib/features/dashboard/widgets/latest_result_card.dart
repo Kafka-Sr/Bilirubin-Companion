@@ -27,26 +27,12 @@ class LatestResultCard extends ConsumerWidget {
     if (m == null) {
       final emptyContent = Padding(
         padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                l10n.noReadings,
-                style: theme.textTheme.headlineLarge?.copyWith(
-                  color: dimColor,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text('—', style: theme.textTheme.bodyMedium?.copyWith(color: dimColor)),
-                const SizedBox(height: 4),
-                Text('—', style: theme.textTheme.bodyMedium?.copyWith(color: dimColor)),
-              ],
-            ),
-          ],
+        child: Text(
+          l10n.noReadings,
+          style: theme.textTheme.headlineLarge?.copyWith(
+            color: dimColor,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       );
       if (embedded) return emptyContent;

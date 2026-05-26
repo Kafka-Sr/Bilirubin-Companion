@@ -227,7 +227,7 @@ class _IconButton extends StatelessWidget {
   }
 }
 
-// ── PIN-setup bottom sheet ────────────────────────────────────────────────────
+// PIN-setup bottom sheet
 
 /// Shows a bottom sheet for the user to set a new PIN.
 Future<bool> showSetPinSheet(BuildContext context) async {

@@ -51,7 +51,8 @@ class _TransferScreenState extends ConsumerState<TransferScreen>
       ),
       body: transfersAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+        error: (e, _) =>
+            Center(child: Text(AppLocalizations.of(context).adminErrorGeneric)),
         data: (transfers) {
           final myId = profile?.hospitalId ?? '';
           final outgoing = transfers
@@ -120,44 +121,61 @@ class _TransferList extends ConsumerWidget {
       itemBuilder: (_, i) {
         final t = transfers[i];
         final status = t['status'] as String? ?? 'pending';
-        final babyName = (t['babies'] as Map<String, dynamic>?)?['baby_name']
-            as String? ??
-            t['baby_id'] as String? ??
-            'Unknown';
+        final babyName =
+            (t['babies'] as Map<String, dynamic>?)?['baby_name'] as String? ??
+                t['baby_id'] as String? ??
+                'Unknown';
+        final l10n = AppLocalizations.of(context);
+
+        Widget? trailing;
+        if (isIncoming && status == 'pending') {
+          trailing = Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextButton(
+                onPressed: () => _updateStatus(
+                  context, ref,
+                  t['transfer_id'] as String,
+                  'accepted',
+                  babyId: t['baby_id'] as String?,
+                  fromHospitalId: t['from_hospital_id'] as String?,
+                ),
+                child: Text(l10n.acceptLabel),
+              ),
+              TextButton(
+                onPressed: () => _updateStatus(
+                  context, ref,
+                  t['transfer_id'] as String,
+                  'rejected',
+                  babyId: t['baby_id'] as String?,
+                  fromHospitalId: t['from_hospital_id'] as String?,
+                ),
+                child: Text(l10n.rejectLabel,
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.error)),
+              ),
+            ],
+          );
+        } else if (!isIncoming && status == 'pending') {
+          trailing = TextButton(
+            onPressed: () => _updateStatus(
+              context, ref,
+              t['transfer_id'] as String,
+              'cancelled',
+              babyId: t['baby_id'] as String?,
+              toHospitalId: t['to_hospital_id'] as String?,
+            ),
+            child: Text(l10n.cancelTransfer,
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.error)),
+          );
+        }
 
         return ListTile(
           leading: _StatusIcon(status: status),
           title: Text(babyName),
           subtitle: Text(status.toUpperCase()),
-          trailing: isIncoming && status == 'pending'
-              ? Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextButton(
-                      onPressed: () => _updateStatus(
-                        context, ref,
-                        t['transfer_id'] as String,
-                        'accepted',
-                        babyId: t['baby_id'] as String?,
-                        fromHospitalId: t['from_hospital_id'] as String?,
-                      ),
-                      child: Text(AppLocalizations.of(context).acceptLabel),
-                    ),
-                    TextButton(
-                      onPressed: () => _updateStatus(
-                        context, ref,
-                        t['transfer_id'] as String,
-                        'rejected',
-                        babyId: t['baby_id'] as String?,
-                        fromHospitalId: t['from_hospital_id'] as String?,
-                      ),
-                      child: Text(AppLocalizations.of(context).rejectLabel,
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.error)),
-                    ),
-                  ],
-                )
-              : null,
+          trailing: trailing,
         );
       },
     );
@@ -170,29 +188,52 @@ class _TransferList extends ConsumerWidget {
     String newStatus, {
     String? babyId,
     String? fromHospitalId,
+    String? toHospitalId,
   }) async {
     final client = ref.read(supabaseClientProvider);
+    final session = ref.read(supabaseSessionProvider).valueOrNull;
     final user = ref.read(supabaseUserProvider);
     if (client == null || user == null) return;
+
     try {
-      await client.from('transfer_requests').update({
-        'status': newStatus,
-        'resolved_by': user.id,
-        'resolved_at': DateTime.now().toIso8601String(),
-      }).eq('transfer_id', transferId);
-      if (babyId != null && fromHospitalId != null) {
+      if (newStatus == 'accepted') {
+        if (session == null) throw Exception('Not authenticated');
+        await client.functions.invoke(
+          'accept-transfer',
+          body: {'transferId': transferId},
+          headers: {'Authorization': 'Bearer ${session.accessToken}'},
+        );
+        if (babyId != null && fromHospitalId != null) {
+          ref
+              .read(auditRepositoryProvider)
+              .logTransferAccept(babyId, fromHospitalId);
+        }
+      } else {
+        await client.from('transfer_requests').update({
+          'status': newStatus,
+          'resolved_by': user.id,
+          'resolved_at': DateTime.now().toIso8601String(),
+        }).eq('transfer_id', transferId);
+
         final audit = ref.read(auditRepositoryProvider);
-        if (newStatus == 'accepted') {
-          audit.logTransferAccept(babyId, fromHospitalId);
-        } else if (newStatus == 'rejected') {
+        if (newStatus == 'rejected' &&
+            babyId != null &&
+            fromHospitalId != null) {
           audit.logTransferReject(babyId, fromHospitalId);
+        } else if (newStatus == 'cancelled' &&
+            babyId != null &&
+            toHospitalId != null) {
+          audit.logTransferCancel(babyId, toHospitalId);
         }
       }
       onRefresh();
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content:
+                  Text(AppLocalizations.of(context).adminErrorGeneric)),
+        );
       }
     }
   }
@@ -242,6 +283,32 @@ class _InitiateTransferDialogState
     final code = _hospitalCodeCtrl.text.trim();
     if (babyId == null || code.isEmpty) return;
 
+    final l10n = AppLocalizations.of(context);
+
+    // Warn the admin that data access will be permanently lost
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) {
+        final dl10n = AppLocalizations.of(ctx);
+        return AlertDialog(
+          title: Text(dl10n.transferWarningTitle),
+          content: Text(dl10n.transferWarningBody),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: Text(dl10n.cancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: Text(dl10n.transferWarningConfirm),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true || !mounted) return;
+
     setState(() {
       _loading = true;
       _error = null;
@@ -254,7 +321,6 @@ class _InitiateTransferDialogState
         throw Exception('Not authenticated');
       }
 
-      // Look up the target hospital by code.
       final hospital = await client
           .from('hospitals')
           .select('hospital_id')
@@ -273,7 +339,7 @@ class _InitiateTransferDialogState
       widget.onDone();
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
-      setState(() => _error = e.toString());
+      setState(() => _error = l10n.adminErrorGeneric);
     } finally {
       setState(() => _loading = false);
     }

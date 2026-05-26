@@ -33,10 +33,16 @@ class SyncService {
           toRemove.add(e.id);
         }
       } on PostgrestException catch (e) {
-        // Permanent schema/data error — drop these entries, retrying won't help.
-        debugPrint('drainOutbox: dropping ${batch.length} entries: $e');
-        for (final e in batch) {
-          toRemove.add(e.id);
+        if (e.code == '23505') {
+          // Unique violation: row is already in cloud — safe to drop.
+          debugPrint('drainOutbox: row already in cloud, dropping: $e');
+          for (final entry in batch) {
+            toRemove.add(entry.id);
+          }
+        } else {
+          // RLS violations, FK errors, etc. are transient — keep for retry.
+          debugPrint('drainOutbox: Supabase error (${e.code}), will retry: $e');
+          hasNetworkError = true;
         }
       } catch (e) {
         debugPrint('drainOutbox: network error, will retry: $e');
@@ -44,14 +50,16 @@ class SyncService {
       }
     }
 
-    final babyUpsertBatch = entries
+    final babyUpsertEntries = entries
         .where((e) => e.table == 'babies' && e.action == 'upsert')
         .toList();
-    await attempt(babyUpsertBatch, () => _cloud.upsertRows(
-          table: 'babies',
-          rows: babyUpsertBatch.map((e) => e.payload).toList(),
-          onConflict: 'baby_id',
-        ));
+    for (final entry in babyUpsertEntries) {
+      await attempt([entry], () => _cloud.upsertRows(
+            table: 'babies',
+            rows: [entry.payload],
+            onConflict: 'baby_id',
+          ));
+    }
 
     final measurementUpsertBatch = entries
         .where((e) => e.table == 'measurements' && e.action == 'upsert')
@@ -146,5 +154,42 @@ class SyncService {
     } catch (_) {
       // Offline is acceptable — retry on next pull.
     }
+  }
+
+  /// Directly upserts all local babies belonging to [userHospitalId] to
+  /// Supabase, bypassing the outbox. Babies with a different hospital_id
+  /// (orphans from a deleted hospital) are skipped and counted separately.
+  /// Returns {'synced': N, 'skipped': M}.
+  Future<Map<String, int>> repairBabySync(String userHospitalId) async {
+    if (!_cloud.isEnabled) return {'synced': 0, 'skipped': 0};
+
+    final active = await _db.babiesDao.watchAllActive().first;
+    final archived = await _db.babiesDao.watchAllArchived().first;
+    final all = [...active, ...archived];
+
+    final toSync =
+        all.where((b) => b.hospitalId == userHospitalId).toList();
+    final skipped = all.length - toSync.length;
+
+    if (toSync.isNotEmpty) {
+      await _cloud.upsertRows(
+        table: 'babies',
+        rows: toSync
+            .map((b) => {
+                  'baby_id': b.babyId,
+                  'hospital_id': b.hospitalId,
+                  'baby_name': b.babyName,
+                  'baby_dob': b.babyDob.toUtc().toIso8601String(),
+                  'baby_weight': b.babyWeight,
+                  'is_archived': b.isArchived,
+                  'created_at': b.createdAt.toUtc().toIso8601String(),
+                  'updated_at': b.updatedAt.toUtc().toIso8601String(),
+                })
+            .toList(),
+        onConflict: 'baby_id',
+      );
+    }
+
+    return {'synced': toSync.length, 'skipped': skipped};
   }
 }

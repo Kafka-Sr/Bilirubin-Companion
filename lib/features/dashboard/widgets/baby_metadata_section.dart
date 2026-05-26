@@ -27,16 +27,16 @@ class BabyMetadataSection extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Header ───────────────────────────────────────────────────────
+            // Header
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(l10n.metadataTitle,
                     style: theme.textTheme.titleLarge
                         ?.copyWith(fontWeight: FontWeight.bold)),
-                FilledButton.tonal(
+                OutlinedButton(
                   onPressed: () => showBabyEditModal(context, existing: baby),
-                  style: FilledButton.styleFrom(
+                  style: OutlinedButton.styleFrom(
                     shape: const CircleBorder(),
                     padding: EdgeInsets.zero,
                     minimumSize: const Size(48, 48),

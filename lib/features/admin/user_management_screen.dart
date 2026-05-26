@@ -5,7 +5,6 @@ import 'package:bilirubin/providers/admin_providers.dart';
 import 'package:bilirubin/providers/audit_providers.dart';
 import 'package:bilirubin/providers/auth_providers.dart';
 import 'package:bilirubin/providers/supabase_providers.dart';
-
 class UserManagementScreen extends ConsumerStatefulWidget {
   const UserManagementScreen({super.key});
 
@@ -16,6 +15,7 @@ class UserManagementScreen extends ConsumerStatefulWidget {
 
 class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
   String _roleFilter = 'all';
+  String _searchQuery = '';
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,9 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
         ref.watch(userProfileProvider).valueOrNull?.userId ?? '';
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.userManagementTitle)),
+      appBar: AppBar(
+        title: Text(l10n.userManagementTitle),
+      ),
       floatingActionButton: FloatingActionButton.extended(
         icon: const Icon(Icons.person_add_outlined),
         label: Text(l10n.addAccountFab),
@@ -35,14 +37,34 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text(l10n.loadingUsersError(e.toString()))),
         data: (users) {
-          final filtered = _roleFilter == 'all'
-              ? users
-              : users
-                  .where((u) => u['role'] == _roleFilter)
-                  .toList();
+          final filtered = users.where((u) {
+            final matchesRole =
+                _roleFilter == 'all' || u['role'] == _roleFilter;
+            final q = _searchQuery.toLowerCase();
+            final matchesSearch = q.isEmpty ||
+                (u['full_name'] as String? ?? '')
+                    .toLowerCase()
+                    .contains(q) ||
+                (u['role'] as String? ?? '').toLowerCase().contains(q);
+            return matchesRole && matchesSearch;
+          }).toList();
 
           return Column(
             children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: l10n.adminSearchUsersHint,
+                    prefixIcon: const Icon(Icons.search),
+                    border: const OutlineInputBorder(),
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 12),
+                  ),
+                  onChanged: (v) => setState(() => _searchQuery = v),
+                ),
+              ),
               _RoleFilterBar(
                 selected: _roleFilter,
                 onChanged: (v) => setState(() => _roleFilter = v),
@@ -59,6 +81,8 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                           isSelf: filtered[i]['user_id'] == currentUserId,
                           onToggleActive: () =>
                               _toggleActive(context, ref, filtered[i]),
+                          onEdit: () =>
+                              _showEditAccountDialog(context, ref, filtered[i]),
                         ),
                       ),
               ),
@@ -74,18 +98,19 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
     WidgetRef ref,
     Map<String, dynamic> user,
   ) async {
-    final client = ref.read(supabaseClientProvider);
-    if (client == null) return;
     final isActive = user['is_active'] as bool? ?? true;
     final name = user['full_name'] as String;
     final role = user['role'] as String;
+    final l10n = AppLocalizations.of(context);
 
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) {
         final dl10n = AppLocalizations.of(ctx);
         return AlertDialog(
-          title: Text(isActive ? dl10n.deactivateAccountTitle : dl10n.reactivateAccountTitle),
+          title: Text(isActive
+              ? dl10n.deactivateAccountTitle
+              : dl10n.reactivateAccountTitle),
           content: Text(
             isActive
                 ? dl10n.deactivateConfirmContent(name, role)
@@ -98,7 +123,9 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
             ),
             FilledButton(
               onPressed: () => Navigator.of(ctx).pop(true),
-              child: Text(isActive ? dl10n.deactivateAccountTitle : dl10n.reactivateAccountTitle),
+              child: Text(isActive
+                  ? dl10n.deactivateAccountTitle
+                  : dl10n.reactivateAccountTitle),
             ),
           ],
         );
@@ -108,11 +135,17 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
     if (confirmed != true || !context.mounted) return;
 
     try {
+      final client = ref.read(supabaseClientProvider);
+      final session = ref.read(supabaseSessionProvider).valueOrNull;
+      if (client == null || session == null) throw Exception('Not authenticated');
+
       final targetUserId = user['user_id'] as String;
-      await client
-          .from('user_profiles')
-          .update({'is_active': !isActive})
-          .eq('user_id', targetUserId);
+      await client.functions.invoke(
+        'toggle-user-active',
+        body: {'userId': targetUserId, 'active': !isActive},
+        headers: {'Authorization': 'Bearer ${session.accessToken}'},
+      );
+
       final audit = ref.read(auditRepositoryProvider);
       if (isActive) {
         audit.logAccountDeactivate(targetUserId, role);
@@ -123,7 +156,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(l10n.adminErrorGeneric)),
         );
       }
     }
@@ -136,6 +169,15 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
       builder: (ctx) => _AddAccountDialog(ref: ref),
     );
   }
+
+  Future<void> _showEditAccountDialog(
+      BuildContext context, WidgetRef ref, Map<String, dynamic> user) async {
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => _EditAccountDialog(ref: ref, user: user),
+    );
+  }
+
 }
 
 // ── Role filter bar ───────────────────────────────────────────────────────────
@@ -179,18 +221,22 @@ class _UserTile extends StatelessWidget {
     required this.user,
     required this.isSelf,
     required this.onToggleActive,
+    required this.onEdit,
   });
 
   final Map<String, dynamic> user;
   final bool isSelf;
   final VoidCallback onToggleActive;
+  final VoidCallback onEdit;
 
   @override
   Widget build(BuildContext context) {
     final isActive = user['is_active'] as bool? ?? true;
     final role = user['role'] as String;
     final name = user['full_name'] as String;
-    final dimColor = Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38);
+    final dimColor =
+        Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38);
+    final l10n = AppLocalizations.of(context);
 
     return ListTile(
       leading: CircleAvatar(
@@ -212,7 +258,7 @@ class _UserTile extends StatelessWidget {
           _RoleBadge(role: role, isActive: isActive),
           if (!isActive)
             Text(
-              AppLocalizations.of(context).deactivatedLabel,
+              l10n.deactivatedLabel,
               style: Theme.of(context)
                   .textTheme
                   .labelSmall
@@ -220,7 +266,7 @@ class _UserTile extends StatelessWidget {
             ),
           if (isSelf)
             Text(
-              AppLocalizations.of(context).selfLabel,
+              l10n.selfLabel,
               style: Theme.of(context)
                   .textTheme
                   .labelSmall
@@ -230,15 +276,28 @@ class _UserTile extends StatelessWidget {
       ),
       trailing: isSelf
           ? null
-          : IconButton(
-              icon: Icon(
-                isActive ? Icons.block_outlined : Icons.check_circle_outline,
-                color: isActive
-                    ? Theme.of(context).colorScheme.error
-                    : Theme.of(context).colorScheme.primary,
-              ),
-              tooltip: isActive ? 'Deactivate' : 'Reactivate',
-              onPressed: onToggleActive,
+          : Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.edit_outlined),
+                  tooltip: l10n.adminEditUser,
+                  onPressed: onEdit,
+                ),
+                IconButton(
+                  icon: Icon(
+                    isActive
+                        ? Icons.block_outlined
+                        : Icons.check_circle_outline,
+                    color: isActive
+                        ? Theme.of(context).colorScheme.error
+                        : Theme.of(context).colorScheme.primary,
+                  ),
+                  tooltip:
+                      isActive ? l10n.adminDeactivate : l10n.adminReactivate,
+                  onPressed: onToggleActive,
+                ),
+              ],
             ),
     );
   }
@@ -304,6 +363,7 @@ class _AddAccountDialogState extends ConsumerState<_AddAccountDialog> {
   final _passwordCtrl = TextEditingController();
   String _role = 'staff';
   bool _loading = false;
+  bool _obscurePassword = true;
   String? _error;
 
   @override
@@ -335,7 +395,8 @@ class _AddAccountDialogState extends ConsumerState<_AddAccountDialog> {
         },
         headers: {'Authorization': 'Bearer ${session.accessToken}'},
       );
-      final newUserId = (result.data as Map<String, dynamic>?)?['userId'] as String?;
+      final newUserId =
+          (result.data as Map<String, dynamic>?)?['userId'] as String?;
       if (newUserId != null) {
         ref.read(auditRepositoryProvider).logAccountCreate(newUserId, _role);
       }
@@ -377,8 +438,17 @@ class _AddAccountDialogState extends ConsumerState<_AddAccountDialog> {
               const SizedBox(height: 12),
               TextFormField(
                 controller: _passwordCtrl,
-                obscureText: true,
-                decoration: InputDecoration(labelText: l10n.loginPasswordLabel),
+                obscureText: _obscurePassword,
+                decoration: InputDecoration(
+                  labelText: l10n.loginPasswordLabel,
+                  suffixIcon: IconButton(
+                    icon: Icon(_obscurePassword
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined),
+                    onPressed: () =>
+                        setState(() => _obscurePassword = !_obscurePassword),
+                  ),
+                ),
                 validator: (v) =>
                     (v == null || v.length < 8) ? l10n.passwordMinLength : null,
               ),
@@ -389,7 +459,8 @@ class _AddAccountDialogState extends ConsumerState<_AddAccountDialog> {
                 items: [
                   DropdownMenuItem(value: 'staff', child: Text(l10n.roleStaff)),
                   DropdownMenuItem(value: 'admin', child: Text(l10n.roleAdmin)),
-                  DropdownMenuItem(value: 'parent', child: Text(l10n.roleParent)),
+                  DropdownMenuItem(
+                      value: 'parent', child: Text(l10n.roleParent)),
                 ],
                 onChanged: (v) => setState(() => _role = v ?? 'staff'),
               ),
@@ -421,6 +492,128 @@ class _AddAccountDialogState extends ConsumerState<_AddAccountDialog> {
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
               : Text(l10n.createLabel),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Edit account dialog ───────────────────────────────────────────────────────
+
+class _EditAccountDialog extends ConsumerStatefulWidget {
+  const _EditAccountDialog({required this.ref, required this.user});
+
+  final WidgetRef ref;
+  final Map<String, dynamic> user;
+
+  @override
+  ConsumerState<_EditAccountDialog> createState() => _EditAccountDialogState();
+}
+
+class _EditAccountDialogState extends ConsumerState<_EditAccountDialog> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _nameCtrl;
+  late String _role;
+  bool _loading = false;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameCtrl =
+        TextEditingController(text: widget.user['full_name'] as String? ?? '');
+    _role = widget.user['role'] as String? ?? 'staff';
+  }
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final client = ref.read(supabaseClientProvider);
+      if (client == null) throw Exception('Not authenticated');
+
+      final targetUserId = widget.user['user_id'] as String;
+      await client.from('user_profiles').update({
+        'full_name': _nameCtrl.text.trim(),
+        'role': _role,
+      }).eq('user_id', targetUserId);
+
+      ref.read(auditRepositoryProvider).logAccountEdit(targetUserId, _role);
+      ref.invalidate(allUsersProvider);
+      if (mounted) Navigator.of(context).pop();
+    } catch (e) {
+      if (mounted) setState(() => _error = e.toString());
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return AlertDialog(
+      title: Text(l10n.adminEditUserTitle),
+      content: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: _nameCtrl,
+                decoration: InputDecoration(labelText: l10n.fullNameLabel),
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? l10n.validationRequired : null,
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                initialValue: _role,
+                decoration: InputDecoration(labelText: l10n.roleLabel),
+                items: [
+                  DropdownMenuItem(value: 'staff', child: Text(l10n.roleStaff)),
+                  DropdownMenuItem(value: 'admin', child: Text(l10n.roleAdmin)),
+                  DropdownMenuItem(
+                      value: 'parent', child: Text(l10n.roleParent)),
+                ],
+                onChanged: (v) => setState(() => _role = v ?? 'staff'),
+              ),
+              if (_error != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  _error!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(l10n.cancel),
+        ),
+        FilledButton(
+          onPressed: _loading ? null : _submit,
+          child: _loading
+              ? const SizedBox(
+                  height: 16,
+                  width: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Text(l10n.adminSaveChanges),
         ),
       ],
     );

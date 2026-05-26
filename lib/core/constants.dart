@@ -52,9 +52,11 @@ const String kAuditAccountReactivate = 'account_reactivate';
 const String kAuditParentLink        = 'parent_link';
 const String kAuditParentUnlink      = 'parent_unlink';
 const String kAuditDeviceAdd         = 'device_add';
+const String kAuditAccountEdit       = 'account_edit';
 const String kAuditTransferCreate    = 'transfer_create';
 const String kAuditTransferAccept    = 'transfer_accept';
 const String kAuditTransferReject    = 'transfer_reject';
+const String kAuditTransferCancel    = 'transfer_cancel';
 
 // ── Secure storage keys ───────────────────────────────────────────────────────
 const String kImageKeyAlias = 'bilirubin_image_key_v1';

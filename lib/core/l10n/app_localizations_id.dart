@@ -9,7 +9,7 @@ class AppLocalizationsId extends AppLocalizations {
   AppLocalizationsId([String locale = 'id']) : super(locale);
 
   @override
-  String get appTitle => 'Monitor Bilirubin';
+  String get appTitle => 'Biligun Companion';
 
   @override
   String get dashboardTitle => 'Dasbor';
@@ -44,7 +44,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get bhutaniOutsideRangeNotice =>
-      'Pengingat: Nomogram Bhutani ini hanya menampilkan pembacaan bilirubin dari usia 0 hingga 168 jam. Pembacaan di luar rentang usia ini ditampilkan sebagai titik ungu.';
+      'Peringatan: Nomogram Bhutani ini hanya menampilkan pembacaan bilirubin dari usia 0 hingga 168 jam. Pembacaan di luar rentang usia ini ditampilkan sebagai titik ungu.';
 
   @override
   String get bhutaniCurrentBeyond168h =>
@@ -125,6 +125,9 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get addBabyTitle => 'Tambah Bayi';
+
+  @override
+  String get editAction => 'Ubah';
 
   @override
   String get fieldName => 'Nama';
@@ -284,24 +287,24 @@ class AppLocalizationsId extends AppLocalizations {
   String get zoneHighFull => 'Zona Risiko Tinggi';
 
   @override
-  String get deviceConnecting => 'Memasangkan…';
+  String get deviceConnecting => 'Menghubungi…';
 
   @override
   String get deviceConnectedLabel => 'Terhubung:';
 
   @override
-  String get deviceConnect => 'Pasangkan';
+  String get deviceConnect => 'Hubungkan';
 
   @override
   String get deviceDisconnect => 'Putuskan';
 
   @override
   String deviceConnectedTo(String displayName) {
-    return 'Berpasangan dengan $displayName';
+    return 'Terhubung dengan $displayName';
   }
 
   @override
-  String get deviceConnectionError => 'Gagal memasangkan';
+  String get deviceConnectionError => 'Gagal menghubung';
 
   @override
   String get selectBaby => 'Pilih bayi';
@@ -439,7 +442,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get adminUserManagementSubtitle =>
-      'Kelola semua akun — staf, admin, dan orang tua';
+      'Kelola semua akun admin, staf, dan orang tua';
 
   @override
   String get adminParentAccessTitle => 'Akses Orang Tua';
@@ -684,4 +687,53 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get couldNotLoadProfile => 'Tidak dapat memuat profil.';
+
+  @override
+  String get adminSearchUsersHint => 'Cari pengguna…';
+
+  @override
+  String get adminDeactivate => 'Nonaktifkan';
+
+  @override
+  String get adminReactivate => 'Aktifkan Kembali';
+
+  @override
+  String get adminErrorGeneric => 'Terjadi kesalahan. Silakan coba lagi.';
+
+  @override
+  String get adminParentNotFound => 'Akun orang tua tidak ditemukan.';
+
+  @override
+  String get adminLinkFailed => 'Gagal menautkan orang tua ke bayi.';
+
+  @override
+  String get adminUnlinkFailed => 'Gagal menghapus tautan.';
+
+  @override
+  String get transferWarningTitle => 'Peringatan: Data Akan Hilang';
+
+  @override
+  String get transferWarningBody =>
+      'Setelah transfer diterima, rumah sakit Anda akan kehilangan akses permanen ke data dan pengukuran bayi ini. Ekspor data sebelum melanjutkan.';
+
+  @override
+  String get transferWarningConfirm => 'Saya Mengerti, Lanjutkan';
+
+  @override
+  String get cancelTransfer => 'Batalkan Transfer';
+
+  @override
+  String get adminEditUser => 'Edit Pengguna';
+
+  @override
+  String get adminEditUserTitle => 'Edit Akun';
+
+  @override
+  String get adminSaveChanges => 'Simpan Perubahan';
+
+  @override
+  String get auditEventAccountEdit => 'Akun Diubah';
+
+  @override
+  String get auditEventTransferCancel => 'Transfer Dibatalkan';
 }

@@ -31,16 +31,34 @@ class DashboardScreen extends ConsumerWidget {
         title: Text(l10n.dashboardTitle),
         actions: [
           if (isAdmin)
-            IconButton(
-              icon: const Icon(Icons.admin_panel_settings_outlined),
-              tooltip: 'Admin Panel',
-              onPressed: () => context.push('/admin'),
+            Tooltip(
+              message: 'Admin Panel',
+              child: OutlinedButton(
+                onPressed: () => context.push('/admin'),
+                style: OutlinedButton.styleFrom(
+                  shape: const CircleBorder(),
+                  padding: EdgeInsets.zero,
+                  minimumSize: const Size(40, 40),
+                  maximumSize: const Size(40, 40),
+                ),
+                child: const Icon(Icons.admin_panel_settings_outlined, size: 20),
+              ),
             ),
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            tooltip: 'Settings',
-            onPressed: () => context.push('/settings'),
+          const SizedBox(width: 4),
+          Tooltip(
+            message: 'Settings',
+            child: OutlinedButton(
+              onPressed: () => context.push('/settings'),
+              style: OutlinedButton.styleFrom(
+                shape: const CircleBorder(),
+                padding: EdgeInsets.zero,
+                minimumSize: const Size(40, 40),
+                maximumSize: const Size(40, 40),
+              ),
+              child: const Icon(Icons.settings_outlined, size: 20),
+            ),
           ),
+          const SizedBox(width: 4),
         ],
       ),
       body: babiesAsync.when(
