@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Bilirubin Monitor';
+  String get appTitle => 'Biligun Companion';
 
   @override
   String get dashboardTitle => 'Dashboard';
@@ -124,6 +124,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addBabyTitle => 'Add Baby';
+
+  @override
+  String get editAction => 'Edit';
 
   @override
   String get fieldName => 'Name';
@@ -436,7 +439,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminUserManagementSubtitle =>
-      'Manage all accounts — staff, admin, and parent';
+      'Manage all admin, staff, and parent accounts';
 
   @override
   String get adminParentAccessTitle => 'Parent Access';
@@ -680,4 +683,53 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get couldNotLoadProfile => 'Could not load profile.';
+
+  @override
+  String get adminSearchUsersHint => 'Search users…';
+
+  @override
+  String get adminDeactivate => 'Deactivate';
+
+  @override
+  String get adminReactivate => 'Reactivate';
+
+  @override
+  String get adminErrorGeneric => 'Something went wrong. Please try again.';
+
+  @override
+  String get adminParentNotFound => 'Parent account not found.';
+
+  @override
+  String get adminLinkFailed => 'Failed to link parent to baby.';
+
+  @override
+  String get adminUnlinkFailed => 'Failed to remove link.';
+
+  @override
+  String get transferWarningTitle => 'Warning: Permanent Data Loss';
+
+  @override
+  String get transferWarningBody =>
+      'Once this transfer is accepted, your hospital will permanently lose access to this baby’s records and measurements. Export the data before proceeding.';
+
+  @override
+  String get transferWarningConfirm => 'I Understand, Continue';
+
+  @override
+  String get cancelTransfer => 'Cancel Transfer';
+
+  @override
+  String get adminEditUser => 'Edit User';
+
+  @override
+  String get adminEditUserTitle => 'Edit Account';
+
+  @override
+  String get adminSaveChanges => 'Save Changes';
+
+  @override
+  String get auditEventAccountEdit => 'Account Edited';
+
+  @override
+  String get auditEventTransferCancel => 'Transfer Cancelled';
 }

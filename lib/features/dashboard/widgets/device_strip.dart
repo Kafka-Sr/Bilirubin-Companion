@@ -7,6 +7,7 @@ import 'package:bilirubin/models/device_connection_state.dart';
 import 'package:bilirubin/models/device_info.dart';
 import 'package:bilirubin/providers/device_providers.dart';
 import 'package:bilirubin/providers/supabase_providers.dart';
+import 'package:bilirubin/providers/auth_providers.dart';
 import 'package:bilirubin/providers/sync_providers.dart';
 
 class DeviceStrip extends ConsumerWidget {
@@ -44,7 +45,7 @@ class DeviceStrip extends ConsumerWidget {
               Expanded(
                 child: Text(
                   _deviceText(connectionState, info, l10n),
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: Theme.of(context).textTheme.bodyLarge,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -65,7 +66,7 @@ class DeviceStrip extends ConsumerWidget {
               Expanded(
                 child: Text(
                   _cloudText(client, syncStatus, l10n),
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: Theme.of(context).textTheme.bodyLarge,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -101,14 +102,22 @@ class DeviceStrip extends ConsumerWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: FilledButton.tonal(
-                  onPressed: isSyncing ? null : () {
+                  onPressed: isSyncing ? null : () async {
                     final notifier = ref.read(syncStatusProvider.notifier);
                     final syncService = ref.read(syncServiceProvider);
+                    final hospitalId =
+                        ref.read(userProfileProvider).valueOrNull?.hospitalId;
                     notifier.set(SyncStatus.syncing);
-                    syncService.drainOutbox()
-                        .then((_) => syncService.pullChanges())
-                        .then((_) => notifier.set(SyncStatus.idle))
-                        .catchError((_) => notifier.set(SyncStatus.error));
+                    try {
+                      if (hospitalId != null && hospitalId.isNotEmpty) {
+                        await syncService.repairBabySync(hospitalId);
+                      }
+                      await syncService.drainOutbox();
+                      await syncService.pullChanges();
+                      notifier.set(SyncStatus.idle);
+                    } catch (_) {
+                      notifier.set(SyncStatus.error);
+                    }
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,

@@ -329,7 +329,7 @@ class _ExportSheetState extends State<_ExportSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // ── Header ──────────────────────────────────────────────────────────
+          // Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -344,7 +344,7 @@ class _ExportSheetState extends State<_ExportSheet> {
           ),
           const SizedBox(height: 20),
 
-          // ── File name ────────────────────────────────────────────────────────
+          // File name
           Text(l10n.exportFileName,
               style: theme.textTheme.bodyLarge
                   ?.copyWith(fontWeight: FontWeight.bold)),
@@ -371,7 +371,7 @@ class _ExportSheetState extends State<_ExportSheet> {
           ),
           const SizedBox(height: 16),
 
-          // ── Save location ────────────────────────────────────────────────────
+          // Save location
           Text(l10n.exportSaveLocation,
               style: theme.textTheme.bodyLarge
                   ?.copyWith(fontWeight: FontWeight.bold)),
@@ -410,7 +410,7 @@ class _ExportSheetState extends State<_ExportSheet> {
           ),
           const SizedBox(height: 20),
 
-          // ── Format selector ──────────────────────────────────────────────────
+          // Format selector
           SegmentedButton<_ExportFormat>(
             showSelectedIcon: false,
             selected: {_format},
@@ -435,7 +435,7 @@ class _ExportSheetState extends State<_ExportSheet> {
           ),
           const SizedBox(height: 24),
 
-          // ── Export button ────────────────────────────────────────────────────
+          // Export button
           FilledButton(
             onPressed: _exporting ? null : () => _export(context),
             child: _exporting
@@ -444,7 +444,7 @@ class _ExportSheetState extends State<_ExportSheet> {
                     width: 18,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : Text(l10n.exportAction),
+                : Text(l10n.exportAction, style: const TextStyle(fontWeight: FontWeight.bold)),
           ),
           SizedBox(height: MediaQuery.viewInsetsOf(context).bottom + 24),
         ],

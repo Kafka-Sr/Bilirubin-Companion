@@ -57,7 +57,8 @@ class _ParentLinkingScreenState extends ConsumerState<ParentLinkingScreen> {
         _foundName = data['fullName'] as String?;
       });
     } catch (e) {
-      setState(() => _searchError = 'Parent not found: $e');
+      setState(() => _searchError =
+          AppLocalizations.of(context).adminParentNotFound);
     } finally {
       setState(() => _searching = false);
     }
@@ -117,7 +118,8 @@ class _ParentLinkingScreenState extends ConsumerState<ParentLinkingScreen> {
         });
       }
     } catch (e) {
-      setState(() => _linkError = 'Failed to link: $e');
+      setState(() =>
+          _linkError = AppLocalizations.of(context).adminLinkFailed);
     } finally {
       setState(() => _linking = false);
     }
@@ -137,7 +139,9 @@ class _ParentLinkingScreenState extends ConsumerState<ParentLinkingScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to unlink: $e')),
+          SnackBar(
+              content:
+                  Text(AppLocalizations.of(context).adminUnlinkFailed)),
         );
       }
     }
@@ -163,8 +167,9 @@ class _ParentLinkingScreenState extends ConsumerState<ParentLinkingScreen> {
           const SizedBox(height: 8),
           linksAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) =>
-                Text('Error: $e', style: TextStyle(color: cs.error)),
+            error: (e, _) => Text(
+                AppLocalizations.of(context).adminErrorGeneric,
+                style: TextStyle(color: cs.error)),
             data: (links) {
               if (links.isEmpty) {
                 return Padding(

@@ -68,6 +68,12 @@ class AuditRepository {
           detailsJson:
               jsonEncode({'target_user_id': targetUserId, 'role': role}));
 
+  Future<void> logAccountEdit(String targetUserId, String role) =>
+      _insert(
+          eventType: kAuditAccountEdit,
+          detailsJson:
+              jsonEncode({'target_user_id': targetUserId, 'role': role}));
+
   // ── Parent access ──────────────────────────────────────────────────────────
 
   Future<void> logParentLink(String parentId, String babyId) => _insert(
@@ -104,6 +110,12 @@ class AuditRepository {
           eventType: kAuditTransferReject,
           babyId: babyId,
           detailsJson: jsonEncode({'from_hospital_code': fromHospitalCode}));
+
+  Future<void> logTransferCancel(String babyId, String toHospitalCode) =>
+      _insert(
+          eventType: kAuditTransferCancel,
+          babyId: babyId,
+          detailsJson: jsonEncode({'to_hospital_code': toHospitalCode}));
 
   // ── Private ────────────────────────────────────────────────────────────────
 

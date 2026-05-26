@@ -58,7 +58,7 @@ class BabySelector extends ConsumerWidget {
   }
 }
 
-// ── Baby dropdown ─────────────────────────────────────────────────────────────
+// Baby dropdown
 
 class _BabyDropdown extends ConsumerStatefulWidget {
   const _BabyDropdown({required this.babies, required this.selectedId});
@@ -120,7 +120,7 @@ class _BabyDropdownState extends ConsumerState<_BabyDropdown> {
   }
 }
 
-// ── Overflow menu ─────────────────────────────────────────────────────────────
+// Overflow menu
 
 class _OverflowMenu extends ConsumerWidget {
   const _OverflowMenu({required this.babies, required this.selectedBaby});
@@ -143,21 +143,23 @@ class _OverflowMenu extends ConsumerWidget {
           PopupMenuItem(
             value: _BabyMenuAction.add,
             child: Row(children: [
-              const Icon(Icons.add_rounded, size: 18),
+              const Icon(Icons.add_rounded, size: 20),
               const SizedBox(width: 12),
-              Text(l10n.addBabyTitle),
+              Text(l10n.addBabyTitle, style: Theme.of(ctx).textTheme.bodyLarge),
             ]),
           ),
           PopupMenuItem(
             value: _BabyMenuAction.archive,
             enabled: hasSelection,
             child: Row(children: [
-              Icon(Icons.archive_outlined, size: 18,
+              Icon(Icons.archive_outlined, size: 20,
                   color: hasSelection ? null : colorScheme.onSurface.withValues(alpha: 0.38)),
               const SizedBox(width: 12),
               Text(
                 l10n.archiveBabyAction,
-                style: hasSelection ? null : TextStyle(color: colorScheme.onSurface.withValues(alpha: 0.38)),
+                style: Theme.of(ctx).textTheme.bodyLarge?.copyWith(
+                  color: hasSelection ? null : colorScheme.onSurface.withValues(alpha: 0.38),
+                ),
               ),
             ]),
           ),
@@ -216,7 +218,7 @@ class _OverflowMenu extends ConsumerWidget {
   }
 }
 
-// ── Export button ─────────────────────────────────────────────────────────────
+// Export button
 
 class _ExportButton extends ConsumerWidget {
   const _ExportButton({required this.selectedBaby});
@@ -267,7 +269,7 @@ class _ExportButton extends ConsumerWidget {
   }
 }
 
-// ── Baby search sheet ─────────────────────────────────────────────────────────
+// Baby search sheet
 
 class _BabySearchSheet extends ConsumerStatefulWidget {
   const _BabySearchSheet({required this.babies, required this.onSelect});

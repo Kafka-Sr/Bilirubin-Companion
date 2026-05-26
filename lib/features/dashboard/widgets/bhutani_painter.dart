@@ -91,7 +91,7 @@ class BhutaniPainter extends CustomPainter {
     _drawData(canvas, chartRect, colorScheme, pxX, pxY);
   }
 
-  // ── Zone fills + labels ───────────────────────────────────────────────────
+  // Zone fills + labels
 
   void _drawZones(
     Canvas canvas,
@@ -153,7 +153,7 @@ class BhutaniPainter extends CustomPainter {
     }
   }
 
-  // ── Grid + axis labels ────────────────────────────────────────────────────
+  // Grid + axis labels
 
   void _drawGrid(
     Canvas canvas,
@@ -196,7 +196,7 @@ class BhutaniPainter extends CustomPainter {
     }
   }
 
-  // ── Boundary lines ────────────────────────────────────────────────────────
+  // Boundary lines
 
   void _drawBoundaries(
     Canvas canvas,
@@ -239,7 +239,7 @@ class BhutaniPainter extends CustomPainter {
     }
   }
 
-  // ── Data points ───────────────────────────────────────────────────────────
+  // Data points
 
   void _drawData(
     Canvas canvas,
@@ -259,7 +259,7 @@ class BhutaniPainter extends CustomPainter {
         : measurements.first;
     final activeIsOutside = _isOutside(active);
 
-    // ── History line + dots ─────────────────────────────────────────────────
+    // History line + dots
     if (showHistory && measurements.length > 1) {
       final sorted = measurements.reversed.toList();
 
@@ -304,7 +304,7 @@ class BhutaniPainter extends CustomPainter {
       }
     }
 
-    // ── Active (highlighted) point ────────────────────────────────────────────
+    // Active (highlighted) point
     final dotColor = activeIsOutside ? _purpleColor : colorScheme.error;
     final lx = pxX(active.ageHours.clamp(kNomogramMinHours, kNomogramMaxHours));
     final ly = pxY(active.bilirubinMgdl.clamp(0, maxY));
@@ -323,7 +323,7 @@ class BhutaniPainter extends CustomPainter {
     canvas.drawCircle(Offset(lx, ly), 3, Paint()..color = Colors.white);
   }
 
-  // ── Helpers ───────────────────────────────────────────────────────────────
+  // Helpers
 
   void _paintText(
     Canvas canvas,

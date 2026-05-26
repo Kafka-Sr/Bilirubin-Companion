@@ -1,7 +1,7 @@
 {
   "@@locale": "en",
 
-  "appTitle": "Bilirubin Monitor",
+  "appTitle": "Biligun Companion",
   "dashboardTitle": "Dashboard",
   "settingsTitle": "Settings",
 
@@ -58,6 +58,7 @@
 
   "editBabyTitle": "Edit Baby",
   "addBabyTitle": "Add Baby",
+  "editAction": "Edit",
   "fieldName": "Name",
   "fieldWeight": "Weight (kg)",
   "fieldDob": "Date & Time of Birth",
@@ -195,7 +196,7 @@
 
   "adminPanelTitle": "Admin Panel",
   "adminUserManagementTitle": "User Management",
-  "adminUserManagementSubtitle": "Manage all accounts — staff, admin, and parent",
+  "adminUserManagementSubtitle": "Manage all admin, staff, and parent accounts",
   "adminParentAccessTitle": "Parent Access",
   "adminParentAccessSubtitle": "Link and unlink parents to babies",
   "adminTransfersTitle": "Baby Transfers",
@@ -306,5 +307,22 @@
 
   "settingsAccountTitle": "Account",
   "signOutLabel": "Sign Out",
-  "couldNotLoadProfile": "Could not load profile."
+  "couldNotLoadProfile": "Could not load profile.",
+
+  "adminSearchUsersHint": "Search users…",
+  "adminDeactivate": "Deactivate",
+  "adminReactivate": "Reactivate",
+  "adminErrorGeneric": "Something went wrong. Please try again.",
+  "adminParentNotFound": "Parent account not found.",
+  "adminLinkFailed": "Failed to link parent to baby.",
+  "adminUnlinkFailed": "Failed to remove link.",
+  "transferWarningTitle": "Warning: Permanent Data Loss",
+  "transferWarningBody": "Once this transfer is accepted, your hospital will permanently lose access to this baby’s records and measurements. Export the data before proceeding.",
+  "transferWarningConfirm": "I Understand, Continue",
+  "cancelTransfer": "Cancel Transfer",
+  "adminEditUser": "Edit User",
+  "adminEditUserTitle": "Edit Account",
+  "adminSaveChanges": "Save Changes",
+  "auditEventAccountEdit": "Account Edited",
+  "auditEventTransferCancel": "Transfer Cancelled"
 }
