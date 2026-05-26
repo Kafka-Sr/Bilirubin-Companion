@@ -66,7 +66,10 @@ class SyncService {
         .toList();
     await attempt(measurementUpsertBatch, () => _cloud.upsertRows(
           table: 'measurements',
-          rows: measurementUpsertBatch.map((e) => e.payload).toList(),
+          rows: measurementUpsertBatch.map((e) {
+            final p = Map<String, dynamic>.from(e.payload)..remove('received_at');
+            return p;
+          }).toList(),
           onConflict: 'measurement_id',
         ));
 
@@ -136,15 +139,16 @@ class SyncService {
       }
 
       final measurementRows = await _cloud.fetchRows(
-          table: 'measurements', orderBy: 'received_at');
+          table: 'measurements', orderBy: 'captured_at');
       for (final row in measurementRows) {
+        final bilirubinRaw = row['bilirubin_mgdl'];
+        if (bilirubinRaw == null) continue;
         await _db.measurementsDao.upsertMeasurement(MeasurementsCompanion(
           measurementId: Value(row['measurement_id'] as String),
           babyId: Value(row['baby_id'] as String),
           capturedAt: Value(DateTime.parse(row['captured_at'] as String)),
-          receivedAt: Value(DateTime.parse(row['received_at'] as String)),
           ageHours: Value((row['age_hours'] as num).toDouble()),
-          bilirubinMgdl: Value((row['bilirubin_mgdl'] as num).toDouble()),
+          bilirubinMgdl: Value((bilirubinRaw as num).toDouble()),
           hasImage: Value(row['has_image'] as bool? ?? false),
           encryptedImageRef: Value(row['encrypted_image_ref'] as String?),
           deviceId: Value(row['device_id'] as String?),

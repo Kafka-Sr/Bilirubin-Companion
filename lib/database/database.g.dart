@@ -468,12 +468,6 @@ class $MeasurementsTable extends Measurements
   late final GeneratedColumn<DateTime> capturedAt = GeneratedColumn<DateTime>(
       'captured_at', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
-  static const VerificationMeta _receivedAtMeta =
-      const VerificationMeta('receivedAt');
-  @override
-  late final GeneratedColumn<DateTime> receivedAt = GeneratedColumn<DateTime>(
-      'received_at', aliasedName, false,
-      type: DriftSqlType.dateTime, requiredDuringInsert: true);
   static const VerificationMeta _ageHoursMeta =
       const VerificationMeta('ageHours');
   @override
@@ -519,7 +513,6 @@ class $MeasurementsTable extends Measurements
         measurementId,
         babyId,
         capturedAt,
-        receivedAt,
         ageHours,
         bilirubinMgdl,
         hasImage,
@@ -558,14 +551,6 @@ class $MeasurementsTable extends Measurements
               data['captured_at']!, _capturedAtMeta));
     } else if (isInserting) {
       context.missing(_capturedAtMeta);
-    }
-    if (data.containsKey('received_at')) {
-      context.handle(
-          _receivedAtMeta,
-          receivedAt.isAcceptableOrUnknown(
-              data['received_at']!, _receivedAtMeta));
-    } else if (isInserting) {
-      context.missing(_receivedAtMeta);
     }
     if (data.containsKey('age_hours')) {
       context.handle(_ageHoursMeta,
@@ -616,8 +601,6 @@ class $MeasurementsTable extends Measurements
           .read(DriftSqlType.string, data['${effectivePrefix}baby_id'])!,
       capturedAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}captured_at'])!,
-      receivedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}received_at'])!,
       ageHours: attachedDatabase.typeMapping
           .read(DriftSqlType.double, data['${effectivePrefix}age_hours'])!,
       bilirubinMgdl: attachedDatabase.typeMapping
@@ -649,9 +632,6 @@ class Measurement extends DataClass implements Insertable<Measurement> {
   /// Timestamp from the device clock (may drift).
   final DateTime capturedAt;
 
-  /// Timestamp when the app received the data.
-  final DateTime receivedAt;
-
   /// Baby's postnatal age in hours at time of measurement.
   final double ageHours;
 
@@ -673,7 +653,6 @@ class Measurement extends DataClass implements Insertable<Measurement> {
       {required this.measurementId,
       required this.babyId,
       required this.capturedAt,
-      required this.receivedAt,
       required this.ageHours,
       required this.bilirubinMgdl,
       required this.hasImage,
@@ -686,7 +665,6 @@ class Measurement extends DataClass implements Insertable<Measurement> {
     map['measurement_id'] = Variable<String>(measurementId);
     map['baby_id'] = Variable<String>(babyId);
     map['captured_at'] = Variable<DateTime>(capturedAt);
-    map['received_at'] = Variable<DateTime>(receivedAt);
     map['age_hours'] = Variable<double>(ageHours);
     map['bilirubin_mgdl'] = Variable<double>(bilirubinMgdl);
     map['has_image'] = Variable<bool>(hasImage);
@@ -707,7 +685,6 @@ class Measurement extends DataClass implements Insertable<Measurement> {
       measurementId: Value(measurementId),
       babyId: Value(babyId),
       capturedAt: Value(capturedAt),
-      receivedAt: Value(receivedAt),
       ageHours: Value(ageHours),
       bilirubinMgdl: Value(bilirubinMgdl),
       hasImage: Value(hasImage),
@@ -730,7 +707,6 @@ class Measurement extends DataClass implements Insertable<Measurement> {
       measurementId: serializer.fromJson<String>(json['measurementId']),
       babyId: serializer.fromJson<String>(json['babyId']),
       capturedAt: serializer.fromJson<DateTime>(json['capturedAt']),
-      receivedAt: serializer.fromJson<DateTime>(json['receivedAt']),
       ageHours: serializer.fromJson<double>(json['ageHours']),
       bilirubinMgdl: serializer.fromJson<double>(json['bilirubinMgdl']),
       hasImage: serializer.fromJson<bool>(json['hasImage']),
@@ -747,7 +723,6 @@ class Measurement extends DataClass implements Insertable<Measurement> {
       'measurementId': serializer.toJson<String>(measurementId),
       'babyId': serializer.toJson<String>(babyId),
       'capturedAt': serializer.toJson<DateTime>(capturedAt),
-      'receivedAt': serializer.toJson<DateTime>(receivedAt),
       'ageHours': serializer.toJson<double>(ageHours),
       'bilirubinMgdl': serializer.toJson<double>(bilirubinMgdl),
       'hasImage': serializer.toJson<bool>(hasImage),
@@ -761,7 +736,6 @@ class Measurement extends DataClass implements Insertable<Measurement> {
           {String? measurementId,
           String? babyId,
           DateTime? capturedAt,
-          DateTime? receivedAt,
           double? ageHours,
           double? bilirubinMgdl,
           bool? hasImage,
@@ -772,7 +746,6 @@ class Measurement extends DataClass implements Insertable<Measurement> {
         measurementId: measurementId ?? this.measurementId,
         babyId: babyId ?? this.babyId,
         capturedAt: capturedAt ?? this.capturedAt,
-        receivedAt: receivedAt ?? this.receivedAt,
         ageHours: ageHours ?? this.ageHours,
         bilirubinMgdl: bilirubinMgdl ?? this.bilirubinMgdl,
         hasImage: hasImage ?? this.hasImage,
@@ -791,8 +764,6 @@ class Measurement extends DataClass implements Insertable<Measurement> {
       babyId: data.babyId.present ? data.babyId.value : this.babyId,
       capturedAt:
           data.capturedAt.present ? data.capturedAt.value : this.capturedAt,
-      receivedAt:
-          data.receivedAt.present ? data.receivedAt.value : this.receivedAt,
       ageHours: data.ageHours.present ? data.ageHours.value : this.ageHours,
       bilirubinMgdl: data.bilirubinMgdl.present
           ? data.bilirubinMgdl.value
@@ -814,7 +785,6 @@ class Measurement extends DataClass implements Insertable<Measurement> {
           ..write('measurementId: $measurementId, ')
           ..write('babyId: $babyId, ')
           ..write('capturedAt: $capturedAt, ')
-          ..write('receivedAt: $receivedAt, ')
           ..write('ageHours: $ageHours, ')
           ..write('bilirubinMgdl: $bilirubinMgdl, ')
           ..write('hasImage: $hasImage, ')
@@ -826,17 +796,8 @@ class Measurement extends DataClass implements Insertable<Measurement> {
   }
 
   @override
-  int get hashCode => Object.hash(
-      measurementId,
-      babyId,
-      capturedAt,
-      receivedAt,
-      ageHours,
-      bilirubinMgdl,
-      hasImage,
-      encryptedImageRef,
-      deviceId,
-      modelVersion);
+  int get hashCode => Object.hash(measurementId, babyId, capturedAt, ageHours,
+      bilirubinMgdl, hasImage, encryptedImageRef, deviceId, modelVersion);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -844,7 +805,6 @@ class Measurement extends DataClass implements Insertable<Measurement> {
           other.measurementId == this.measurementId &&
           other.babyId == this.babyId &&
           other.capturedAt == this.capturedAt &&
-          other.receivedAt == this.receivedAt &&
           other.ageHours == this.ageHours &&
           other.bilirubinMgdl == this.bilirubinMgdl &&
           other.hasImage == this.hasImage &&
@@ -857,7 +817,6 @@ class MeasurementsCompanion extends UpdateCompanion<Measurement> {
   final Value<String> measurementId;
   final Value<String> babyId;
   final Value<DateTime> capturedAt;
-  final Value<DateTime> receivedAt;
   final Value<double> ageHours;
   final Value<double> bilirubinMgdl;
   final Value<bool> hasImage;
@@ -869,7 +828,6 @@ class MeasurementsCompanion extends UpdateCompanion<Measurement> {
     this.measurementId = const Value.absent(),
     this.babyId = const Value.absent(),
     this.capturedAt = const Value.absent(),
-    this.receivedAt = const Value.absent(),
     this.ageHours = const Value.absent(),
     this.bilirubinMgdl = const Value.absent(),
     this.hasImage = const Value.absent(),
@@ -882,7 +840,6 @@ class MeasurementsCompanion extends UpdateCompanion<Measurement> {
     required String measurementId,
     required String babyId,
     required DateTime capturedAt,
-    required DateTime receivedAt,
     required double ageHours,
     required double bilirubinMgdl,
     this.hasImage = const Value.absent(),
@@ -893,14 +850,12 @@ class MeasurementsCompanion extends UpdateCompanion<Measurement> {
   })  : measurementId = Value(measurementId),
         babyId = Value(babyId),
         capturedAt = Value(capturedAt),
-        receivedAt = Value(receivedAt),
         ageHours = Value(ageHours),
         bilirubinMgdl = Value(bilirubinMgdl);
   static Insertable<Measurement> custom({
     Expression<String>? measurementId,
     Expression<String>? babyId,
     Expression<DateTime>? capturedAt,
-    Expression<DateTime>? receivedAt,
     Expression<double>? ageHours,
     Expression<double>? bilirubinMgdl,
     Expression<bool>? hasImage,
@@ -913,7 +868,6 @@ class MeasurementsCompanion extends UpdateCompanion<Measurement> {
       if (measurementId != null) 'measurement_id': measurementId,
       if (babyId != null) 'baby_id': babyId,
       if (capturedAt != null) 'captured_at': capturedAt,
-      if (receivedAt != null) 'received_at': receivedAt,
       if (ageHours != null) 'age_hours': ageHours,
       if (bilirubinMgdl != null) 'bilirubin_mgdl': bilirubinMgdl,
       if (hasImage != null) 'has_image': hasImage,
@@ -928,7 +882,6 @@ class MeasurementsCompanion extends UpdateCompanion<Measurement> {
       {Value<String>? measurementId,
       Value<String>? babyId,
       Value<DateTime>? capturedAt,
-      Value<DateTime>? receivedAt,
       Value<double>? ageHours,
       Value<double>? bilirubinMgdl,
       Value<bool>? hasImage,
@@ -940,7 +893,6 @@ class MeasurementsCompanion extends UpdateCompanion<Measurement> {
       measurementId: measurementId ?? this.measurementId,
       babyId: babyId ?? this.babyId,
       capturedAt: capturedAt ?? this.capturedAt,
-      receivedAt: receivedAt ?? this.receivedAt,
       ageHours: ageHours ?? this.ageHours,
       bilirubinMgdl: bilirubinMgdl ?? this.bilirubinMgdl,
       hasImage: hasImage ?? this.hasImage,
@@ -962,9 +914,6 @@ class MeasurementsCompanion extends UpdateCompanion<Measurement> {
     }
     if (capturedAt.present) {
       map['captured_at'] = Variable<DateTime>(capturedAt.value);
-    }
-    if (receivedAt.present) {
-      map['received_at'] = Variable<DateTime>(receivedAt.value);
     }
     if (ageHours.present) {
       map['age_hours'] = Variable<double>(ageHours.value);
@@ -996,7 +945,6 @@ class MeasurementsCompanion extends UpdateCompanion<Measurement> {
           ..write('measurementId: $measurementId, ')
           ..write('babyId: $babyId, ')
           ..write('capturedAt: $capturedAt, ')
-          ..write('receivedAt: $receivedAt, ')
           ..write('ageHours: $ageHours, ')
           ..write('bilirubinMgdl: $bilirubinMgdl, ')
           ..write('hasImage: $hasImage, ')
@@ -1020,62 +968,40 @@ class $DevicesTable extends Devices with TableInfo<$DevicesTable, Device> {
   late final GeneratedColumn<String> deviceId = GeneratedColumn<String>(
       'device_id', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _hospitalIdMeta =
+      const VerificationMeta('hospitalId');
+  @override
+  late final GeneratedColumn<String> hospitalId = GeneratedColumn<String>(
+      'hospital_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _displayNameMeta =
       const VerificationMeta('displayName');
   @override
   late final GeneratedColumn<String> displayName = GeneratedColumn<String>(
       'display_name', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _isPairedMeta =
-      const VerificationMeta('isPaired');
-  @override
-  late final GeneratedColumn<bool> isPaired = GeneratedColumn<bool>(
-      'is_paired', aliasedName, false,
-      type: DriftSqlType.bool,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('CHECK ("is_paired" IN (0, 1))'),
-      defaultValue: const Constant(false));
   static const VerificationMeta _pairedAtMeta =
       const VerificationMeta('pairedAt');
   @override
   late final GeneratedColumn<DateTime> pairedAt = GeneratedColumn<DateTime>(
-      'paired_at', aliasedName, true,
-      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+      'paired_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  static const VerificationMeta _ssidMeta = const VerificationMeta('ssid');
+  @override
+  late final GeneratedColumn<String> ssid = GeneratedColumn<String>(
+      'ssid', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _lastSeenAtMeta =
       const VerificationMeta('lastSeenAt');
   @override
   late final GeneratedColumn<DateTime> lastSeenAt = GeneratedColumn<DateTime>(
       'last_seen_at', aliasedName, true,
       type: DriftSqlType.dateTime, requiredDuringInsert: false);
-  static const VerificationMeta _firmwareVersionMeta =
-      const VerificationMeta('firmwareVersion');
   @override
-  late final GeneratedColumn<String> firmwareVersion = GeneratedColumn<String>(
-      'firmware_version', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _publicKeyMeta =
-      const VerificationMeta('publicKey');
-  @override
-  late final GeneratedColumn<String> publicKey = GeneratedColumn<String>(
-      'public_key', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _ssidMeta = const VerificationMeta('ssid');
-  @override
-  late final GeneratedColumn<String> ssid = GeneratedColumn<String>(
-      'ssid', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  @override
-  List<GeneratedColumn> get $columns => [
-        deviceId,
-        displayName,
-        isPaired,
-        pairedAt,
-        lastSeenAt,
-        firmwareVersion,
-        publicKey,
-        ssid
-      ];
+  List<GeneratedColumn> get $columns =>
+      [deviceId, hospitalId, displayName, pairedAt, ssid, lastSeenAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1092,6 +1018,14 @@ class $DevicesTable extends Devices with TableInfo<$DevicesTable, Device> {
     } else if (isInserting) {
       context.missing(_deviceIdMeta);
     }
+    if (data.containsKey('hospital_id')) {
+      context.handle(
+          _hospitalIdMeta,
+          hospitalId.isAcceptableOrUnknown(
+              data['hospital_id']!, _hospitalIdMeta));
+    } else if (isInserting) {
+      context.missing(_hospitalIdMeta);
+    }
     if (data.containsKey('display_name')) {
       context.handle(
           _displayNameMeta,
@@ -1100,33 +1034,19 @@ class $DevicesTable extends Devices with TableInfo<$DevicesTable, Device> {
     } else if (isInserting) {
       context.missing(_displayNameMeta);
     }
-    if (data.containsKey('is_paired')) {
-      context.handle(_isPairedMeta,
-          isPaired.isAcceptableOrUnknown(data['is_paired']!, _isPairedMeta));
-    }
     if (data.containsKey('paired_at')) {
       context.handle(_pairedAtMeta,
           pairedAt.isAcceptableOrUnknown(data['paired_at']!, _pairedAtMeta));
+    }
+    if (data.containsKey('ssid')) {
+      context.handle(
+          _ssidMeta, ssid.isAcceptableOrUnknown(data['ssid']!, _ssidMeta));
     }
     if (data.containsKey('last_seen_at')) {
       context.handle(
           _lastSeenAtMeta,
           lastSeenAt.isAcceptableOrUnknown(
               data['last_seen_at']!, _lastSeenAtMeta));
-    }
-    if (data.containsKey('firmware_version')) {
-      context.handle(
-          _firmwareVersionMeta,
-          firmwareVersion.isAcceptableOrUnknown(
-              data['firmware_version']!, _firmwareVersionMeta));
-    }
-    if (data.containsKey('public_key')) {
-      context.handle(_publicKeyMeta,
-          publicKey.isAcceptableOrUnknown(data['public_key']!, _publicKeyMeta));
-    }
-    if (data.containsKey('ssid')) {
-      context.handle(
-          _ssidMeta, ssid.isAcceptableOrUnknown(data['ssid']!, _ssidMeta));
     }
     return context;
   }
@@ -1139,20 +1059,16 @@ class $DevicesTable extends Devices with TableInfo<$DevicesTable, Device> {
     return Device(
       deviceId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}device_id'])!,
+      hospitalId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}hospital_id'])!,
       displayName: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}display_name'])!,
-      isPaired: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}is_paired'])!,
       pairedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}paired_at']),
-      lastSeenAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}last_seen_at']),
-      firmwareVersion: attachedDatabase.typeMapping.read(
-          DriftSqlType.string, data['${effectivePrefix}firmware_version']),
-      publicKey: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}public_key']),
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}paired_at'])!,
       ssid: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}ssid']),
+      lastSeenAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}last_seen_at']),
     );
   }
 
@@ -1164,46 +1080,30 @@ class $DevicesTable extends Devices with TableInfo<$DevicesTable, Device> {
 
 class Device extends DataClass implements Insertable<Device> {
   final String deviceId;
+  final String hospitalId;
   final String displayName;
-  final bool isPaired;
-  final DateTime? pairedAt;
-  final DateTime? lastSeenAt;
-  final String? firmwareVersion;
-
-  /// Base64-encoded device public key for future challenge-response auth.
-  final String? publicKey;
-
-  /// SSID of the Pi's hotspot network (reported by the Pi on connect).
+  final DateTime pairedAt;
   final String? ssid;
+  final DateTime? lastSeenAt;
   const Device(
       {required this.deviceId,
+      required this.hospitalId,
       required this.displayName,
-      required this.isPaired,
-      this.pairedAt,
-      this.lastSeenAt,
-      this.firmwareVersion,
-      this.publicKey,
-      this.ssid});
+      required this.pairedAt,
+      this.ssid,
+      this.lastSeenAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['device_id'] = Variable<String>(deviceId);
+    map['hospital_id'] = Variable<String>(hospitalId);
     map['display_name'] = Variable<String>(displayName);
-    map['is_paired'] = Variable<bool>(isPaired);
-    if (!nullToAbsent || pairedAt != null) {
-      map['paired_at'] = Variable<DateTime>(pairedAt);
+    map['paired_at'] = Variable<DateTime>(pairedAt);
+    if (!nullToAbsent || ssid != null) {
+      map['ssid'] = Variable<String>(ssid);
     }
     if (!nullToAbsent || lastSeenAt != null) {
       map['last_seen_at'] = Variable<DateTime>(lastSeenAt);
-    }
-    if (!nullToAbsent || firmwareVersion != null) {
-      map['firmware_version'] = Variable<String>(firmwareVersion);
-    }
-    if (!nullToAbsent || publicKey != null) {
-      map['public_key'] = Variable<String>(publicKey);
-    }
-    if (!nullToAbsent || ssid != null) {
-      map['ssid'] = Variable<String>(ssid);
     }
     return map;
   }
@@ -1211,21 +1111,13 @@ class Device extends DataClass implements Insertable<Device> {
   DevicesCompanion toCompanion(bool nullToAbsent) {
     return DevicesCompanion(
       deviceId: Value(deviceId),
+      hospitalId: Value(hospitalId),
       displayName: Value(displayName),
-      isPaired: Value(isPaired),
-      pairedAt: pairedAt == null && nullToAbsent
-          ? const Value.absent()
-          : Value(pairedAt),
+      pairedAt: Value(pairedAt),
+      ssid: ssid == null && nullToAbsent ? const Value.absent() : Value(ssid),
       lastSeenAt: lastSeenAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSeenAt),
-      firmwareVersion: firmwareVersion == null && nullToAbsent
-          ? const Value.absent()
-          : Value(firmwareVersion),
-      publicKey: publicKey == null && nullToAbsent
-          ? const Value.absent()
-          : Value(publicKey),
-      ssid: ssid == null && nullToAbsent ? const Value.absent() : Value(ssid),
     );
   }
 
@@ -1234,13 +1126,11 @@ class Device extends DataClass implements Insertable<Device> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Device(
       deviceId: serializer.fromJson<String>(json['deviceId']),
+      hospitalId: serializer.fromJson<String>(json['hospitalId']),
       displayName: serializer.fromJson<String>(json['displayName']),
-      isPaired: serializer.fromJson<bool>(json['isPaired']),
-      pairedAt: serializer.fromJson<DateTime?>(json['pairedAt']),
-      lastSeenAt: serializer.fromJson<DateTime?>(json['lastSeenAt']),
-      firmwareVersion: serializer.fromJson<String?>(json['firmwareVersion']),
-      publicKey: serializer.fromJson<String?>(json['publicKey']),
+      pairedAt: serializer.fromJson<DateTime>(json['pairedAt']),
       ssid: serializer.fromJson<String?>(json['ssid']),
+      lastSeenAt: serializer.fromJson<DateTime?>(json['lastSeenAt']),
     );
   }
   @override
@@ -1248,51 +1138,40 @@ class Device extends DataClass implements Insertable<Device> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'deviceId': serializer.toJson<String>(deviceId),
+      'hospitalId': serializer.toJson<String>(hospitalId),
       'displayName': serializer.toJson<String>(displayName),
-      'isPaired': serializer.toJson<bool>(isPaired),
-      'pairedAt': serializer.toJson<DateTime?>(pairedAt),
-      'lastSeenAt': serializer.toJson<DateTime?>(lastSeenAt),
-      'firmwareVersion': serializer.toJson<String?>(firmwareVersion),
-      'publicKey': serializer.toJson<String?>(publicKey),
+      'pairedAt': serializer.toJson<DateTime>(pairedAt),
       'ssid': serializer.toJson<String?>(ssid),
+      'lastSeenAt': serializer.toJson<DateTime?>(lastSeenAt),
     };
   }
 
   Device copyWith(
           {String? deviceId,
+          String? hospitalId,
           String? displayName,
-          bool? isPaired,
-          Value<DateTime?> pairedAt = const Value.absent(),
-          Value<DateTime?> lastSeenAt = const Value.absent(),
-          Value<String?> firmwareVersion = const Value.absent(),
-          Value<String?> publicKey = const Value.absent(),
-          Value<String?> ssid = const Value.absent()}) =>
+          DateTime? pairedAt,
+          Value<String?> ssid = const Value.absent(),
+          Value<DateTime?> lastSeenAt = const Value.absent()}) =>
       Device(
         deviceId: deviceId ?? this.deviceId,
+        hospitalId: hospitalId ?? this.hospitalId,
         displayName: displayName ?? this.displayName,
-        isPaired: isPaired ?? this.isPaired,
-        pairedAt: pairedAt.present ? pairedAt.value : this.pairedAt,
-        lastSeenAt: lastSeenAt.present ? lastSeenAt.value : this.lastSeenAt,
-        firmwareVersion: firmwareVersion.present
-            ? firmwareVersion.value
-            : this.firmwareVersion,
-        publicKey: publicKey.present ? publicKey.value : this.publicKey,
+        pairedAt: pairedAt ?? this.pairedAt,
         ssid: ssid.present ? ssid.value : this.ssid,
+        lastSeenAt: lastSeenAt.present ? lastSeenAt.value : this.lastSeenAt,
       );
   Device copyWithCompanion(DevicesCompanion data) {
     return Device(
       deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+      hospitalId:
+          data.hospitalId.present ? data.hospitalId.value : this.hospitalId,
       displayName:
           data.displayName.present ? data.displayName.value : this.displayName,
-      isPaired: data.isPaired.present ? data.isPaired.value : this.isPaired,
       pairedAt: data.pairedAt.present ? data.pairedAt.value : this.pairedAt,
+      ssid: data.ssid.present ? data.ssid.value : this.ssid,
       lastSeenAt:
           data.lastSeenAt.present ? data.lastSeenAt.value : this.lastSeenAt,
-      firmwareVersion: data.firmwareVersion.present
-          ? data.firmwareVersion.value
-          : this.firmwareVersion,
-      publicKey: data.publicKey.present ? data.publicKey.value : this.publicKey,
-      ssid: data.ssid.present ? data.ssid.value : this.ssid,
     );
   }
 
@@ -1300,110 +1179,93 @@ class Device extends DataClass implements Insertable<Device> {
   String toString() {
     return (StringBuffer('Device(')
           ..write('deviceId: $deviceId, ')
+          ..write('hospitalId: $hospitalId, ')
           ..write('displayName: $displayName, ')
-          ..write('isPaired: $isPaired, ')
           ..write('pairedAt: $pairedAt, ')
-          ..write('lastSeenAt: $lastSeenAt, ')
-          ..write('firmwareVersion: $firmwareVersion, ')
-          ..write('publicKey: $publicKey, ')
-          ..write('ssid: $ssid')
+          ..write('ssid: $ssid, ')
+          ..write('lastSeenAt: $lastSeenAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(deviceId, displayName, isPaired, pairedAt,
-      lastSeenAt, firmwareVersion, publicKey, ssid);
+  int get hashCode => Object.hash(
+      deviceId, hospitalId, displayName, pairedAt, ssid, lastSeenAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Device &&
           other.deviceId == this.deviceId &&
+          other.hospitalId == this.hospitalId &&
           other.displayName == this.displayName &&
-          other.isPaired == this.isPaired &&
           other.pairedAt == this.pairedAt &&
-          other.lastSeenAt == this.lastSeenAt &&
-          other.firmwareVersion == this.firmwareVersion &&
-          other.publicKey == this.publicKey &&
-          other.ssid == this.ssid);
+          other.ssid == this.ssid &&
+          other.lastSeenAt == this.lastSeenAt);
 }
 
 class DevicesCompanion extends UpdateCompanion<Device> {
   final Value<String> deviceId;
+  final Value<String> hospitalId;
   final Value<String> displayName;
-  final Value<bool> isPaired;
-  final Value<DateTime?> pairedAt;
-  final Value<DateTime?> lastSeenAt;
-  final Value<String?> firmwareVersion;
-  final Value<String?> publicKey;
+  final Value<DateTime> pairedAt;
   final Value<String?> ssid;
+  final Value<DateTime?> lastSeenAt;
   final Value<int> rowid;
   const DevicesCompanion({
     this.deviceId = const Value.absent(),
+    this.hospitalId = const Value.absent(),
     this.displayName = const Value.absent(),
-    this.isPaired = const Value.absent(),
     this.pairedAt = const Value.absent(),
-    this.lastSeenAt = const Value.absent(),
-    this.firmwareVersion = const Value.absent(),
-    this.publicKey = const Value.absent(),
     this.ssid = const Value.absent(),
+    this.lastSeenAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   DevicesCompanion.insert({
     required String deviceId,
+    required String hospitalId,
     required String displayName,
-    this.isPaired = const Value.absent(),
     this.pairedAt = const Value.absent(),
-    this.lastSeenAt = const Value.absent(),
-    this.firmwareVersion = const Value.absent(),
-    this.publicKey = const Value.absent(),
     this.ssid = const Value.absent(),
+    this.lastSeenAt = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : deviceId = Value(deviceId),
+        hospitalId = Value(hospitalId),
         displayName = Value(displayName);
   static Insertable<Device> custom({
     Expression<String>? deviceId,
+    Expression<String>? hospitalId,
     Expression<String>? displayName,
-    Expression<bool>? isPaired,
     Expression<DateTime>? pairedAt,
-    Expression<DateTime>? lastSeenAt,
-    Expression<String>? firmwareVersion,
-    Expression<String>? publicKey,
     Expression<String>? ssid,
+    Expression<DateTime>? lastSeenAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (deviceId != null) 'device_id': deviceId,
+      if (hospitalId != null) 'hospital_id': hospitalId,
       if (displayName != null) 'display_name': displayName,
-      if (isPaired != null) 'is_paired': isPaired,
       if (pairedAt != null) 'paired_at': pairedAt,
-      if (lastSeenAt != null) 'last_seen_at': lastSeenAt,
-      if (firmwareVersion != null) 'firmware_version': firmwareVersion,
-      if (publicKey != null) 'public_key': publicKey,
       if (ssid != null) 'ssid': ssid,
+      if (lastSeenAt != null) 'last_seen_at': lastSeenAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
   DevicesCompanion copyWith(
       {Value<String>? deviceId,
+      Value<String>? hospitalId,
       Value<String>? displayName,
-      Value<bool>? isPaired,
-      Value<DateTime?>? pairedAt,
-      Value<DateTime?>? lastSeenAt,
-      Value<String?>? firmwareVersion,
-      Value<String?>? publicKey,
+      Value<DateTime>? pairedAt,
       Value<String?>? ssid,
+      Value<DateTime?>? lastSeenAt,
       Value<int>? rowid}) {
     return DevicesCompanion(
       deviceId: deviceId ?? this.deviceId,
+      hospitalId: hospitalId ?? this.hospitalId,
       displayName: displayName ?? this.displayName,
-      isPaired: isPaired ?? this.isPaired,
       pairedAt: pairedAt ?? this.pairedAt,
-      lastSeenAt: lastSeenAt ?? this.lastSeenAt,
-      firmwareVersion: firmwareVersion ?? this.firmwareVersion,
-      publicKey: publicKey ?? this.publicKey,
       ssid: ssid ?? this.ssid,
+      lastSeenAt: lastSeenAt ?? this.lastSeenAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1414,26 +1276,20 @@ class DevicesCompanion extends UpdateCompanion<Device> {
     if (deviceId.present) {
       map['device_id'] = Variable<String>(deviceId.value);
     }
+    if (hospitalId.present) {
+      map['hospital_id'] = Variable<String>(hospitalId.value);
+    }
     if (displayName.present) {
       map['display_name'] = Variable<String>(displayName.value);
-    }
-    if (isPaired.present) {
-      map['is_paired'] = Variable<bool>(isPaired.value);
     }
     if (pairedAt.present) {
       map['paired_at'] = Variable<DateTime>(pairedAt.value);
     }
-    if (lastSeenAt.present) {
-      map['last_seen_at'] = Variable<DateTime>(lastSeenAt.value);
-    }
-    if (firmwareVersion.present) {
-      map['firmware_version'] = Variable<String>(firmwareVersion.value);
-    }
-    if (publicKey.present) {
-      map['public_key'] = Variable<String>(publicKey.value);
-    }
     if (ssid.present) {
       map['ssid'] = Variable<String>(ssid.value);
+    }
+    if (lastSeenAt.present) {
+      map['last_seen_at'] = Variable<DateTime>(lastSeenAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -1445,13 +1301,11 @@ class DevicesCompanion extends UpdateCompanion<Device> {
   String toString() {
     return (StringBuffer('DevicesCompanion(')
           ..write('deviceId: $deviceId, ')
+          ..write('hospitalId: $hospitalId, ')
           ..write('displayName: $displayName, ')
-          ..write('isPaired: $isPaired, ')
           ..write('pairedAt: $pairedAt, ')
-          ..write('lastSeenAt: $lastSeenAt, ')
-          ..write('firmwareVersion: $firmwareVersion, ')
-          ..write('publicKey: $publicKey, ')
           ..write('ssid: $ssid, ')
+          ..write('lastSeenAt: $lastSeenAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -2234,7 +2088,6 @@ typedef $$MeasurementsTableCreateCompanionBuilder = MeasurementsCompanion
   required String measurementId,
   required String babyId,
   required DateTime capturedAt,
-  required DateTime receivedAt,
   required double ageHours,
   required double bilirubinMgdl,
   Value<bool> hasImage,
@@ -2248,7 +2101,6 @@ typedef $$MeasurementsTableUpdateCompanionBuilder = MeasurementsCompanion
   Value<String> measurementId,
   Value<String> babyId,
   Value<DateTime> capturedAt,
-  Value<DateTime> receivedAt,
   Value<double> ageHours,
   Value<double> bilirubinMgdl,
   Value<bool> hasImage,
@@ -2291,9 +2143,6 @@ class $$MeasurementsTableFilterComposer
 
   ColumnFilters<DateTime> get capturedAt => $composableBuilder(
       column: $table.capturedAt, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<DateTime> get receivedAt => $composableBuilder(
-      column: $table.receivedAt, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<double> get ageHours => $composableBuilder(
       column: $table.ageHours, builder: (column) => ColumnFilters(column));
@@ -2351,9 +2200,6 @@ class $$MeasurementsTableOrderingComposer
   ColumnOrderings<DateTime> get capturedAt => $composableBuilder(
       column: $table.capturedAt, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get receivedAt => $composableBuilder(
-      column: $table.receivedAt, builder: (column) => ColumnOrderings(column));
-
   ColumnOrderings<double> get ageHours => $composableBuilder(
       column: $table.ageHours, builder: (column) => ColumnOrderings(column));
 
@@ -2410,9 +2256,6 @@ class $$MeasurementsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get capturedAt => $composableBuilder(
       column: $table.capturedAt, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get receivedAt => $composableBuilder(
-      column: $table.receivedAt, builder: (column) => column);
 
   GeneratedColumn<double> get ageHours =>
       $composableBuilder(column: $table.ageHours, builder: (column) => column);
@@ -2479,7 +2322,6 @@ class $$MeasurementsTableTableManager extends RootTableManager<
             Value<String> measurementId = const Value.absent(),
             Value<String> babyId = const Value.absent(),
             Value<DateTime> capturedAt = const Value.absent(),
-            Value<DateTime> receivedAt = const Value.absent(),
             Value<double> ageHours = const Value.absent(),
             Value<double> bilirubinMgdl = const Value.absent(),
             Value<bool> hasImage = const Value.absent(),
@@ -2492,7 +2334,6 @@ class $$MeasurementsTableTableManager extends RootTableManager<
             measurementId: measurementId,
             babyId: babyId,
             capturedAt: capturedAt,
-            receivedAt: receivedAt,
             ageHours: ageHours,
             bilirubinMgdl: bilirubinMgdl,
             hasImage: hasImage,
@@ -2505,7 +2346,6 @@ class $$MeasurementsTableTableManager extends RootTableManager<
             required String measurementId,
             required String babyId,
             required DateTime capturedAt,
-            required DateTime receivedAt,
             required double ageHours,
             required double bilirubinMgdl,
             Value<bool> hasImage = const Value.absent(),
@@ -2518,7 +2358,6 @@ class $$MeasurementsTableTableManager extends RootTableManager<
             measurementId: measurementId,
             babyId: babyId,
             capturedAt: capturedAt,
-            receivedAt: receivedAt,
             ageHours: ageHours,
             bilirubinMgdl: bilirubinMgdl,
             hasImage: hasImage,
@@ -2585,24 +2424,20 @@ typedef $$MeasurementsTableProcessedTableManager = ProcessedTableManager<
     PrefetchHooks Function({bool babyId})>;
 typedef $$DevicesTableCreateCompanionBuilder = DevicesCompanion Function({
   required String deviceId,
+  required String hospitalId,
   required String displayName,
-  Value<bool> isPaired,
-  Value<DateTime?> pairedAt,
-  Value<DateTime?> lastSeenAt,
-  Value<String?> firmwareVersion,
-  Value<String?> publicKey,
+  Value<DateTime> pairedAt,
   Value<String?> ssid,
+  Value<DateTime?> lastSeenAt,
   Value<int> rowid,
 });
 typedef $$DevicesTableUpdateCompanionBuilder = DevicesCompanion Function({
   Value<String> deviceId,
+  Value<String> hospitalId,
   Value<String> displayName,
-  Value<bool> isPaired,
-  Value<DateTime?> pairedAt,
-  Value<DateTime?> lastSeenAt,
-  Value<String?> firmwareVersion,
-  Value<String?> publicKey,
+  Value<DateTime> pairedAt,
   Value<String?> ssid,
+  Value<DateTime?> lastSeenAt,
   Value<int> rowid,
 });
 
@@ -2618,27 +2453,20 @@ class $$DevicesTableFilterComposer
   ColumnFilters<String> get deviceId => $composableBuilder(
       column: $table.deviceId, builder: (column) => ColumnFilters(column));
 
+  ColumnFilters<String> get hospitalId => $composableBuilder(
+      column: $table.hospitalId, builder: (column) => ColumnFilters(column));
+
   ColumnFilters<String> get displayName => $composableBuilder(
       column: $table.displayName, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<bool> get isPaired => $composableBuilder(
-      column: $table.isPaired, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get pairedAt => $composableBuilder(
       column: $table.pairedAt, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get lastSeenAt => $composableBuilder(
-      column: $table.lastSeenAt, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get firmwareVersion => $composableBuilder(
-      column: $table.firmwareVersion,
-      builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get publicKey => $composableBuilder(
-      column: $table.publicKey, builder: (column) => ColumnFilters(column));
-
   ColumnFilters<String> get ssid => $composableBuilder(
       column: $table.ssid, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get lastSeenAt => $composableBuilder(
+      column: $table.lastSeenAt, builder: (column) => ColumnFilters(column));
 }
 
 class $$DevicesTableOrderingComposer
@@ -2653,27 +2481,20 @@ class $$DevicesTableOrderingComposer
   ColumnOrderings<String> get deviceId => $composableBuilder(
       column: $table.deviceId, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get hospitalId => $composableBuilder(
+      column: $table.hospitalId, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<String> get displayName => $composableBuilder(
       column: $table.displayName, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<bool> get isPaired => $composableBuilder(
-      column: $table.isPaired, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<DateTime> get pairedAt => $composableBuilder(
       column: $table.pairedAt, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get lastSeenAt => $composableBuilder(
-      column: $table.lastSeenAt, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get firmwareVersion => $composableBuilder(
-      column: $table.firmwareVersion,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get publicKey => $composableBuilder(
-      column: $table.publicKey, builder: (column) => ColumnOrderings(column));
-
   ColumnOrderings<String> get ssid => $composableBuilder(
       column: $table.ssid, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get lastSeenAt => $composableBuilder(
+      column: $table.lastSeenAt, builder: (column) => ColumnOrderings(column));
 }
 
 class $$DevicesTableAnnotationComposer
@@ -2688,26 +2509,20 @@ class $$DevicesTableAnnotationComposer
   GeneratedColumn<String> get deviceId =>
       $composableBuilder(column: $table.deviceId, builder: (column) => column);
 
+  GeneratedColumn<String> get hospitalId => $composableBuilder(
+      column: $table.hospitalId, builder: (column) => column);
+
   GeneratedColumn<String> get displayName => $composableBuilder(
       column: $table.displayName, builder: (column) => column);
-
-  GeneratedColumn<bool> get isPaired =>
-      $composableBuilder(column: $table.isPaired, builder: (column) => column);
 
   GeneratedColumn<DateTime> get pairedAt =>
       $composableBuilder(column: $table.pairedAt, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get lastSeenAt => $composableBuilder(
-      column: $table.lastSeenAt, builder: (column) => column);
-
-  GeneratedColumn<String> get firmwareVersion => $composableBuilder(
-      column: $table.firmwareVersion, builder: (column) => column);
-
-  GeneratedColumn<String> get publicKey =>
-      $composableBuilder(column: $table.publicKey, builder: (column) => column);
-
   GeneratedColumn<String> get ssid =>
       $composableBuilder(column: $table.ssid, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastSeenAt => $composableBuilder(
+      column: $table.lastSeenAt, builder: (column) => column);
 }
 
 class $$DevicesTableTableManager extends RootTableManager<
@@ -2734,46 +2549,38 @@ class $$DevicesTableTableManager extends RootTableManager<
               $$DevicesTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> deviceId = const Value.absent(),
+            Value<String> hospitalId = const Value.absent(),
             Value<String> displayName = const Value.absent(),
-            Value<bool> isPaired = const Value.absent(),
-            Value<DateTime?> pairedAt = const Value.absent(),
-            Value<DateTime?> lastSeenAt = const Value.absent(),
-            Value<String?> firmwareVersion = const Value.absent(),
-            Value<String?> publicKey = const Value.absent(),
+            Value<DateTime> pairedAt = const Value.absent(),
             Value<String?> ssid = const Value.absent(),
+            Value<DateTime?> lastSeenAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               DevicesCompanion(
             deviceId: deviceId,
+            hospitalId: hospitalId,
             displayName: displayName,
-            isPaired: isPaired,
             pairedAt: pairedAt,
-            lastSeenAt: lastSeenAt,
-            firmwareVersion: firmwareVersion,
-            publicKey: publicKey,
             ssid: ssid,
+            lastSeenAt: lastSeenAt,
             rowid: rowid,
           ),
           createCompanionCallback: ({
             required String deviceId,
+            required String hospitalId,
             required String displayName,
-            Value<bool> isPaired = const Value.absent(),
-            Value<DateTime?> pairedAt = const Value.absent(),
-            Value<DateTime?> lastSeenAt = const Value.absent(),
-            Value<String?> firmwareVersion = const Value.absent(),
-            Value<String?> publicKey = const Value.absent(),
+            Value<DateTime> pairedAt = const Value.absent(),
             Value<String?> ssid = const Value.absent(),
+            Value<DateTime?> lastSeenAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               DevicesCompanion.insert(
             deviceId: deviceId,
+            hospitalId: hospitalId,
             displayName: displayName,
-            isPaired: isPaired,
             pairedAt: pairedAt,
-            lastSeenAt: lastSeenAt,
-            firmwareVersion: firmwareVersion,
-            publicKey: publicKey,
             ssid: ssid,
+            lastSeenAt: lastSeenAt,
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0

@@ -15,9 +15,6 @@ class Measurements extends Table {
   /// Timestamp from the device clock (may drift).
   DateTimeColumn get capturedAt => dateTime()();
 
-  /// Timestamp when the app received the data.
-  DateTimeColumn get receivedAt => dateTime()();
-
   /// Baby's postnatal age in hours at time of measurement.
   RealColumn get ageHours => real()();
 
