@@ -4,7 +4,6 @@ class Measurement {
     required this.measurementId,
     required this.babyId,
     required this.capturedAt,
-    required this.receivedAt,
     required this.ageHours,
     required this.bilirubinMgdl,
     this.hasImage = false,
@@ -21,9 +20,6 @@ class Measurement {
 
   /// When the device took the measurement (device clock; may drift).
   final DateTime capturedAt;
-
-  /// When the app received the measurement from the device.
-  final DateTime receivedAt;
 
   /// Baby's postnatal age at time of measurement (hours).
   final double ageHours;
@@ -48,7 +44,6 @@ class Measurement {
     String? measurementId,
     String? babyId,
     DateTime? capturedAt,
-    DateTime? receivedAt,
     double? ageHours,
     double? bilirubinMgdl,
     bool? hasImage,
@@ -60,7 +55,6 @@ class Measurement {
       measurementId: measurementId ?? this.measurementId,
       babyId: babyId ?? this.babyId,
       capturedAt: capturedAt ?? this.capturedAt,
-      receivedAt: receivedAt ?? this.receivedAt,
       ageHours: ageHours ?? this.ageHours,
       bilirubinMgdl: bilirubinMgdl ?? this.bilirubinMgdl,
       hasImage: hasImage ?? this.hasImage,

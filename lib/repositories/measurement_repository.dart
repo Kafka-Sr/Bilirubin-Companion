@@ -53,7 +53,6 @@ class MeasurementRepository {
   ) async {
     if (!isBilirubinAcceptable(event.bilirubinMgdl)) return;
 
-    final receivedAt = DateTime.now();
     final ageHours = baby.ageHoursAt(event.capturedAt);
 
     String? imageRef;
@@ -65,7 +64,6 @@ class MeasurementRepository {
       measurementId: event.measurementId,
       babyId: baby.babyId,
       capturedAt: event.capturedAt,
-      receivedAt: receivedAt,
       ageHours: ageHours,
       bilirubinMgdl: event.bilirubinMgdl,
       hasImage: Value(imageRef != null),
@@ -79,7 +77,6 @@ class MeasurementRepository {
       'measurement_id': event.measurementId,
       'baby_id': baby.babyId,
       'captured_at': event.capturedAt.toIso8601String(),
-      'received_at': receivedAt.toIso8601String(),
       'age_hours': ageHours,
       'bilirubin_mgdl': event.bilirubinMgdl,
       'has_image': imageRef != null,
@@ -177,7 +174,6 @@ class MeasurementRepository {
         measurementId: row.measurementId,
         babyId: row.babyId,
         capturedAt: row.capturedAt,
-        receivedAt: row.receivedAt,
         ageHours: row.ageHours,
         bilirubinMgdl: row.bilirubinMgdl,
         hasImage: row.hasImage,
