@@ -78,7 +78,7 @@
   "settingsPiAddressLabel": "Biligun address or URL",
   "settingsPiAddressHint": "10.42.0.1:7878",
   "settingsHotspotTitle": "Biligun Pairing",
-  "settingsHotspotInstructions": "Connect your phone to the Biligun's Wi-Fi hotspot, then enter its address below.",
+  "settingsHotspotInstructions": "When the phone and Biligun are on the same Wi-Fi network, the app will discover the device automatically.",
   "settingsPiSave": "Connect",
   "settingsPiClear": "Disconnect",
   "settingsPiBeaconUse": "Use",

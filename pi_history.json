@@ -1,0 +1,10 @@
+[
+  {
+    "measurementId": "371a79d6-abba-4e81-827a-86768186d821",
+    "capturedAt": "2026-05-22T12:58:41.534405Z",
+    "bilirubinMgDl": 8.4,
+    "deviceId": "bilirubin-pi-250c2863-4fba-43fe-8255-64b9191d5bb2",
+    "modelVersion": "pi-1",
+    "imageBytesBase64": null
+  }
+]

@@ -5,7 +5,10 @@ import 'package:bilirubin/core/l10n/app_localizations.dart';
 import 'package:bilirubin/features/shared/pairing_status_icon.dart';
 import 'package:bilirubin/models/device_connection_state.dart';
 import 'package:bilirubin/models/device_info.dart';
+import 'package:bilirubin/models/pi_beacon.dart';
 import 'package:bilirubin/providers/device_providers.dart';
+import 'package:bilirubin/providers/pi_discovery_providers.dart';
+import 'package:bilirubin/providers/settings_providers.dart';
 import 'package:bilirubin/providers/supabase_providers.dart';
 import 'package:bilirubin/providers/auth_providers.dart';
 import 'package:bilirubin/providers/sync_providers.dart';
@@ -138,12 +141,21 @@ class DeviceStrip extends ConsumerWidget {
   }
 
   void _toggle(WidgetRef ref, bool isConnected) {
-    final repo = ref.read(deviceRepositoryProvider);
     if (isConnected) {
-      repo.disconnect();
-    } else {
-      repo.connect();
+      ref.read(deviceRepositoryProvider).disconnect();
+      return;
     }
+
+    final manualPiUrl = ref.read(piBaseUrlProvider).trim();
+    if (manualPiUrl.isEmpty) {
+      final discovered = ref.read(piBeaconListProvider).valueOrNull ?? const <PiBeacon>[];
+      if (discovered.isNotEmpty) {
+        ref.read(piBaseUrlProvider.notifier).set(discovered.first.baseUrl);
+        return;
+      }
+    }
+
+    ref.read(deviceRepositoryProvider).connect();
   }
 
   PairingState _pairingState(DeviceConnectionState? state) {

@@ -75,7 +75,7 @@ class PiBeaconDiscoveryService {
           (decoded['deviceId'] as String?) ?? packet.address.address;
       final displayName = (decoded['displayName'] as String?) ?? 'Raspberry Pi';
       final host = (decoded['host'] as String?) ?? packet.address.address;
-      final port = (decoded['port'] as int?) ?? 8080;
+      final port = _parsePort(decoded['port']);
       final firmwareVersion = decoded['firmwareVersion'] as String?;
       final beacon = PiBeacon(
         deviceId: deviceId,
@@ -106,6 +106,16 @@ class PiBeaconDiscoveryService {
     if (!_controller.isClosed) {
       _controller.add(_beacons.values.toList());
     }
+  }
+
+  int _parsePort(dynamic value) {
+    if (value == null) return 8080;
+    if (value is int) return value;
+    if (value is double) return value.toInt();
+    if (value is String) {
+      return int.tryParse(value) ?? 8080;
+    }
+    return 8080;
   }
 
   void _scheduleEmit() {
