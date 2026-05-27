@@ -230,7 +230,7 @@
   "auditEventTransferAccept": "Transfer Diterima",
   "auditEventTransferReject": "Transfer Ditolak",
 
-  "parentDashboardTitle": "Bayi Saya",
+  "parentDashboardTitle": "Dashboard Orang Tua",
   "signOutTooltip": "Keluar",
   "awaitingLinkageTitle": "Menunggu tautan",
   "awaitingLinkageBody": "Akun Anda ({email}) belum ditautkan ke bayi oleh rumah sakit. Hubungi staf rumah sakit Anda.",
@@ -256,5 +256,10 @@
   "adminEditUserTitle": "Edit Akun",
   "adminSaveChanges": "Simpan Perubahan",
   "auditEventAccountEdit": "Akun Diubah",
-  "auditEventTransferCancel": "Transfer Dibatalkan"
+  "auditEventTransferCancel": "Transfer Dibatalkan",
+
+  "parentNoConnectionTitle": "Tidak Ada Koneksi Internet",
+  "parentNoConnectionBody": "Koneksi internet diperlukan untuk memuat data bayi Anda untuk pertama kali. Harap sambungkan ke internet dan coba lagi.",
+  "parentSyncLabel": "Sinkronkan",
+  "retryAction": "Coba Lagi"
 }

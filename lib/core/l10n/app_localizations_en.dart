@@ -656,7 +656,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get auditEventTransferReject => 'Transfer Rejected';
 
   @override
-  String get parentDashboardTitle => 'My Baby';
+  String get parentDashboardTitle => 'Parent Dashboard';
 
   @override
   String get signOutTooltip => 'Sign Out';
@@ -732,4 +732,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get auditEventTransferCancel => 'Transfer Cancelled';
+
+  @override
+  String get parentNoConnectionTitle => 'No Internet Connection';
+
+  @override
+  String get parentNoConnectionBody =>
+      'An internet connection is needed to load your baby\'s data for the first time. Please connect and try again.';
+
+  @override
+  String get parentSyncLabel => 'Sync';
+
+  @override
+  String get retryAction => 'Retry';
 }

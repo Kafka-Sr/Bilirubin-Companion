@@ -1319,7 +1319,7 @@ abstract class AppLocalizations {
   /// No description provided for @parentDashboardTitle.
   ///
   /// In en, this message translates to:
-  /// **'My Baby'**
+  /// **'Parent Dashboard'**
   String get parentDashboardTitle;
 
   /// No description provided for @signOutTooltip.
@@ -1465,6 +1465,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Transfer Cancelled'**
   String get auditEventTransferCancel;
+
+  /// No description provided for @parentNoConnectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Internet Connection'**
+  String get parentNoConnectionTitle;
+
+  /// No description provided for @parentNoConnectionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'An internet connection is needed to load your baby\'s data for the first time. Please connect and try again.'**
+  String get parentNoConnectionBody;
+
+  /// No description provided for @parentSyncLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync'**
+  String get parentSyncLabel;
+
+  /// No description provided for @retryAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retryAction;
 }
 
 class _AppLocalizationsDelegate

@@ -660,7 +660,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get auditEventTransferReject => 'Transfer Ditolak';
 
   @override
-  String get parentDashboardTitle => 'Bayi Saya';
+  String get parentDashboardTitle => 'Dashboard Orang Tua';
 
   @override
   String get signOutTooltip => 'Keluar';
@@ -736,4 +736,17 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get auditEventTransferCancel => 'Transfer Dibatalkan';
+
+  @override
+  String get parentNoConnectionTitle => 'Tidak Ada Koneksi Internet';
+
+  @override
+  String get parentNoConnectionBody =>
+      'Koneksi internet diperlukan untuk memuat data bayi Anda untuk pertama kali. Harap sambungkan ke internet dan coba lagi.';
+
+  @override
+  String get parentSyncLabel => 'Sinkronkan';
+
+  @override
+  String get retryAction => 'Coba Lagi';
 }

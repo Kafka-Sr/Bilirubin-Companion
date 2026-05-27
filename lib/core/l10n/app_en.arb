@@ -293,7 +293,7 @@
   "auditEventTransferAccept": "Transfer Accepted",
   "auditEventTransferReject": "Transfer Rejected",
 
-  "parentDashboardTitle": "My Baby",
+  "parentDashboardTitle": "Parent Dashboard",
   "signOutTooltip": "Sign Out",
   "awaitingLinkageTitle": "Awaiting linkage",
   "awaitingLinkageBody": "Your account ({email}) has not yet been linked to a baby by the hospital. Please contact your hospital staff.",
@@ -324,5 +324,10 @@
   "adminEditUserTitle": "Edit Account",
   "adminSaveChanges": "Save Changes",
   "auditEventAccountEdit": "Account Edited",
-  "auditEventTransferCancel": "Transfer Cancelled"
+  "auditEventTransferCancel": "Transfer Cancelled",
+
+  "parentNoConnectionTitle": "No Internet Connection",
+  "parentNoConnectionBody": "An internet connection is needed to load your baby's data for the first time. Please connect and try again.",
+  "parentSyncLabel": "Sync",
+  "retryAction": "Retry"
 }
