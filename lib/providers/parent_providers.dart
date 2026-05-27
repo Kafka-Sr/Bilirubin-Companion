@@ -1,6 +1,18 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bilirubin/providers/supabase_providers.dart';
 
+/// All baby IDs linked to the current parent via parent_access.
+final parentLinkedBabyIdsProvider = FutureProvider<List<String>>((ref) async {
+  final client = ref.watch(supabaseClientProvider);
+  final user = ref.watch(supabaseUserProvider);
+  if (client == null || user == null) return [];
+  final data = await client
+      .from('parent_access')
+      .select('baby_id')
+      .eq('parent_id', user.id);
+  return (data as List).map((e) => e['baby_id'] as String).toList();
+});
+
 /// The parent_access row for the current user, or null if not linked.
 final parentAccessProvider =
     FutureProvider<Map<String, dynamic>?>((ref) async {
