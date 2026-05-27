@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'Bilirubin Monitor'**
+  /// **'Biligun Companion'**
   String get appTitle;
 
   /// No description provided for @dashboardTitle.
@@ -307,6 +307,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add Baby'**
   String get addBabyTitle;
+
+  /// No description provided for @editAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get editAction;
 
   /// No description provided for @fieldName.
   ///
@@ -899,7 +905,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminUserManagementSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Manage all accounts — staff, admin, and parent'**
+  /// **'Manage all admin, staff, and parent accounts'**
   String get adminUserManagementSubtitle;
 
   /// No description provided for @adminParentAccessTitle.
@@ -1313,7 +1319,7 @@ abstract class AppLocalizations {
   /// No description provided for @parentDashboardTitle.
   ///
   /// In en, this message translates to:
-  /// **'My Baby'**
+  /// **'Parent Dashboard'**
   String get parentDashboardTitle;
 
   /// No description provided for @signOutTooltip.
@@ -1363,6 +1369,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not load profile.'**
   String get couldNotLoadProfile;
+
+  /// No description provided for @adminSearchUsersHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search users…'**
+  String get adminSearchUsersHint;
+
+  /// No description provided for @adminDeactivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivate'**
+  String get adminDeactivate;
+
+  /// No description provided for @adminReactivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Reactivate'**
+  String get adminReactivate;
+
+  /// No description provided for @adminErrorGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get adminErrorGeneric;
+
+  /// No description provided for @adminParentNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent account not found.'**
+  String get adminParentNotFound;
+
+  /// No description provided for @adminLinkFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to link parent to baby.'**
+  String get adminLinkFailed;
+
+  /// No description provided for @adminUnlinkFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to remove link.'**
+  String get adminUnlinkFailed;
+
+  /// No description provided for @transferWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning: Permanent Data Loss'**
+  String get transferWarningTitle;
+
+  /// No description provided for @transferWarningBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Once this transfer is accepted, your hospital will permanently lose access to this baby’s records and measurements. Export the data before proceeding.'**
+  String get transferWarningBody;
+
+  /// No description provided for @transferWarningConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'I Understand, Continue'**
+  String get transferWarningConfirm;
+
+  /// No description provided for @cancelTransfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Transfer'**
+  String get cancelTransfer;
+
+  /// No description provided for @adminEditUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit User'**
+  String get adminEditUser;
+
+  /// No description provided for @adminEditUserTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Account'**
+  String get adminEditUserTitle;
+
+  /// No description provided for @adminSaveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get adminSaveChanges;
+
+  /// No description provided for @auditEventAccountEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Edited'**
+  String get auditEventAccountEdit;
+
+  /// No description provided for @auditEventTransferCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer Cancelled'**
+  String get auditEventTransferCancel;
+
+  /// No description provided for @parentNoConnectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Internet Connection'**
+  String get parentNoConnectionTitle;
+
+  /// No description provided for @parentNoConnectionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'An internet connection is needed to load your baby\'s data for the first time. Please connect and try again.'**
+  String get parentNoConnectionBody;
+
+  /// No description provided for @parentSyncLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync'**
+  String get parentSyncLabel;
+
+  /// No description provided for @retryAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retryAction;
 }
 
 class _AppLocalizationsDelegate

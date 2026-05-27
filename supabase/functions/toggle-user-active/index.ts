@@ -11,7 +11,6 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Verify caller is authenticated
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
@@ -20,21 +19,18 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Client using caller's JWT — for RLS-protected reads
     const callerClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       { global: { headers: { Authorization: authHeader } } }
     )
 
-    // Admin client — for creating auth users (bypasses RLS)
     const adminClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
       { auth: { autoRefreshToken: false, persistSession: false } }
     )
 
-    // Resolve caller's own user ID from JWT first
     const { data: { user: callerUser }, error: userErr } = await callerClient.auth.getUser()
     if (userErr || !callerUser) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
@@ -43,78 +39,66 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Verify caller is admin — filter by user_id so .single() never sees multiple rows
     const { data: callerProfile, error: profileErr } = await callerClient
       .from('user_profiles')
       .select('role, hospital_id')
       .eq('user_id', callerUser.id)
       .single()
 
-    if (profileErr || !callerProfile) {
-      return new Response(JSON.stringify({ error: 'Profile not found' }), {
+    if (profileErr || callerProfile?.role !== 'admin') {
+      return new Response(JSON.stringify({ error: 'Only admins can toggle user status' }), {
         status: 403,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
-    if (callerProfile.role !== 'admin') {
-      return new Response(JSON.stringify({ error: 'Only admins can create accounts' }), {
-        status: 403,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
-    }
-
-    const { email, password, fullName, role } = await req.json()
-
-    if (!email || !password || !fullName || !role) {
-      return new Response(JSON.stringify({ error: 'Missing required fields' }), {
+    const { userId, active } = await req.json()
+    if (!userId || typeof active !== 'boolean') {
+      return new Response(JSON.stringify({ error: 'userId and active (boolean) are required' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
-    if (!['admin', 'staff', 'parent'].includes(role)) {
-      return new Response(JSON.stringify({ error: 'Invalid role' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
-    }
-
-    // Create auth user
-    const { data: newUser, error: createErr } = await adminClient.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-    })
-
-    if (createErr || !newUser.user) {
-      return new Response(JSON.stringify({ error: createErr?.message ?? 'Failed to create user' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
-    }
-
-    // Insert user_profiles row
-    const { error: insertErr } = await adminClient
+    // Verify the target user belongs to the same hospital
+    const { data: targetProfile, error: targetErr } = await adminClient
       .from('user_profiles')
-      .insert({
-        user_id: newUser.user.id,
-        hospital_id: callerProfile.hospital_id,
-        role,
-        full_name: fullName,
-      })
+      .select('hospital_id')
+      .eq('user_id', userId)
+      .single()
 
-    if (insertErr) {
-      // Rollback: delete the auth user
-      await adminClient.auth.admin.deleteUser(newUser.user.id)
-      return new Response(JSON.stringify({ error: 'Failed to create profile, user rolled back' }), {
+    if (targetErr || !targetProfile) {
+      return new Response(JSON.stringify({ error: 'Target user not found' }), {
+        status: 404,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    if (targetProfile.hospital_id !== callerProfile.hospital_id) {
+      return new Response(JSON.stringify({ error: 'Cannot modify users from another hospital' }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    const { error: updateErr } = await adminClient
+      .from('user_profiles')
+      .update({ is_active: active })
+      .eq('user_id', userId)
+
+    if (updateErr) {
+      return new Response(JSON.stringify({ error: 'Failed to update user status' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
+    }
+
+    if (!active) {
+      await adminClient.auth.admin.signOut(userId)
     }
 
     return new Response(
-      JSON.stringify({ userId: newUser.user.id, email, role }),
+      JSON.stringify({ success: true }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (err) {

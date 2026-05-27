@@ -91,7 +91,9 @@ final transfersProvider =
   return (data as List).cast<Map<String, dynamic>>();
 });
 
-/// Paginated audit events for the current hospital (50 per page).
+/// Paginated audit events for the current hospital.
+/// Fetches 51 rows per page so the screen can detect whether a next page
+/// exists (length > 50) without a separate count query.
 final auditEventsProvider =
     FutureProvider.family<List<Map<String, dynamic>>, int>((ref, page) async {
   final client = ref.watch(supabaseClientProvider);
@@ -102,7 +104,7 @@ final auditEventsProvider =
       .from('audit_events')
       .select('*')
       .order('created_at', ascending: false)
-      .range(page * pageSize, (page + 1) * pageSize - 1);
+      .range(page * pageSize, (page + 1) * pageSize);
 
   return (data as List).cast<Map<String, dynamic>>();
 });

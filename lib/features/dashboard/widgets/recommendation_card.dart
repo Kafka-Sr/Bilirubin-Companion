@@ -22,7 +22,7 @@ class RecommendationCard extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // ── Coloured header bar ──────────────────────────────────────────
+          // Coloured header bar
           Container(
             color: zoneColor,
             padding:
@@ -36,7 +36,7 @@ class RecommendationCard extends ConsumerWidget {
               textAlign: TextAlign.center,
             ),
           ),
-          // ── Body ─────────────────────────────────────────────────────────
+          // Body
           Padding(
             padding: const EdgeInsets.all(16),
             child: zone == null

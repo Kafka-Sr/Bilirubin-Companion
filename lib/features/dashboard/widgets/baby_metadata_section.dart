@@ -7,9 +7,10 @@ import 'package:bilirubin/models/baby.dart';
 ///
 /// Each field is rendered as a readonly filled text input (matches frontend design).
 class BabyMetadataSection extends StatelessWidget {
-  const BabyMetadataSection({super.key, required this.baby});
+  const BabyMetadataSection({super.key, required this.baby, this.allowEdit = true});
 
   final Baby baby;
+  final bool allowEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -27,23 +28,24 @@ class BabyMetadataSection extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Header ───────────────────────────────────────────────────────
+            // Header
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(l10n.metadataTitle,
                     style: theme.textTheme.titleLarge
                         ?.copyWith(fontWeight: FontWeight.bold)),
-                FilledButton.tonal(
-                  onPressed: () => showBabyEditModal(context, existing: baby),
-                  style: FilledButton.styleFrom(
-                    shape: const CircleBorder(),
-                    padding: EdgeInsets.zero,
-                    minimumSize: const Size(48, 48),
-                    maximumSize: const Size(48, 48),
+                if (allowEdit)
+                  OutlinedButton(
+                    onPressed: () => showBabyEditModal(context, existing: baby),
+                    style: OutlinedButton.styleFrom(
+                      shape: const CircleBorder(),
+                      padding: EdgeInsets.zero,
+                      minimumSize: const Size(48, 48),
+                      maximumSize: const Size(48, 48),
+                    ),
+                    child: const Icon(Icons.edit_outlined, size: 18),
                   ),
-                  child: const Icon(Icons.edit_outlined, size: 18),
-                ),
               ],
             ),
             const SizedBox(height: 4),

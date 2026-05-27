@@ -43,7 +43,7 @@ class SettingsScreen extends ConsumerWidget {
   }
 }
 
-// ── Account ───────────────────────────────────────────────────────────────────
+// Account
 
 class _AccountSection extends ConsumerWidget {
   const _AccountSection();
@@ -114,7 +114,7 @@ class _AccountSection extends ConsumerWidget {
   }
 }
 
-// ── Hotspot Connection ────────────────────────────────────────────────────────
+// Hotspot Connection
 
 class _HotspotSection extends ConsumerStatefulWidget {
   const _HotspotSection();
@@ -199,7 +199,7 @@ class _BeaconList extends StatelessWidget {
   }
 }
 
-// ── Language ──────────────────────────────────────────────────────────────────
+// Language
 
 class _LanguageSection extends ConsumerWidget {
   const _LanguageSection();
@@ -239,7 +239,7 @@ class _LanguageSection extends ConsumerWidget {
   }
 }
 
-// ── Theme ─────────────────────────────────────────────────────────────────────
+// Theme
 
 class _ThemeSection extends ConsumerWidget {
   const _ThemeSection();
@@ -284,7 +284,7 @@ class _ThemeSection extends ConsumerWidget {
   }
 }
 
-// ── App lock ──────────────────────────────────────────────────────────────────
+// App lock
 
 class _AppLockSection extends ConsumerWidget {
   const _AppLockSection();
@@ -327,7 +327,7 @@ class _AppLockSection extends ConsumerWidget {
   }
 }
 
-// ── Shared section wrapper ────────────────────────────────────────────────────
+// Shared section wrapper
 
 class _Section extends StatelessWidget {
   const _Section({

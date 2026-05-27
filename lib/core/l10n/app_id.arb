@@ -1,7 +1,7 @@
 {
   "@@locale": "id",
 
-  "appTitle": "Monitor Bilirubin",
+  "appTitle": "Biligun Companion",
   "dashboardTitle": "Dasbor",
   "settingsTitle": "Pengaturan",
 
@@ -14,7 +14,7 @@
   "bhutaniChartTitle": "Nomogram Bhutani",
   "showPreviousBilirubin": "Tampilkan Bacaan Sebelumnya",
   "showReadingsOutside168h": "Tampilkan Bacaan >168 jam",
-  "bhutaniOutsideRangeNotice": "Pengingat: Nomogram Bhutani ini hanya menampilkan pembacaan bilirubin dari usia 0 hingga 168 jam. Pembacaan di luar rentang usia ini ditampilkan sebagai titik ungu.",
+  "bhutaniOutsideRangeNotice": "Peringatan: Nomogram Bhutani ini hanya menampilkan pembacaan bilirubin dari usia 0 hingga 168 jam. Pembacaan di luar rentang usia ini ditampilkan sebagai titik ungu.",
   "bhutaniCurrentBeyond168h": "Usia bayi saat ini sudah lebih dari 168 jam.",
   "axisLabelTotalSerumBilirubin": "Total Bilirubin Serum (mg/dL)",
   "axisLabelAgeHours": "Usia (jam)",
@@ -43,6 +43,7 @@
 
   "editBabyTitle": "Ubah Data Bayi",
   "addBabyTitle": "Tambah Bayi",
+  "editAction": "Ubah",
   "fieldName": "Nama",
   "fieldWeight": "Berat (kg)",
   "fieldDob": "Tanggal & Waktu Lahir",
@@ -101,12 +102,12 @@
   "zoneHighIntermediateFull": "Zona Risiko Menengah Tinggi",
   "zoneHighFull": "Zona Risiko Tinggi",
 
-  "deviceConnecting": "Memasangkan\u2026",
+  "deviceConnecting": "Menghubungi\u2026",
   "deviceConnectedLabel": "Terhubung:",
-  "deviceConnect": "Pasangkan",
+  "deviceConnect": "Hubungkan",
   "deviceDisconnect": "Putuskan",
-  "deviceConnectedTo": "Berpasangan dengan {displayName}",
-  "deviceConnectionError": "Gagal memasangkan",
+  "deviceConnectedTo": "Terhubung dengan {displayName}",
+  "deviceConnectionError": "Gagal menghubung",
 
   "selectBaby": "Pilih bayi",
   "searchBabiesHint": "Cari bayi\u2026",
@@ -155,7 +156,7 @@
 
   "adminPanelTitle": "Panel Admin",
   "adminUserManagementTitle": "Manajemen Pengguna",
-  "adminUserManagementSubtitle": "Kelola semua akun — staf, admin, dan orang tua",
+  "adminUserManagementSubtitle": "Kelola semua akun admin, staf, dan orang tua",
   "adminParentAccessTitle": "Akses Orang Tua",
   "adminParentAccessSubtitle": "Hubungkan dan putuskan hubungan orang tua dengan bayi",
   "adminTransfersTitle": "Transfer Bayi",
@@ -229,7 +230,7 @@
   "auditEventTransferAccept": "Transfer Diterima",
   "auditEventTransferReject": "Transfer Ditolak",
 
-  "parentDashboardTitle": "Bayi Saya",
+  "parentDashboardTitle": "Dashboard Orang Tua",
   "signOutTooltip": "Keluar",
   "awaitingLinkageTitle": "Menunggu tautan",
   "awaitingLinkageBody": "Akun Anda ({email}) belum ditautkan ke bayi oleh rumah sakit. Hubungi staf rumah sakit Anda.",
@@ -238,5 +239,27 @@
 
   "settingsAccountTitle": "Akun",
   "signOutLabel": "Keluar",
-  "couldNotLoadProfile": "Tidak dapat memuat profil."
+  "couldNotLoadProfile": "Tidak dapat memuat profil.",
+
+  "adminSearchUsersHint": "Cari pengguna…",
+  "adminDeactivate": "Nonaktifkan",
+  "adminReactivate": "Aktifkan Kembali",
+  "adminErrorGeneric": "Terjadi kesalahan. Silakan coba lagi.",
+  "adminParentNotFound": "Akun orang tua tidak ditemukan.",
+  "adminLinkFailed": "Gagal menautkan orang tua ke bayi.",
+  "adminUnlinkFailed": "Gagal menghapus tautan.",
+  "transferWarningTitle": "Peringatan: Data Akan Hilang",
+  "transferWarningBody": "Setelah transfer diterima, rumah sakit Anda akan kehilangan akses permanen ke data dan pengukuran bayi ini. Ekspor data sebelum melanjutkan.",
+  "transferWarningConfirm": "Saya Mengerti, Lanjutkan",
+  "cancelTransfer": "Batalkan Transfer",
+  "adminEditUser": "Edit Pengguna",
+  "adminEditUserTitle": "Edit Akun",
+  "adminSaveChanges": "Simpan Perubahan",
+  "auditEventAccountEdit": "Akun Diubah",
+  "auditEventTransferCancel": "Transfer Dibatalkan",
+
+  "parentNoConnectionTitle": "Tidak Ada Koneksi Internet",
+  "parentNoConnectionBody": "Koneksi internet diperlukan untuk memuat data bayi Anda untuk pertama kali. Harap sambungkan ke internet dan coba lagi.",
+  "parentSyncLabel": "Sinkronkan",
+  "retryAction": "Coba Lagi"
 }
