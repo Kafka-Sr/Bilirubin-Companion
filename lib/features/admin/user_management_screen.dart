@@ -148,9 +148,9 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
 
       final audit = ref.read(auditRepositoryProvider);
       if (isActive) {
-        audit.logAccountDeactivate(targetUserId, role);
+        audit.logAccountDeactivate(targetUserId, name: name, role: role);
       } else {
-        audit.logAccountReactivate(targetUserId, role);
+        audit.logAccountReactivate(targetUserId, name: name, role: role);
       }
       ref.invalidate(allUsersProvider);
     } catch (e) {
@@ -398,7 +398,12 @@ class _AddAccountDialogState extends ConsumerState<_AddAccountDialog> {
       final newUserId =
           (result.data as Map<String, dynamic>?)?['userId'] as String?;
       if (newUserId != null) {
-        ref.read(auditRepositoryProvider).logAccountCreate(newUserId, _role);
+        ref.read(auditRepositoryProvider).logAccountCreate(
+          newUserId,
+          email: _emailCtrl.text.trim(),
+          name: _nameCtrl.text.trim(),
+          role: _role,
+        );
       }
 
       ref.invalidate(allUsersProvider);
@@ -547,7 +552,11 @@ class _EditAccountDialogState extends ConsumerState<_EditAccountDialog> {
         'role': _role,
       }).eq('user_id', targetUserId);
 
-      ref.read(auditRepositoryProvider).logAccountEdit(targetUserId, _role);
+      ref.read(auditRepositoryProvider).logAccountEdit(
+        targetUserId,
+        name: _nameCtrl.text.trim(),
+        role: _role,
+      );
       ref.invalidate(allUsersProvider);
       if (mounted) Navigator.of(context).pop();
     } catch (e) {

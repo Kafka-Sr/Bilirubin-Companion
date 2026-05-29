@@ -10,6 +10,7 @@ final auditRepositoryProvider = Provider<AuditRepository>((ref) {
   return AuditRepository(
     ref.watch(appDatabaseProvider),
     hospitalId: profile?.hospitalId,
+    actorName: profile?.fullName,
     outbox: ref.watch(localSyncOutboxProvider),
   );
 });

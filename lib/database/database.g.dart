@@ -1361,6 +1361,12 @@ class $AuditEventsTable extends AuditEvents
   late final GeneratedColumn<String> hospitalId = GeneratedColumn<String>(
       'hospital_id', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _messageMeta =
+      const VerificationMeta('message');
+  @override
+  late final GeneratedColumn<String> message = GeneratedColumn<String>(
+      'message', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _detailsJsonMeta =
       const VerificationMeta('detailsJson');
   @override
@@ -1376,6 +1382,7 @@ class $AuditEventsTable extends AuditEvents
         measurementId,
         deviceId,
         hospitalId,
+        message,
         detailsJson
       ];
   @override
@@ -1426,6 +1433,10 @@ class $AuditEventsTable extends AuditEvents
           hospitalId.isAcceptableOrUnknown(
               data['hospital_id']!, _hospitalIdMeta));
     }
+    if (data.containsKey('message')) {
+      context.handle(_messageMeta,
+          message.isAcceptableOrUnknown(data['message']!, _messageMeta));
+    }
     if (data.containsKey('details_json')) {
       context.handle(
           _detailsJsonMeta,
@@ -1455,6 +1466,8 @@ class $AuditEventsTable extends AuditEvents
           .read(DriftSqlType.string, data['${effectivePrefix}device_id']),
       hospitalId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}hospital_id']),
+      message: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}message']),
       detailsJson: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}details_json']),
     );
@@ -1480,6 +1493,9 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
   /// Hospital this event belongs to (for cloud-side RLS filtering).
   final String? hospitalId;
 
+  /// Human-readable summary of the event.
+  final String? message;
+
   /// Arbitrary JSON payload for additional context.
   final String? detailsJson;
   const AuditEvent(
@@ -1490,6 +1506,7 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
       this.measurementId,
       this.deviceId,
       this.hospitalId,
+      this.message,
       this.detailsJson});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1508,6 +1525,9 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
     }
     if (!nullToAbsent || hospitalId != null) {
       map['hospital_id'] = Variable<String>(hospitalId);
+    }
+    if (!nullToAbsent || message != null) {
+      map['message'] = Variable<String>(message);
     }
     if (!nullToAbsent || detailsJson != null) {
       map['details_json'] = Variable<String>(detailsJson);
@@ -1531,6 +1551,9 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
       hospitalId: hospitalId == null && nullToAbsent
           ? const Value.absent()
           : Value(hospitalId),
+      message: message == null && nullToAbsent
+          ? const Value.absent()
+          : Value(message),
       detailsJson: detailsJson == null && nullToAbsent
           ? const Value.absent()
           : Value(detailsJson),
@@ -1548,6 +1571,7 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
       measurementId: serializer.fromJson<String?>(json['measurementId']),
       deviceId: serializer.fromJson<String?>(json['deviceId']),
       hospitalId: serializer.fromJson<String?>(json['hospitalId']),
+      message: serializer.fromJson<String?>(json['message']),
       detailsJson: serializer.fromJson<String?>(json['detailsJson']),
     );
   }
@@ -1562,6 +1586,7 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
       'measurementId': serializer.toJson<String?>(measurementId),
       'deviceId': serializer.toJson<String?>(deviceId),
       'hospitalId': serializer.toJson<String?>(hospitalId),
+      'message': serializer.toJson<String?>(message),
       'detailsJson': serializer.toJson<String?>(detailsJson),
     };
   }
@@ -1574,6 +1599,7 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
           Value<String?> measurementId = const Value.absent(),
           Value<String?> deviceId = const Value.absent(),
           Value<String?> hospitalId = const Value.absent(),
+          Value<String?> message = const Value.absent(),
           Value<String?> detailsJson = const Value.absent()}) =>
       AuditEvent(
         auditEventId: auditEventId ?? this.auditEventId,
@@ -1584,6 +1610,7 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
             measurementId.present ? measurementId.value : this.measurementId,
         deviceId: deviceId.present ? deviceId.value : this.deviceId,
         hospitalId: hospitalId.present ? hospitalId.value : this.hospitalId,
+        message: message.present ? message.value : this.message,
         detailsJson: detailsJson.present ? detailsJson.value : this.detailsJson,
       );
   AuditEvent copyWithCompanion(AuditEventsCompanion data) {
@@ -1600,6 +1627,7 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
       deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
       hospitalId:
           data.hospitalId.present ? data.hospitalId.value : this.hospitalId,
+      message: data.message.present ? data.message.value : this.message,
       detailsJson:
           data.detailsJson.present ? data.detailsJson.value : this.detailsJson,
     );
@@ -1615,6 +1643,7 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
           ..write('measurementId: $measurementId, ')
           ..write('deviceId: $deviceId, ')
           ..write('hospitalId: $hospitalId, ')
+          ..write('message: $message, ')
           ..write('detailsJson: $detailsJson')
           ..write(')'))
         .toString();
@@ -1622,7 +1651,7 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
 
   @override
   int get hashCode => Object.hash(auditEventId, createdAt, eventType, babyId,
-      measurementId, deviceId, hospitalId, detailsJson);
+      measurementId, deviceId, hospitalId, message, detailsJson);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1634,6 +1663,7 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
           other.measurementId == this.measurementId &&
           other.deviceId == this.deviceId &&
           other.hospitalId == this.hospitalId &&
+          other.message == this.message &&
           other.detailsJson == this.detailsJson);
 }
 
@@ -1645,6 +1675,7 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
   final Value<String?> measurementId;
   final Value<String?> deviceId;
   final Value<String?> hospitalId;
+  final Value<String?> message;
   final Value<String?> detailsJson;
   final Value<int> rowid;
   const AuditEventsCompanion({
@@ -1655,6 +1686,7 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
     this.measurementId = const Value.absent(),
     this.deviceId = const Value.absent(),
     this.hospitalId = const Value.absent(),
+    this.message = const Value.absent(),
     this.detailsJson = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -1666,6 +1698,7 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
     this.measurementId = const Value.absent(),
     this.deviceId = const Value.absent(),
     this.hospitalId = const Value.absent(),
+    this.message = const Value.absent(),
     this.detailsJson = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : auditEventId = Value(auditEventId),
@@ -1678,6 +1711,7 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
     Expression<String>? measurementId,
     Expression<String>? deviceId,
     Expression<String>? hospitalId,
+    Expression<String>? message,
     Expression<String>? detailsJson,
     Expression<int>? rowid,
   }) {
@@ -1689,6 +1723,7 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
       if (measurementId != null) 'measurement_id': measurementId,
       if (deviceId != null) 'device_id': deviceId,
       if (hospitalId != null) 'hospital_id': hospitalId,
+      if (message != null) 'message': message,
       if (detailsJson != null) 'details_json': detailsJson,
       if (rowid != null) 'rowid': rowid,
     });
@@ -1702,6 +1737,7 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
       Value<String?>? measurementId,
       Value<String?>? deviceId,
       Value<String?>? hospitalId,
+      Value<String?>? message,
       Value<String?>? detailsJson,
       Value<int>? rowid}) {
     return AuditEventsCompanion(
@@ -1712,6 +1748,7 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
       measurementId: measurementId ?? this.measurementId,
       deviceId: deviceId ?? this.deviceId,
       hospitalId: hospitalId ?? this.hospitalId,
+      message: message ?? this.message,
       detailsJson: detailsJson ?? this.detailsJson,
       rowid: rowid ?? this.rowid,
     );
@@ -1741,6 +1778,9 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
     if (hospitalId.present) {
       map['hospital_id'] = Variable<String>(hospitalId.value);
     }
+    if (message.present) {
+      map['message'] = Variable<String>(message.value);
+    }
     if (detailsJson.present) {
       map['details_json'] = Variable<String>(detailsJson.value);
     }
@@ -1760,6 +1800,7 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
           ..write('measurementId: $measurementId, ')
           ..write('deviceId: $deviceId, ')
           ..write('hospitalId: $hospitalId, ')
+          ..write('message: $message, ')
           ..write('detailsJson: $detailsJson, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -2611,6 +2652,7 @@ typedef $$AuditEventsTableCreateCompanionBuilder = AuditEventsCompanion
   Value<String?> measurementId,
   Value<String?> deviceId,
   Value<String?> hospitalId,
+  Value<String?> message,
   Value<String?> detailsJson,
   Value<int> rowid,
 });
@@ -2623,6 +2665,7 @@ typedef $$AuditEventsTableUpdateCompanionBuilder = AuditEventsCompanion
   Value<String?> measurementId,
   Value<String?> deviceId,
   Value<String?> hospitalId,
+  Value<String?> message,
   Value<String?> detailsJson,
   Value<int> rowid,
 });
@@ -2656,6 +2699,9 @@ class $$AuditEventsTableFilterComposer
 
   ColumnFilters<String> get hospitalId => $composableBuilder(
       column: $table.hospitalId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get message => $composableBuilder(
+      column: $table.message, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get detailsJson => $composableBuilder(
       column: $table.detailsJson, builder: (column) => ColumnFilters(column));
@@ -2693,6 +2739,9 @@ class $$AuditEventsTableOrderingComposer
   ColumnOrderings<String> get hospitalId => $composableBuilder(
       column: $table.hospitalId, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get message => $composableBuilder(
+      column: $table.message, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<String> get detailsJson => $composableBuilder(
       column: $table.detailsJson, builder: (column) => ColumnOrderings(column));
 }
@@ -2726,6 +2775,9 @@ class $$AuditEventsTableAnnotationComposer
 
   GeneratedColumn<String> get hospitalId => $composableBuilder(
       column: $table.hospitalId, builder: (column) => column);
+
+  GeneratedColumn<String> get message =>
+      $composableBuilder(column: $table.message, builder: (column) => column);
 
   GeneratedColumn<String> get detailsJson => $composableBuilder(
       column: $table.detailsJson, builder: (column) => column);
@@ -2761,6 +2813,7 @@ class $$AuditEventsTableTableManager extends RootTableManager<
             Value<String?> measurementId = const Value.absent(),
             Value<String?> deviceId = const Value.absent(),
             Value<String?> hospitalId = const Value.absent(),
+            Value<String?> message = const Value.absent(),
             Value<String?> detailsJson = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
@@ -2772,6 +2825,7 @@ class $$AuditEventsTableTableManager extends RootTableManager<
             measurementId: measurementId,
             deviceId: deviceId,
             hospitalId: hospitalId,
+            message: message,
             detailsJson: detailsJson,
             rowid: rowid,
           ),
@@ -2783,6 +2837,7 @@ class $$AuditEventsTableTableManager extends RootTableManager<
             Value<String?> measurementId = const Value.absent(),
             Value<String?> deviceId = const Value.absent(),
             Value<String?> hospitalId = const Value.absent(),
+            Value<String?> message = const Value.absent(),
             Value<String?> detailsJson = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
@@ -2794,6 +2849,7 @@ class $$AuditEventsTableTableManager extends RootTableManager<
             measurementId: measurementId,
             deviceId: deviceId,
             hospitalId: hospitalId,
+            message: message,
             detailsJson: detailsJson,
             rowid: rowid,
           ),

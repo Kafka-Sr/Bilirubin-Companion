@@ -6,6 +6,7 @@ import 'package:bilirubin/providers/audit_providers.dart';
 import 'package:bilirubin/providers/auth_providers.dart';
 import 'package:bilirubin/providers/baby_providers.dart';
 import 'package:bilirubin/providers/supabase_providers.dart';
+import 'package:bilirubin/utils/extensions.dart';
 
 class ParentLinkingScreen extends ConsumerStatefulWidget {
   const ParentLinkingScreen({super.key});
@@ -104,7 +105,14 @@ class _ParentLinkingScreenState extends ConsumerState<ParentLinkingScreen> {
         'granted_by': user.id,
       });
 
-      ref.read(auditRepositoryProvider).logParentLink(parentId, babyId);
+      final linkedBaby = ref.read(babiesListProvider).valueOrNull
+          ?.firstWhereOrNull((b) => b.babyId == babyId);
+      ref.read(auditRepositoryProvider).logParentLink(
+        parentId,
+        babyId,
+        parentEmail: _emailCtrl.text.trim(),
+        babyName: linkedBaby?.babyName ?? babyId,
+      );
       ref.invalidate(parentLinksProvider);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -125,7 +133,12 @@ class _ParentLinkingScreenState extends ConsumerState<ParentLinkingScreen> {
     }
   }
 
-  Future<void> _unlinkParent(String parentId, String babyId) async {
+  Future<void> _unlinkParent(
+    String parentId,
+    String babyId, {
+    required String parentName,
+    required String babyName,
+  }) async {
     final client = ref.read(supabaseClientProvider);
     if (client == null) return;
     try {
@@ -134,7 +147,12 @@ class _ParentLinkingScreenState extends ConsumerState<ParentLinkingScreen> {
           .delete()
           .eq('parent_id', parentId)
           .eq('baby_id', babyId);
-      ref.read(auditRepositoryProvider).logParentUnlink(parentId, babyId);
+      ref.read(auditRepositoryProvider).logParentUnlink(
+        parentId,
+        babyId,
+        parentName: parentName,
+        babyName: babyName,
+      );
       ref.invalidate(parentLinksProvider);
     } catch (e) {
       if (mounted) {
@@ -224,7 +242,12 @@ class _ParentLinkingScreenState extends ConsumerState<ParentLinkingScreen> {
                           },
                         );
                         if (confirmed == true) {
-                          await _unlinkParent(parentId, babyId);
+                          await _unlinkParent(
+                            parentId,
+                            babyId,
+                            parentName: parentName,
+                            babyName: babyName,
+                          );
                         }
                       },
                     ),

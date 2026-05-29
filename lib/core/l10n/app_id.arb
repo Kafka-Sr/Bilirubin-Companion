@@ -154,7 +154,7 @@
   "loginContactAdmin": "Hubungi administrator rumah sakit Anda untuk mendapatkan akun.",
   "loginUnexpectedError": "Terjadi kesalahan yang tidak terduga.",
 
-  "adminPanelTitle": "Panel Admin",
+  "adminPanelTitle": "Dasbor Admin",
   "adminUserManagementTitle": "Manajemen Pengguna",
   "adminUserManagementSubtitle": "Kelola semua akun admin, staf, dan orang tua",
   "adminParentAccessTitle": "Akses Orang Tua",
@@ -230,7 +230,7 @@
   "auditEventTransferAccept": "Transfer Diterima",
   "auditEventTransferReject": "Transfer Ditolak",
 
-  "parentDashboardTitle": "Dashboard Orang Tua",
+  "parentDashboardTitle": "Dasbor Orang Tua",
   "signOutTooltip": "Keluar",
   "awaitingLinkageTitle": "Menunggu tautan",
   "awaitingLinkageBody": "Akun Anda ({email}) belum ditautkan ke bayi oleh rumah sakit. Hubungi staf rumah sakit Anda.",

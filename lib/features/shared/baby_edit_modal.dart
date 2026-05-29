@@ -5,7 +5,6 @@ import 'package:bilirubin/models/baby.dart';
 import 'package:bilirubin/providers/auth_providers.dart';
 import 'package:bilirubin/providers/baby_providers.dart';
 import 'package:bilirubin/providers/database_provider.dart';
-import 'package:bilirubin/repositories/audit_repository.dart';
 import 'package:bilirubin/utils/input_validators.dart';
 
 /// Shows a modal bottom sheet to add a new baby or edit an existing one.
@@ -195,7 +194,6 @@ class _BabyEditSheetState extends ConsumerState<_BabyEditSheet> {
     try {
       final db = ref.read(appDatabaseProvider);
       final repo = ref.read(babyRepositoryProvider);
-      final audit = AuditRepository(db);
       final name = sanitiseName(_nameCtrl.text);
       final weight = parseWeight(_weightCtrl.text)!;
 
@@ -223,7 +221,6 @@ class _BabyEditSheetState extends ConsumerState<_BabyEditSheet> {
           babyDob: _selectedDob,
           babyWeight: weight,
         ));
-        await audit.logBabyEdit(widget.existing!.babyId);
       }
 
       // Auto-select the newly created baby.

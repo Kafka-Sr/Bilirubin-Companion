@@ -6,9 +6,7 @@ import 'package:bilirubin/features/shared/export_bottom_sheet.dart';
 import 'package:bilirubin/utils/extensions.dart';
 import 'package:bilirubin/models/baby.dart';
 import 'package:bilirubin/providers/baby_providers.dart';
-import 'package:bilirubin/providers/database_provider.dart';
 import 'package:bilirubin/providers/measurement_providers.dart';
-import 'package:bilirubin/repositories/audit_repository.dart';
 
 enum _BabyMenuAction { add, archive }
 
@@ -211,9 +209,7 @@ class _OverflowMenu extends ConsumerWidget {
 
     if (confirmed != true) return;
 
-    final db = ref.read(appDatabaseProvider);
     await ref.read(babyRepositoryProvider).archive(baby.babyId);
-    await AuditRepository(db).logBabyDelete(baby.babyId);
     ref.read(selectedBabyIdProvider.notifier).state = null;
   }
 }

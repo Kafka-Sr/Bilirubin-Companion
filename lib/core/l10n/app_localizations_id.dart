@@ -435,7 +435,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get loginUnexpectedError => 'Terjadi kesalahan yang tidak terduga.';
 
   @override
-  String get adminPanelTitle => 'Panel Admin';
+  String get adminPanelTitle => 'Dasbor Admin';
 
   @override
   String get adminUserManagementTitle => 'Manajemen Pengguna';
@@ -660,7 +660,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get auditEventTransferReject => 'Transfer Ditolak';
 
   @override
-  String get parentDashboardTitle => 'Dashboard Orang Tua';
+  String get parentDashboardTitle => 'Dasbor Orang Tua';
 
   @override
   String get signOutTooltip => 'Keluar';

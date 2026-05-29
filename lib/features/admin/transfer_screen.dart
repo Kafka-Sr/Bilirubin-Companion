@@ -6,6 +6,7 @@ import 'package:bilirubin/providers/audit_providers.dart';
 import 'package:bilirubin/providers/auth_providers.dart';
 import 'package:bilirubin/providers/baby_providers.dart';
 import 'package:bilirubin/providers/supabase_providers.dart';
+import 'package:bilirubin/utils/extensions.dart';
 
 class TransferScreen extends ConsumerStatefulWidget {
   const TransferScreen({super.key});
@@ -138,6 +139,7 @@ class _TransferList extends ConsumerWidget {
                   t['transfer_id'] as String,
                   'accepted',
                   babyId: t['baby_id'] as String?,
+                  babyName: babyName,
                   fromHospitalId: t['from_hospital_id'] as String?,
                 ),
                 child: Text(l10n.acceptLabel),
@@ -148,6 +150,7 @@ class _TransferList extends ConsumerWidget {
                   t['transfer_id'] as String,
                   'rejected',
                   babyId: t['baby_id'] as String?,
+                  babyName: babyName,
                   fromHospitalId: t['from_hospital_id'] as String?,
                 ),
                 child: Text(l10n.rejectLabel,
@@ -163,6 +166,7 @@ class _TransferList extends ConsumerWidget {
               t['transfer_id'] as String,
               'cancelled',
               babyId: t['baby_id'] as String?,
+              babyName: babyName,
               toHospitalId: t['to_hospital_id'] as String?,
             ),
             child: Text(l10n.cancelTransfer,
@@ -187,6 +191,7 @@ class _TransferList extends ConsumerWidget {
     String transferId,
     String newStatus, {
     String? babyId,
+    String? babyName,
     String? fromHospitalId,
     String? toHospitalId,
   }) async {
@@ -204,9 +209,11 @@ class _TransferList extends ConsumerWidget {
           headers: {'Authorization': 'Bearer ${session.accessToken}'},
         );
         if (babyId != null && fromHospitalId != null) {
-          ref
-              .read(auditRepositoryProvider)
-              .logTransferAccept(babyId, fromHospitalId);
+          ref.read(auditRepositoryProvider).logTransferAccept(
+            babyId,
+            babyName: babyName ?? babyId,
+            fromHospitalId: fromHospitalId,
+          );
         }
       } else {
         await client.from('transfer_requests').update({
@@ -219,11 +226,19 @@ class _TransferList extends ConsumerWidget {
         if (newStatus == 'rejected' &&
             babyId != null &&
             fromHospitalId != null) {
-          audit.logTransferReject(babyId, fromHospitalId);
+          audit.logTransferReject(
+            babyId,
+            babyName: babyName ?? babyId,
+            fromHospitalId: fromHospitalId,
+          );
         } else if (newStatus == 'cancelled' &&
             babyId != null &&
             toHospitalId != null) {
-          audit.logTransferCancel(babyId, toHospitalId);
+          audit.logTransferCancel(
+            babyId,
+            babyName: babyName ?? babyId,
+            toHospitalId: toHospitalId,
+          );
         }
       }
       onRefresh();
@@ -335,7 +350,16 @@ class _InitiateTransferDialogState
         'initiated_by': user.id,
       });
 
-      ref.read(auditRepositoryProvider).logTransferCreate(babyId, code);
+      final babies = ref.read(babiesListProvider).valueOrNull ?? [];
+      final transferBabyName = babies
+              .firstWhereOrNull((b) => b.babyId == babyId)
+              ?.babyName ??
+          babyId;
+      ref.read(auditRepositoryProvider).logTransferCreate(
+        babyId,
+        babyName: transferBabyName,
+        toHospitalCode: code,
+      );
       widget.onDone();
       if (mounted) Navigator.of(context).pop();
     } catch (e) {

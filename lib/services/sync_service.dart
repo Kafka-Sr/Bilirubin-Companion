@@ -130,11 +130,11 @@ class SyncService {
           babyId: Value(row['baby_id'] as String),
           hospitalId: Value(row['hospital_id'] as String),
           babyName: Value(row['baby_name'] as String),
-          babyDob: Value(DateTime.parse(row['baby_dob'] as String)),
+          babyDob: Value(DateTime.parse(row['baby_dob'] as String).toLocal()),
           babyWeight: Value((row['baby_weight'] as num).toDouble()),
           isArchived: Value(row['is_archived'] as bool? ?? false),
-          createdAt: Value(DateTime.parse(row['created_at'] as String)),
-          updatedAt: Value(cloudUpdatedAt),
+          createdAt: Value(DateTime.parse(row['created_at'] as String).toLocal()),
+          updatedAt: Value(cloudUpdatedAt.toLocal()),
         ));
       }
 
@@ -146,7 +146,7 @@ class SyncService {
         await _db.measurementsDao.upsertMeasurement(MeasurementsCompanion(
           measurementId: Value(row['measurement_id'] as String),
           babyId: Value(row['baby_id'] as String),
-          capturedAt: Value(DateTime.parse(row['captured_at'] as String)),
+          capturedAt: Value(DateTime.parse(row['captured_at'] as String).toLocal()),
           ageHours: Value((row['age_hours'] as num).toDouble()),
           bilirubinMgdl: Value((bilirubinRaw as num).toDouble()),
           hasImage: Value(row['has_image'] as bool? ?? false),

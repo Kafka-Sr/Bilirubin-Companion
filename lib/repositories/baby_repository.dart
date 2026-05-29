@@ -48,7 +48,8 @@ class BabyRepository {
       createdAt: Value(now),
       updatedAt: Value(now),
     ));
-    _audit?.logBabyCreate(id);
+    _audit?.logBabyCreate(id,
+        babyName: name, dob: dateOfBirth, weightKg: weightKg);
     await _queue('upsert', {
       'baby_id': id,
       'hospital_id': hospitalId,
@@ -65,6 +66,7 @@ class BabyRepository {
   /// Updates an existing baby record.
   Future<void> update(domain.Baby baby) async {
     final now = DateTime.now();
+    final oldRow = await _db.babiesDao.getBabyById(baby.babyId);
     await _db.babiesDao.updateBaby(BabiesCompanion(
       babyId: Value(baby.babyId),
       hospitalId: Value(baby.hospitalId),
@@ -73,7 +75,9 @@ class BabyRepository {
       babyWeight: Value(baby.babyWeight),
       updatedAt: Value(now),
     ));
-    _audit?.logBabyEdit(baby.babyId);
+    if (oldRow != null) {
+      _audit?.logBabyEdit(_toModel(oldRow), baby);
+    }
     await _queue('upsert', {
       'baby_id': baby.babyId,
       'hospital_id': baby.hospitalId,
@@ -92,7 +96,8 @@ class BabyRepository {
     final baby = await _db.babiesDao.getBabyById(id);
     if (baby == null) return;
     await _db.babiesDao.archiveBaby(id);
-    _audit?.logBabyDelete(id);
+    _audit?.logBabyDelete(id,
+        babyName: baby.babyName, dob: baby.babyDob, weightKg: baby.babyWeight);
     await _queue('upsert', {
       'baby_id': id,
       'hospital_id': baby.hospitalId,
@@ -128,8 +133,12 @@ class BabyRepository {
 
   /// Permanently removes a baby record by [id].
   Future<void> delete(String id) async {
+    final baby = await _db.babiesDao.getBabyById(id);
     await _db.babiesDao.deleteBaby(id);
-    _audit?.logBabyDelete(id);
+    if (baby != null) {
+      _audit?.logBabyDelete(id,
+          babyName: baby.babyName, dob: baby.babyDob, weightKg: baby.babyWeight);
+    }
     await _queue('delete', {'baby_id': id});
   }
 

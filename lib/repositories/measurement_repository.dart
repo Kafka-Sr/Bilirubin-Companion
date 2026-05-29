@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:bilirubin/core/constants.dart';
 import 'package:bilirubin/database/database.dart' hide Baby;
+import 'package:bilirubin/utils/bhutani_classifier.dart' as classifier;
 import 'package:bilirubin/device/device_repository.dart';
 import 'package:bilirubin/models/measurement.dart' as domain;
 import 'package:bilirubin/models/baby.dart';
@@ -71,7 +72,16 @@ class MeasurementRepository {
       deviceId: Value(event.deviceId),
       modelVersion: Value(event.modelVersion),
     ));
-    _audit?.logMeasurementCreate(event.measurementId, baby.babyId);
+    final zone = classifier.classify(ageHours, event.bilirubinMgdl)?.label ?? 'unknown';
+    _audit?.logMeasurementCreate(
+      event.measurementId,
+      baby.babyId,
+      babyName: baby.babyName,
+      bilirubinMgdl: event.bilirubinMgdl,
+      ageHours: ageHours,
+      zone: zone,
+      deviceId: event.deviceId,
+    );
 
     await _queue('upsert', {
       'measurement_id': event.measurementId,
@@ -144,7 +154,6 @@ class MeasurementRepository {
       if (file.existsSync()) await file.delete();
     }
     await _db.measurementsDao.deleteMeasurement(measurementId);
-    if (row != null) _audit?.logMeasurementDelete(measurementId, row.babyId);
     await _queue('delete', {'measurement_id': measurementId});
   }
 

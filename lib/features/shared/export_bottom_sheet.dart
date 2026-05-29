@@ -111,7 +111,11 @@ class _ExportSheetState extends State<_ExportSheet> {
         final filename =
             'bilirubin_${sanitiseFilename(widget.baby.babyName)}.pdf';
         await Printing.sharePdf(bytes: bytes, filename: filename);
-        widget.ref.read(auditRepositoryProvider).logExport(widget.baby.babyId);
+        widget.ref.read(auditRepositoryProvider).logExport(
+          widget.baby.babyId,
+          babyName: widget.baby.babyName,
+          fileType: 'PDF',
+        );
       } finally {
         if (mounted) setState(() => _exporting = false);
       }
@@ -139,7 +143,11 @@ class _ExportSheetState extends State<_ExportSheet> {
 
       await file.writeAsString(content);
 
-      widget.ref.read(auditRepositoryProvider).logExport(widget.baby.babyId);
+      widget.ref.read(auditRepositoryProvider).logExport(
+        widget.baby.babyId,
+        babyName: widget.baby.babyName,
+        fileType: _format == _ExportFormat.json ? 'JSON' : 'CSV',
+      );
 
       if (context.mounted) {
         Navigator.of(context).pop();

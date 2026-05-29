@@ -17,6 +17,9 @@ class AuditEvents extends Table {
   /// Hospital this event belongs to (for cloud-side RLS filtering).
   TextColumn get hospitalId => text().nullable()();
 
+  /// Human-readable summary of the event.
+  TextColumn get message => text().nullable()();
+
   /// Arbitrary JSON payload for additional context.
   TextColumn get detailsJson => text().nullable()();
 

@@ -81,7 +81,10 @@ final measurementBridgeProvider = Provider<void>((ref) {
         final info = ref.read(deviceInfoProvider).valueOrNull;
         if (info != null && info.deviceId != loggedDeviceId) {
           loggedDeviceId = info.deviceId;
-          ref.read(auditRepositoryProvider).logDeviceAdd(info.deviceId);
+          ref.read(auditRepositoryProvider).logDeviceAdd(
+            info.deviceId,
+            deviceName: info.displayName,
+          );
         }
       } else {
         loggedDeviceId = null;
