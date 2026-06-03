@@ -35,4 +35,14 @@ class MeasurementsDao extends DatabaseAccessor<AppDatabase>
       (delete(measurements)
             ..where((m) => m.measurementId.equals(measurementId)))
           .go();
+
+  /// Removes measurements whose baby_id no longer exists in the babies table.
+  /// Called after purging out-of-hospital babies to clean up orphaned rows.
+  Future<void> deleteOrphaned() async {
+    final active = await db.babiesDao.watchAllActive().first;
+    final archived = await db.babiesDao.watchAllArchived().first;
+    final knownIds = [...active, ...archived].map((b) => b.babyId).toList();
+    if (knownIds.isEmpty) return;
+    await (delete(measurements)..where((m) => m.babyId.isNotIn(knownIds))).go();
+  }
 }

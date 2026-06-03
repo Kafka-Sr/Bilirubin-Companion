@@ -7,11 +7,12 @@ import 'package:bilirubin/models/local_sync_outbox_entry.dart';
 import 'package:bilirubin/repositories/local_sync_outbox.dart';
 
 class SyncService {
-  SyncService(this._outbox, this._cloud, this._db);
+  SyncService(this._outbox, this._cloud, this._db, {this.hospitalId});
 
   final LocalSyncOutbox _outbox;
   final CloudSyncRepository _cloud;
   final AppDatabase _db;
+  final String? hospitalId;
 
   Future<void> drainOutbox() async {
     if (!_cloud.isEnabled) return;
@@ -154,6 +155,13 @@ class SyncService {
           deviceId: Value(row['device_id'] as String?),
           modelVersion: Value(row['model_version'] as String?),
         ));
+      }
+      // Purge any babies/measurements from other hospitals that were cached
+      // before RLS was enforced.
+      final hid = hospitalId;
+      if (hid != null) {
+        await _db.babiesDao.deleteFromOtherHospitals(hid);
+        await _db.measurementsDao.deleteOrphaned();
       }
     } catch (_) {
       // Offline is acceptable — retry on next pull.

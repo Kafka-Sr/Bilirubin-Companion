@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:bilirubin/providers/auth_providers.dart';
 import 'package:bilirubin/providers/database_provider.dart';
 import 'package:bilirubin/providers/supabase_providers.dart';
 import 'package:bilirubin/providers/sync_queue_providers.dart';
@@ -23,10 +24,12 @@ final cloudSyncRepositoryProvider = Provider<CloudSyncRepository>((ref) {
 });
 
 final syncServiceProvider = Provider<SyncService>((ref) {
+  final hospitalId = ref.watch(userProfileProvider).valueOrNull?.hospitalId;
   return SyncService(
     ref.watch(localSyncOutboxProvider),
     ref.watch(cloudSyncRepositoryProvider),
     ref.watch(appDatabaseProvider),
+    hospitalId: hospitalId,
   );
 });
 

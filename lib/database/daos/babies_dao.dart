@@ -58,4 +58,10 @@ class BabiesDao extends DatabaseAccessor<AppDatabase> with _$BabiesDaoMixin {
   /// Permanently deletes a baby row by [id].
   Future<void> deleteBaby(String id) =>
       (delete(babies)..where((b) => b.babyId.equals(id))).go();
+
+  /// Removes every baby whose hospital_id does not equal [hospitalId].
+  /// Called after a cloud pull to purge cached rows from other hospitals.
+  Future<void> deleteFromOtherHospitals(String hospitalId) =>
+      (delete(babies)..where((b) => b.hospitalId.equals(hospitalId).not()))
+          .go();
 }
