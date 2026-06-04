@@ -175,11 +175,40 @@ class _TransferList extends ConsumerWidget {
           );
         }
 
+        final fromName = (t['from_hospital'] as Map?)?['hospital_name']
+                as String? ??
+            t['from_hospital_id'] as String? ??
+            '?';
+        final toName = (t['to_hospital'] as Map?)?['hospital_name']
+                as String? ??
+            t['to_hospital_id'] as String? ??
+            '?';
+        final labelStyle = Theme.of(context).textTheme.bodySmall;
+
         return ListTile(
           leading: _StatusIcon(status: status),
           title: Text(babyName),
-          subtitle: Text(status.toUpperCase()),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(child: Text(fromName, style: labelStyle)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Icon(Icons.arrow_forward, size: 14,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  ),
+                  Flexible(child: Text(toName, style: labelStyle)),
+                ],
+              ),
+              Text(status.toUpperCase(), style: labelStyle),
+            ],
+          ),
           trailing: trailing,
+          isThreeLine: true,
         );
       },
     );
@@ -299,35 +328,11 @@ class _InitiateTransferDialogState
     if (babyId == null || code.isEmpty) return;
 
     final l10n = AppLocalizations.of(context);
-
-    // Warn the admin that data access will be permanently lost
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) {
-        final dl10n = AppLocalizations.of(ctx);
-        return AlertDialog(
-          title: Text(dl10n.transferWarningTitle),
-          content: Text(dl10n.transferWarningBody),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(false),
-              child: Text(dl10n.cancel),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.of(ctx).pop(true),
-              child: Text(dl10n.transferWarningConfirm),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (confirmed != true || !mounted) return;
-
     setState(() {
       _loading = true;
       _error = null;
     });
+
     try {
       final client = ref.read(supabaseClientProvider);
       final profile = ref.read(userProfileProvider).valueOrNull;
@@ -336,36 +341,92 @@ class _InitiateTransferDialogState
         throw Exception('Not authenticated');
       }
 
-      final hospital = await client
+      // Phase 1: validate hospital code
+      final targetRow = await client
           .from('hospitals')
-          .select('hospital_id')
+          .select('hospital_id, hospital_name')
           .eq('hospital_code', code)
           .maybeSingle();
-      if (hospital == null) throw Exception('Hospital code not found');
 
+      if (targetRow == null) {
+        setState(() => _error = l10n.transferInvalidHospitalCode);
+        return;
+      }
+
+      if ((targetRow['hospital_id'] as String) == profile.hospitalId) {
+        setState(() => _error = l10n.transferSameHospitalError);
+        return;
+      }
+
+      final currentRow = await client
+          .from('hospitals')
+          .select('hospital_name')
+          .eq('hospital_id', profile.hospitalId)
+          .maybeSingle();
+
+      final targetName = targetRow['hospital_name'] as String? ?? code;
+      final currentName =
+          currentRow?['hospital_name'] as String? ?? profile.hospitalId;
+      final babies = ref.read(babiesListProvider).valueOrNull ?? [];
+      final babyName =
+          babies.firstWhereOrNull((b) => b.babyId == babyId)?.babyName ??
+              babyId;
+
+      if (!mounted) return;
+
+      // Show Transfer Preview Dialog
+      final preview = await showDialog<bool>(
+        context: context,
+        builder: (_) => _TransferPreviewDialog(
+          currentHospitalName: currentName,
+          targetHospitalName: targetName,
+          babyName: babyName,
+        ),
+      );
+      if (preview != true || !mounted) return;
+
+      // Show permanent data loss warning
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) {
+          final dl10n = AppLocalizations.of(ctx);
+          return AlertDialog(
+            title: Text(dl10n.transferWarningTitle),
+            content: Text(dl10n.transferWarningBody),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(false),
+                child: Text(dl10n.cancel),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.of(ctx).pop(true),
+                child: Text(dl10n.transferWarningConfirm),
+              ),
+            ],
+          );
+        },
+      );
+      if (confirmed != true || !mounted) return;
+
+      // Phase 2: insert transfer
       await client.from('transfer_requests').insert({
         'baby_id': babyId,
         'from_hospital_id': profile.hospitalId,
-        'to_hospital_id': hospital['hospital_id'] as String,
+        'to_hospital_id': targetRow['hospital_id'] as String,
         'initiated_by': user.id,
       });
 
-      final babies = ref.read(babiesListProvider).valueOrNull ?? [];
-      final transferBabyName = babies
-              .firstWhereOrNull((b) => b.babyId == babyId)
-              ?.babyName ??
-          babyId;
       ref.read(auditRepositoryProvider).logTransferCreate(
         babyId,
-        babyName: transferBabyName,
+        babyName: babyName,
         toHospitalCode: code,
       );
       widget.onDone();
       if (mounted) Navigator.of(context).pop();
-    } catch (e) {
-      setState(() => _error = l10n.adminErrorGeneric);
+    } catch (_) {
+      if (mounted) setState(() => _error = l10n.adminErrorGeneric);
     } finally {
-      setState(() => _loading = false);
+      if (mounted) setState(() => _loading = false);
     }
   }
 
@@ -418,6 +479,104 @@ class _InitiateTransferDialogState
                   width: 16,
                   child: CircularProgressIndicator(strokeWidth: 2))
               : Text(l10n.sendLabel),
+        ),
+      ],
+    );
+  }
+}
+
+class _TransferPreviewDialog extends StatelessWidget {
+  const _TransferPreviewDialog({
+    required this.currentHospitalName,
+    required this.targetHospitalName,
+    required this.babyName,
+  });
+
+  final String currentHospitalName;
+  final String targetHospitalName;
+  final String babyName;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+
+    return AlertDialog(
+      title: Text(l10n.transferConfirmTitle),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(l10n.transferConfirmBabyLabel, style: tt.labelMedium),
+          const SizedBox(height: 6),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: cs.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.child_friendly, size: 18, color: cs.primary),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Text(
+                    babyName,
+                    style: tt.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: cs.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    currentHospitalName,
+                    style: tt.bodySmall,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Icon(Icons.arrow_forward, color: cs.primary),
+              ),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: cs.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    targetHospitalName,
+                    style: tt.bodySmall,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: Text(l10n.cancel),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop(true),
+          child: Text(l10n.transferConfirmYes),
         ),
       ],
     );

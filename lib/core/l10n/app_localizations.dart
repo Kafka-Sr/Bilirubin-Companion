@@ -1489,6 +1489,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry'**
   String get retryAction;
+
+  /// No description provided for @transferInvalidHospitalCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect hospital code.'**
+  String get transferInvalidHospitalCode;
+
+  /// No description provided for @transferSameHospitalError.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot transfer to your own hospital.'**
+  String get transferSameHospitalError;
+
+  /// No description provided for @transferConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Transfer'**
+  String get transferConfirmTitle;
+
+  /// No description provided for @transferConfirmBabyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Baby being transferred'**
+  String get transferConfirmBabyLabel;
+
+  /// No description provided for @transferConfirmYes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, Continue'**
+  String get transferConfirmYes;
 }
 
 class _AppLocalizationsDelegate

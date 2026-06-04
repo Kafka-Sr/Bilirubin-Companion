@@ -745,4 +745,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get retryAction => 'Retry';
+
+  @override
+  String get transferInvalidHospitalCode => 'Incorrect hospital code.';
+
+  @override
+  String get transferSameHospitalError =>
+      'Cannot transfer to your own hospital.';
+
+  @override
+  String get transferConfirmTitle => 'Confirm Transfer';
+
+  @override
+  String get transferConfirmBabyLabel => 'Baby being transferred';
+
+  @override
+  String get transferConfirmYes => 'Yes, Continue';
 }

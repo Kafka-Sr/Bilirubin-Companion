@@ -84,7 +84,7 @@ final transfersProvider =
 
   final data = await client
       .from('transfer_requests')
-      .select('*, babies(baby_name)')
+      .select('*, babies(baby_name), from_hospital:hospitals!from_hospital_id(hospital_name), to_hospital:hospitals!to_hospital_id(hospital_name)')
       .or('from_hospital_id.eq.${profile.hospitalId},to_hospital_id.eq.${profile.hospitalId}')
       .order('initiated_at', ascending: false);
 

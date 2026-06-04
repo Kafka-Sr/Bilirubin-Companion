@@ -261,5 +261,11 @@
   "parentNoConnectionTitle": "Tidak Ada Koneksi Internet",
   "parentNoConnectionBody": "Koneksi internet diperlukan untuk memuat data bayi Anda untuk pertama kali. Harap sambungkan ke internet dan coba lagi.",
   "parentSyncLabel": "Sinkronkan",
-  "retryAction": "Coba Lagi"
+  "retryAction": "Coba Lagi",
+
+  "transferInvalidHospitalCode": "Kode rumah sakit tidak valid.",
+  "transferSameHospitalError": "Tidak dapat mentransfer ke rumah sakit sendiri.",
+  "transferConfirmTitle": "Konfirmasi Transfer",
+  "transferConfirmBabyLabel": "Bayi yang akan ditransfer",
+  "transferConfirmYes": "Ya, Lanjutkan"
 }

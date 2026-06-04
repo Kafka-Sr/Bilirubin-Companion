@@ -329,5 +329,11 @@
   "parentNoConnectionTitle": "No Internet Connection",
   "parentNoConnectionBody": "An internet connection is needed to load your baby's data for the first time. Please connect and try again.",
   "parentSyncLabel": "Sync",
-  "retryAction": "Retry"
+  "retryAction": "Retry",
+
+  "transferInvalidHospitalCode": "Incorrect hospital code.",
+  "transferSameHospitalError": "Cannot transfer to your own hospital.",
+  "transferConfirmTitle": "Confirm Transfer",
+  "transferConfirmBabyLabel": "Baby being transferred",
+  "transferConfirmYes": "Yes, Continue"
 }

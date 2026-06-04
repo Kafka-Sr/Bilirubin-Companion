@@ -749,4 +749,20 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get retryAction => 'Coba Lagi';
+
+  @override
+  String get transferInvalidHospitalCode => 'Kode rumah sakit tidak valid.';
+
+  @override
+  String get transferSameHospitalError =>
+      'Tidak dapat mentransfer ke rumah sakit sendiri.';
+
+  @override
+  String get transferConfirmTitle => 'Konfirmasi Transfer';
+
+  @override
+  String get transferConfirmBabyLabel => 'Bayi yang akan ditransfer';
+
+  @override
+  String get transferConfirmYes => 'Ya, Lanjutkan';
 }
