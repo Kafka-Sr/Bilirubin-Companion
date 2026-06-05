@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bilirubin/core/l10n/app_localizations.dart';
 import 'package:bilirubin/features/shared/baby_edit_modal.dart';
+import 'package:bilirubin/features/shared/marquee_text.dart';
 import 'package:bilirubin/features/shared/export_bottom_sheet.dart';
 import 'package:bilirubin/utils/extensions.dart';
 import 'package:bilirubin/models/baby.dart';
@@ -90,10 +91,9 @@ class _BabyDropdownState extends ConsumerState<_BabyDropdown> {
             const Icon(Icons.child_friendly, size: 20),
             const SizedBox(width: 8),
             Expanded(
-              child: Text(
-                selected?.babyName ?? AppLocalizations.of(context).selectBaby,
+              child: MarqueeText(
+                text: selected?.babyName ?? AppLocalizations.of(context).selectBaby,
                 style: Theme.of(context).textTheme.bodyLarge,
-                overflow: TextOverflow.ellipsis,
               ),
             ),
             const Icon(Icons.keyboard_arrow_down),

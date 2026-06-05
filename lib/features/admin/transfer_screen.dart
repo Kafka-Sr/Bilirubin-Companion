@@ -45,6 +45,7 @@ class _TransferScreenState extends ConsumerState<TransferScreen>
           tabs: [Tab(text: l10n.outgoingTab), Tab(text: l10n.incomingTab)],
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
         icon: const Icon(Icons.swap_horiz),
         label: Text(l10n.initiateTransferFab),
@@ -115,25 +116,43 @@ class _TransferList extends ConsumerWidget {
       );
     }
 
-    return ListView.separated(
-      padding: const EdgeInsets.all(16),
+    return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
       itemCount: transfers.length,
-      separatorBuilder: (_, __) => const Divider(height: 1),
       itemBuilder: (_, i) {
         final t = transfers[i];
         final status = t['status'] as String? ?? 'pending';
         final babyName =
-            (t['babies'] as Map<String, dynamic>?)?['baby_name'] as String? ??
+            t['baby_name'] as String? ??
+                (t['babies'] as Map<String, dynamic>?)?['baby_name'] as String? ??
                 t['baby_id'] as String? ??
                 'Unknown';
         final l10n = AppLocalizations.of(context);
 
-        Widget? trailing;
+        final fromName = (t['from_hospital'] as Map?)?['hospital_name']
+                as String? ??
+            t['from_hospital_id'] as String? ??
+            '?';
+        final toName = (t['to_hospital'] as Map?)?['hospital_name']
+                as String? ??
+            t['to_hospital_id'] as String? ??
+            '?';
+        final labelStyle = Theme.of(context).textTheme.bodySmall;
+        final buttonStyle = TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+          minimumSize: Size.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        );
+
+        Widget statusRow;
         if (isIncoming && status == 'pending') {
-          trailing = Row(
+          statusRow = Row(
             mainAxisSize: MainAxisSize.min,
             children: [
+              Text(status.toUpperCase(), style: labelStyle),
+              const SizedBox(width: 4),
               TextButton(
+                style: buttonStyle,
                 onPressed: () => _updateStatus(
                   context, ref,
                   t['transfer_id'] as String,
@@ -145,6 +164,7 @@ class _TransferList extends ConsumerWidget {
                 child: Text(l10n.acceptLabel),
               ),
               TextButton(
+                style: buttonStyle,
                 onPressed: () => _updateStatus(
                   context, ref,
                   t['transfer_id'] as String,
@@ -154,36 +174,34 @@ class _TransferList extends ConsumerWidget {
                   fromHospitalId: t['from_hospital_id'] as String?,
                 ),
                 child: Text(l10n.rejectLabel,
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.error)),
+                    style: TextStyle(color: Theme.of(context).colorScheme.error)),
               ),
             ],
           );
         } else if (!isIncoming && status == 'pending') {
-          trailing = TextButton(
-            onPressed: () => _updateStatus(
-              context, ref,
-              t['transfer_id'] as String,
-              'cancelled',
-              babyId: t['baby_id'] as String?,
-              babyName: babyName,
-              toHospitalId: t['to_hospital_id'] as String?,
-            ),
-            child: Text(l10n.cancelTransfer,
-                style:
-                    TextStyle(color: Theme.of(context).colorScheme.error)),
+          statusRow = Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(status.toUpperCase(), style: labelStyle),
+              const SizedBox(width: 4),
+              TextButton(
+                style: buttonStyle,
+                onPressed: () => _updateStatus(
+                  context, ref,
+                  t['transfer_id'] as String,
+                  'cancelled',
+                  babyId: t['baby_id'] as String?,
+                  babyName: babyName,
+                  toHospitalId: t['to_hospital_id'] as String?,
+                ),
+                child: Text(l10n.cancelTransfer,
+                    style: TextStyle(color: Theme.of(context).colorScheme.error)),
+              ),
+            ],
           );
+        } else {
+          statusRow = Text(status.toUpperCase(), style: labelStyle);
         }
-
-        final fromName = (t['from_hospital'] as Map?)?['hospital_name']
-                as String? ??
-            t['from_hospital_id'] as String? ??
-            '?';
-        final toName = (t['to_hospital'] as Map?)?['hospital_name']
-                as String? ??
-            t['to_hospital_id'] as String? ??
-            '?';
-        final labelStyle = Theme.of(context).textTheme.bodySmall;
 
         return ListTile(
           leading: _StatusIcon(status: status),
@@ -204,10 +222,9 @@ class _TransferList extends ConsumerWidget {
                   Flexible(child: Text(toName, style: labelStyle)),
                 ],
               ),
-              Text(status.toUpperCase(), style: labelStyle),
+              statusRow,
             ],
           ),
-          trailing: trailing,
           isThreeLine: true,
         );
       },
@@ -414,6 +431,7 @@ class _InitiateTransferDialogState
         'from_hospital_id': profile.hospitalId,
         'to_hospital_id': targetRow['hospital_id'] as String,
         'initiated_by': user.id,
+        'baby_name': babyName,
       });
 
       ref.read(auditRepositoryProvider).logTransferCreate(
@@ -433,6 +451,13 @@ class _InitiateTransferDialogState
   @override
   Widget build(BuildContext context) {
     final babies = ref.watch(babiesListProvider).valueOrNull ?? [];
+    final transfers = ref.watch(transfersProvider).valueOrNull ?? [];
+    final pendingBabyIds = transfers
+        .where((t) => (t['status'] as String?) == 'pending')
+        .map((t) => t['baby_id'] as String)
+        .toSet();
+    final availableBabies =
+        babies.where((b) => !pendingBabyIds.contains(b.babyId)).toList();
 
     final l10n = AppLocalizations.of(context);
     return AlertDialog(
@@ -443,7 +468,7 @@ class _InitiateTransferDialogState
           DropdownButtonFormField<String>(
             initialValue: _selectedBabyId,
             decoration: InputDecoration(labelText: l10n.babyLabel),
-            items: babies
+            items: availableBabies
                 .map((b) => DropdownMenuItem(
                       value: b.babyId,
                       child: Text(b.babyName),

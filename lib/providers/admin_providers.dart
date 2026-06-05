@@ -74,6 +74,25 @@ final supabaseBabiesProvider =
   return (data as List).cast<Map<String, dynamic>>();
 });
 
+/// All active parent accounts in the current hospital.
+final hospitalParentAccountsProvider =
+    FutureProvider<List<Map<String, dynamic>>>((ref) async {
+  final client = ref.watch(supabaseClientProvider);
+  if (client == null) return [];
+  final profile = ref.watch(userProfileProvider).valueOrNull;
+  if (profile == null) return [];
+
+  final data = await client
+      .from('user_profiles')
+      .select('user_id, full_name')
+      .eq('hospital_id', profile.hospitalId)
+      .eq('role', 'parent')
+      .eq('is_active', true)
+      .order('full_name');
+
+  return (data as List).cast<Map<String, dynamic>>();
+});
+
 /// Transfer requests involving the current user's hospital (both directions).
 final transfersProvider =
     FutureProvider<List<Map<String, dynamic>>>((ref) async {

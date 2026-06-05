@@ -20,6 +20,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final cs = Theme.of(context).colorScheme;
     final usersAsync = ref.watch(allUsersProvider);
     final currentUserId =
         ref.watch(userProfileProvider).valueOrNull?.userId ?? '';
@@ -28,6 +29,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
       appBar: AppBar(
         title: Text(l10n.userManagementTitle),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
         icon: const Icon(Icons.person_add_outlined),
         label: Text(l10n.addAccountFab),
@@ -53,16 +55,24 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: l10n.adminSearchUsersHint,
-                    prefixIcon: const Icon(Icons.search),
-                    border: const OutlineInputBorder(),
-                    isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 12),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: cs.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(99),
                   ),
-                  onChanged: (v) => setState(() => _searchQuery = v),
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: l10n.adminSearchUsersHint,
+                      border: InputBorder.none,
+                      icon: Icon(Icons.search, size: 20,
+                          color: cs.onSurfaceVariant),
+                      isDense: true,
+                      contentPadding:
+                          const EdgeInsets.symmetric(vertical: 10),
+                    ),
+                    onChanged: (v) => setState(() => _searchQuery = v),
+                  ),
                 ),
               ),
               _RoleFilterBar(

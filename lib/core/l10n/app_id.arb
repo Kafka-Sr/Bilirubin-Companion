@@ -10,7 +10,7 @@
   "noMeasurementsTitle": "Belum ada pengukuran",
   "noMeasurementsBody": "Hubungkan perangkat dan lakukan pengukuran.",
 
-  "deviceDisconnected": "Tidak berpasangan",
+  "deviceDisconnected": "Tidak berpasangan, cek Pengaturan",
   "bhutaniChartTitle": "Nomogram Bhutani",
   "showPreviousBilirubin": "Tampilkan Bacaan Sebelumnya",
   "showReadingsOutside168h": "Tampilkan Bacaan >168 jam",
@@ -63,7 +63,7 @@
   "settingsPiAddressLabel": "Alamat Biligun atau URL",
   "settingsPiAddressHint": "10.42.0.1:7878",
   "settingsHotspotTitle": "Pairing Biligun",
-  "settingsHotspotInstructions": "Saat ponsel dan Biligun terhubung ke jaringan Wi-Fi yang sama, aplikasi akan menemukan perangkat secara otomatis.",
+  "settingsHotspotInstructions": "Jika ponsel dan Biligun terhubung ke jaringan Wi-Fi yang sama, aplikasi akan menemukan Biligun secara otomatis. Pastikan aplikasi terhubung ke koneksi hotspot Biligun.",
   "settingsPiSave": "Hubungkan",
   "settingsPiClear": "Putuskan",
   "settingsPiBeaconUse": "Gunakan",
@@ -188,10 +188,10 @@
   "currentLinksTitle": "Tautan Saat Ini",
   "noParentLinksYet": "Belum ada tautan orang tua.",
   "linkParentSectionTitle": "Tautkan Orang Tua ke Bayi",
-  "findParentStep": "Langkah 1: Temukan akun orang tua",
+  "findParentStep": "Akun Orang Tua",
   "parentEmailLabel": "Email orang tua",
   "searchLabel": "Cari",
-  "selectBabyStep": "Langkah 2: Pilih bayi",
+  "selectBabyStep": "Profil Bayi",
   "linkParentButton": "Tautkan Orang Tua ke Bayi",
   "unlinkParentTitle": "Putuskan Tautan Orang Tua",
   "unlinkConfirmContent": "Hapus akses {parent} ke {baby}?",
@@ -267,5 +267,14 @@
   "transferSameHospitalError": "Tidak dapat mentransfer ke rumah sakit sendiri.",
   "transferConfirmTitle": "Konfirmasi Transfer",
   "transferConfirmBabyLabel": "Bayi yang akan ditransfer",
-  "transferConfirmYes": "Ya, Lanjutkan"
+  "transferConfirmYes": "Ya, Lanjutkan",
+
+  "deviceUnpair": "Lepaskan",
+  "linkTo": "Tautkan Ke",
+  "selectParentAccount": "Pilih akun orang tua",
+  "searchParentHint": "Cari orang tua…",
+  "searchLinksHint": "Cari tautan…",
+  "noParentAccountsFound": "Tidak ada akun orang tua ditemukan.",
+  "linkParentFab": "Tautkan Orang Tua",
+  "adminLinkAlreadyExists": "Orang tua ini sudah ditautkan ke bayi ini."
 }

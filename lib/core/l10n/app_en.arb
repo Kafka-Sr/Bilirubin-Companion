@@ -10,7 +10,7 @@
   "noMeasurementsTitle": "No measurements yet",
   "noMeasurementsBody": "Connect the device and take a measurement.",
 
-  "deviceDisconnected": "Not paired",
+  "deviceDisconnected": "Not paired, check Settings",
   "bhutaniChartTitle": "Bhutani Nomogram",
   "showPreviousBilirubin": "Show Previous Readings",
   "showReadingsOutside168h": "Show Readings >168 h",
@@ -78,7 +78,7 @@
   "settingsPiAddressLabel": "Biligun address or URL",
   "settingsPiAddressHint": "10.42.0.1:7878",
   "settingsHotspotTitle": "Biligun Pairing",
-  "settingsHotspotInstructions": "When the phone and Biligun are on the same Wi-Fi network, the app will discover the device automatically.",
+  "settingsHotspotInstructions": "If the phone and Biligun are on the same Wi-Fi network, the app will discover the Biligun automatically. Make sure the app connects to the Biligun's hotspot connection.",
   "settingsPiSave": "Connect",
   "settingsPiClear": "Disconnect",
   "settingsPiBeaconUse": "Use",
@@ -245,10 +245,10 @@
   "currentLinksTitle": "Current Links",
   "noParentLinksYet": "No parent links yet.",
   "linkParentSectionTitle": "Link a Parent to a Baby",
-  "findParentStep": "Step 1: Find parent account",
+  "findParentStep": "Parent Account",
   "parentEmailLabel": "Parent email",
   "searchLabel": "Search",
-  "selectBabyStep": "Step 2: Select baby",
+  "selectBabyStep": "Baby Profile",
   "linkParentButton": "Link Parent to Baby",
   "unlinkParentTitle": "Unlink Parent",
   "unlinkConfirmContent": "Remove {parent}'s access to {baby}?",
@@ -335,5 +335,14 @@
   "transferSameHospitalError": "Cannot transfer to your own hospital.",
   "transferConfirmTitle": "Confirm Transfer",
   "transferConfirmBabyLabel": "Baby being transferred",
-  "transferConfirmYes": "Yes, Continue"
+  "transferConfirmYes": "Yes, Continue",
+
+  "deviceUnpair": "Unpair",
+  "linkTo": "Link To",
+  "selectParentAccount": "Select parent account",
+  "searchParentHint": "Search parents…",
+  "searchLinksHint": "Search links…",
+  "noParentAccountsFound": "No parent accounts found.",
+  "linkParentFab": "Link A Parent",
+  "adminLinkAlreadyExists": "This parent is already linked to this baby."
 }

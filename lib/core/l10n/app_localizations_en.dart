@@ -30,7 +30,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noMeasurementsBody => 'Connect the device and take a measurement.';
 
   @override
-  String get deviceDisconnected => 'Not paired';
+  String get deviceDisconnected => 'Not paired, check Settings';
 
   @override
   String get bhutaniChartTitle => 'Bhutani Nomogram';
@@ -181,7 +181,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsHotspotInstructions =>
-      'When the phone and Biligun are on the same Wi-Fi network, the app will discover the device automatically.';
+      'If the phone and Biligun are on the same Wi-Fi network, the app will discover the Biligun automatically. Make sure the app connects to the Biligun\'s hotspot connection.';
 
   @override
   String get settingsPiSave => 'Connect';
@@ -537,7 +537,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get linkParentSectionTitle => 'Link a Parent to a Baby';
 
   @override
-  String get findParentStep => 'Step 1: Find parent account';
+  String get findParentStep => 'Parent Account';
 
   @override
   String get parentEmailLabel => 'Parent email';
@@ -546,7 +546,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchLabel => 'Search';
 
   @override
-  String get selectBabyStep => 'Step 2: Select baby';
+  String get selectBabyStep => 'Baby Profile';
 
   @override
   String get linkParentButton => 'Link Parent to Baby';
@@ -761,4 +761,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get transferConfirmYes => 'Yes, Continue';
+
+  @override
+  String get deviceUnpair => 'Unpair';
+
+  @override
+  String get linkTo => 'Link To';
+
+  @override
+  String get selectParentAccount => 'Select parent account';
+
+  @override
+  String get searchParentHint => 'Search parents…';
+
+  @override
+  String get searchLinksHint => 'Search links…';
+
+  @override
+  String get noParentAccountsFound => 'No parent accounts found.';
+
+  @override
+  String get linkParentFab => 'Link A Parent';
+
+  @override
+  String get adminLinkAlreadyExists =>
+      'This parent is already linked to this baby.';
 }

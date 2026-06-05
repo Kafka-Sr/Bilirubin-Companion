@@ -31,7 +31,7 @@ class AppLocalizationsId extends AppLocalizations {
       'Hubungkan perangkat dan lakukan pengukuran.';
 
   @override
-  String get deviceDisconnected => 'Tidak berpasangan';
+  String get deviceDisconnected => 'Tidak berpasangan, cek Pengaturan';
 
   @override
   String get bhutaniChartTitle => 'Nomogram Bhutani';
@@ -184,7 +184,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get settingsHotspotInstructions =>
-      'Saat ponsel dan Biligun terhubung ke jaringan Wi-Fi yang sama, aplikasi akan menemukan perangkat secara otomatis.';
+      'Jika ponsel dan Biligun terhubung ke jaringan Wi-Fi yang sama, aplikasi akan menemukan Biligun secara otomatis. Pastikan aplikasi terhubung ke koneksi hotspot Biligun.';
 
   @override
   String get settingsPiSave => 'Hubungkan';
@@ -541,7 +541,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get linkParentSectionTitle => 'Tautkan Orang Tua ke Bayi';
 
   @override
-  String get findParentStep => 'Langkah 1: Temukan akun orang tua';
+  String get findParentStep => 'Akun Orang Tua';
 
   @override
   String get parentEmailLabel => 'Email orang tua';
@@ -550,7 +550,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get searchLabel => 'Cari';
 
   @override
-  String get selectBabyStep => 'Langkah 2: Pilih bayi';
+  String get selectBabyStep => 'Profil Bayi';
 
   @override
   String get linkParentButton => 'Tautkan Orang Tua ke Bayi';
@@ -765,4 +765,29 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get transferConfirmYes => 'Ya, Lanjutkan';
+
+  @override
+  String get deviceUnpair => 'Lepaskan';
+
+  @override
+  String get linkTo => 'Tautkan Ke';
+
+  @override
+  String get selectParentAccount => 'Pilih akun orang tua';
+
+  @override
+  String get searchParentHint => 'Cari orang tua…';
+
+  @override
+  String get searchLinksHint => 'Cari tautan…';
+
+  @override
+  String get noParentAccountsFound => 'Tidak ada akun orang tua ditemukan.';
+
+  @override
+  String get linkParentFab => 'Tautkan Orang Tua';
+
+  @override
+  String get adminLinkAlreadyExists =>
+      'Orang tua ini sudah ditautkan ke bayi ini.';
 }

@@ -143,7 +143,7 @@ abstract class AppLocalizations {
   /// No description provided for @deviceDisconnected.
   ///
   /// In en, this message translates to:
-  /// **'Not paired'**
+  /// **'Not paired, check Settings'**
   String get deviceDisconnected;
 
   /// No description provided for @bhutaniChartTitle.
@@ -419,7 +419,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsHotspotInstructions.
   ///
   /// In en, this message translates to:
-  /// **'When the phone and Biligun are on the same Wi-Fi network, the app will discover the device automatically.'**
+  /// **'If the phone and Biligun are on the same Wi-Fi network, the app will discover the Biligun automatically. Make sure the app connects to the Biligun\'s hotspot connection.'**
   String get settingsHotspotInstructions;
 
   /// No description provided for @settingsPiSave.
@@ -1085,7 +1085,7 @@ abstract class AppLocalizations {
   /// No description provided for @findParentStep.
   ///
   /// In en, this message translates to:
-  /// **'Step 1: Find parent account'**
+  /// **'Parent Account'**
   String get findParentStep;
 
   /// No description provided for @parentEmailLabel.
@@ -1103,7 +1103,7 @@ abstract class AppLocalizations {
   /// No description provided for @selectBabyStep.
   ///
   /// In en, this message translates to:
-  /// **'Step 2: Select baby'**
+  /// **'Baby Profile'**
   String get selectBabyStep;
 
   /// No description provided for @linkParentButton.
@@ -1519,6 +1519,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Yes, Continue'**
   String get transferConfirmYes;
+
+  /// No description provided for @deviceUnpair.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpair'**
+  String get deviceUnpair;
+
+  /// No description provided for @linkTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Link To'**
+  String get linkTo;
+
+  /// No description provided for @selectParentAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Select parent account'**
+  String get selectParentAccount;
+
+  /// No description provided for @searchParentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search parents…'**
+  String get searchParentHint;
+
+  /// No description provided for @searchLinksHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search links…'**
+  String get searchLinksHint;
+
+  /// No description provided for @noParentAccountsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No parent accounts found.'**
+  String get noParentAccountsFound;
+
+  /// No description provided for @linkParentFab.
+  ///
+  /// In en, this message translates to:
+  /// **'Link A Parent'**
+  String get linkParentFab;
+
+  /// No description provided for @adminLinkAlreadyExists.
+  ///
+  /// In en, this message translates to:
+  /// **'This parent is already linked to this baby.'**
+  String get adminLinkAlreadyExists;
 }
 
 class _AppLocalizationsDelegate

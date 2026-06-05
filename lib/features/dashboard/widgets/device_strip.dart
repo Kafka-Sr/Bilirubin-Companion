@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bilirubin/core/app_theme.dart';
 import 'package:bilirubin/core/l10n/app_localizations.dart';
+import 'package:bilirubin/features/shared/marquee_text.dart';
 import 'package:bilirubin/features/shared/pairing_status_icon.dart';
 import 'package:bilirubin/models/device_connection_state.dart';
 import 'package:bilirubin/models/device_info.dart';
@@ -46,10 +47,9 @@ class DeviceStrip extends ConsumerWidget {
               PairingStatusIcon(state: _pairingState(connectionState), size: 20),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(
-                  _deviceText(connectionState, info, l10n),
+                child: MarqueeText(
+                  text: _deviceText(connectionState, info, l10n),
                   style: Theme.of(context).textTheme.bodyLarge,
-                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
@@ -95,7 +95,7 @@ class DeviceStrip extends ConsumerWidget {
                   ),
                   label: Text(
                     isConnected
-                        ? l10n.deviceDisconnect
+                        ? l10n.deviceUnpair
                         : isConnecting
                             ? l10n.deviceConnecting
                             : l10n.deviceConnect,
@@ -195,3 +195,4 @@ class DeviceStrip extends ConsumerWidget {
     return l10n.cloudSynced;
   }
 }
+

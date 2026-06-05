@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:bilirubin/core/l10n/app_localizations.dart';
 import 'package:bilirubin/models/device_connection_state.dart';
 import 'package:bilirubin/models/pi_beacon.dart';
+import 'package:bilirubin/features/shared/pairing_status_icon.dart';
 import 'package:bilirubin/features/shared/pin_lock_screen.dart';
 import 'package:bilirubin/providers/auth_providers.dart';
 import 'package:bilirubin/providers/device_providers.dart';
@@ -124,6 +125,13 @@ class _HotspotSection extends ConsumerStatefulWidget {
 }
 
 class _HotspotSectionState extends ConsumerState<_HotspotSection> {
+  PairingState _pairingState(DeviceConnectionState? state) {
+    if (state == DeviceConnectionState.connected) return PairingState.paired;
+    if (state == DeviceConnectionState.connecting ||
+        state == DeviceConnectionState.scanning) { return PairingState.pairing; }
+    return PairingState.notPaired;
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -135,33 +143,28 @@ class _HotspotSectionState extends ConsumerState<_HotspotSection> {
       title: l10n.settingsHotspotTitle,
       icon: Icons.router_outlined,
       children: [
-        Text(
-          l10n.settingsHotspotInstructions,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.outline,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Text(
+                l10n.settingsHotspotInstructions,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
               ),
+            ),
+            const SizedBox(width: 12),
+            PairingStatusIcon(state: _pairingState(connectionState), size: 20),
+          ],
         ),
-        const SizedBox(height: 12),
-        if (beacons.isEmpty) ...[
-          Text(
-            l10n.settingsPiBeaconDescription,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-        ] else ...[
+        if (beacons.isNotEmpty) ...[
+          const SizedBox(height: 12),
           _BeaconList(
             beacons: beacons,
             onUseBeacon: (beacon) {
               ref.read(piBaseUrlProvider.notifier).set(beacon.baseUrl);
             },
-          ),
-          const SizedBox(height: 12),
-          Text(
-            connectionState == DeviceConnectionState.connected
-                ? 'Connected to Pi'
-                : 'Waiting for connection...',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.outline,
-                ),
           ),
         ],
       ],
