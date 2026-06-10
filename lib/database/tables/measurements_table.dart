@@ -9,20 +9,17 @@ class Measurements extends Table {
   /// UUID from the device — globally unique.
   TextColumn get measurementId => text()();
 
-  /// FK → babies.id
-  IntColumn get babyId => integer().references(Babies, #id)();
+  /// FK → babies.baby_id
+  TextColumn get babyId => text().references(Babies, #babyId)();
 
   /// Timestamp from the device clock (may drift).
   DateTimeColumn get capturedAt => dateTime()();
-
-  /// Timestamp when the app received the data.
-  DateTimeColumn get receivedAt => dateTime()();
 
   /// Baby's postnatal age in hours at time of measurement.
   RealColumn get ageHours => real()();
 
   /// Measured bilirubin concentration in mg/dL.
-  RealColumn get bilirubinMgDl => real()();
+  RealColumn get bilirubinMgdl => real().named('bilirubin_mgdl')();
 
   /// True if an encrypted image file exists for this measurement.
   BoolColumn get hasImage =>

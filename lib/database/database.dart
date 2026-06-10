@@ -20,11 +20,26 @@ class AppDatabase extends _$AppDatabase {
       : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
         onCreate: (m) => m.createAll(),
+        onUpgrade: (m, from, to) async {
+          if (from < 7) {
+            // Nuclear: schema before v7 is incompatible.
+            await customStatement('PRAGMA foreign_keys = OFF');
+            for (final table in allTables) {
+              await m.deleteTable(table.actualTableName);
+            }
+            await customStatement('PRAGMA foreign_keys = ON');
+            await m.createAll();
+          } else {
+            if (from < 8) {
+              await m.addColumn(auditEvents, auditEvents.message);
+            }
+          }
+        },
       );
 
   static QueryExecutor _openConnection() =>

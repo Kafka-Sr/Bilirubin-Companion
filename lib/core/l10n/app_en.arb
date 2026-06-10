@@ -1,7 +1,7 @@
 {
   "@@locale": "en",
 
-  "appTitle": "Bilirubin Monitor",
+  "appTitle": "Biligun Companion",
   "dashboardTitle": "Dashboard",
   "settingsTitle": "Settings",
 
@@ -10,33 +10,25 @@
   "noMeasurementsTitle": "No measurements yet",
   "noMeasurementsBody": "Connect the device and take a measurement.",
 
-  "deviceConnected": "Connected: {deviceName} ({transport})",
-  "@deviceConnected": {
-    "placeholders": {
-      "deviceName": { "type": "String" },
-      "transport": { "type": "String" }
-    }
-  },
-  "deviceDisconnected": "Not connected",
-  "deviceTransportWifi": "Wi-Fi",
-  "deviceTransportBle": "BLE",
-  "deviceTransportFake": "Simulator",
-
+  "deviceDisconnected": "Not paired, check Settings",
   "bhutaniChartTitle": "Bhutani Nomogram",
-  "showPreviousBilirubin": "Show Previous Bilirubin",
+  "showPreviousBilirubin": "Show Previous Readings",
+  "showReadingsOutside168h": "Show Readings >168 h",
+  "bhutaniOutsideRangeNotice": "Reminder: This Bhutani nomogram only displays bilirubin readings from ages 0 to 168 hours. Readings beyond this age range are in purple dots.",
+  "bhutaniCurrentBeyond168h": "The baby's age is currently beyond 168 hours.",
+  "axisLabelTotalSerumBilirubin": "Total Serum Bilirubin (mg/dL)",
+  "axisLabelAgeHours": "Age (h)",
 
   "zoneLow": "Low Risk",
-  "zoneIntermediate": "Intermediate Risk",
+  "zoneLowIntermediate": "Low Intermediate Risk",
   "zoneHighIntermediate": "High Intermediate Risk",
   "zoneHigh": "High Risk",
-  "zoneVeryHigh": "Very High Risk",
 
   "recommendationHeader": "Recommendation",
-  "recommendationLow": "Bilirubin levels are within the safe range. Continue routine monitoring. No immediate action required.",
-  "recommendationIntermediate": "Bilirubin is in the intermediate zone. Repeat measurement in 8–12 hours and monitor closely.",
-  "recommendationHighIntermediate": "Bilirubin is in the high-intermediate zone. Repeat measurement in 4–8 hours. Consider initiating phototherapy per AAP 2022 guidelines.",
-  "recommendationHigh": "Bilirubin is in the high-risk zone. Consider phototherapy immediately. Consult a neonatologist.",
-  "recommendationVeryHigh": "Bilirubin is critically elevated. Immediate intervention required. Escalate to a neonatologist urgently.",
+  "recommendationLow": "Bilirubin levels are within the safe range (below 40th percentile). Continue routine monitoring. No immediate action required.",
+  "recommendationLowIntermediate": "Bilirubin is in the low intermediate zone (40th–75th percentile). Repeat measurement in 8–12 hours and monitor closely.",
+  "recommendationHighIntermediate": "Bilirubin is in the high intermediate zone (75th–95th percentile). Repeat measurement in 4–8 hours. Consider initiating phototherapy per AAP 2022 guidelines.",
+  "recommendationHigh": "Bilirubin is critically elevated (above 95th percentile). Immediate intervention required. Escalate to a neonatologist urgently.",
 
   "metadataTitle": "Baby Information",
   "metadataName": "Name",
@@ -55,7 +47,7 @@
       "hours": { "type": "String" }
     }
   },
-  "metadataEdit": "Edit Baby",
+  "metadataEdit": "Edit Data",
 
   "bilirubinValue": "{value} mg/dL",
   "@bilirubinValue": {
@@ -66,9 +58,10 @@
 
   "editBabyTitle": "Edit Baby",
   "addBabyTitle": "Add Baby",
+  "editAction": "Edit",
   "fieldName": "Name",
   "fieldWeight": "Weight (kg)",
-  "fieldDob": "Date of Birth",
+  "fieldDob": "Date & Time of Birth",
   "selectDate": "Select date",
   "save": "Save",
   "cancel": "Cancel",
@@ -81,11 +74,16 @@
   "validationNameTooLong": "Name must be 100 characters or fewer.",
   "validationNameInvalid": "Name contains invalid characters.",
 
-  "settingsWifi": "Wi-Fi Configuration",
-  "settingsWifiSsid": "Network name (SSID)",
-  "settingsWifiPassword": "Password",
-  "settingsBle": "Bluetooth Configuration",
-  "settingsBleNotAvailable": "BLE not yet supported in this version.",
+  "settingsPiLanTitle": "Biligun LAN",
+  "settingsPiAddressLabel": "Biligun address or URL",
+  "settingsPiAddressHint": "10.42.0.1:7878",
+  "settingsHotspotTitle": "Biligun Pairing",
+  "settingsHotspotInstructions": "If the phone and Biligun are on the same Wi-Fi network, the app will discover the Biligun automatically. Make sure the app connects to the Biligun's hotspot connection.",
+  "settingsPiSave": "Connect",
+  "settingsPiClear": "Disconnect",
+  "settingsPiBeaconUse": "Use",
+  "settingsPiBeaconDescription": "If the phone and Biligun are on the same Wi-Fi network, the app can discover the Biligun automatically by beacon. Supabase still stores the synced history.",
+
   "settingsLanguage": "Language",
   "settingsTheme": "Theme",
   "settingsThemeSystem": "System",
@@ -120,15 +118,21 @@
   "languageGerman": "German",
 
   "zoneLowFull": "Low Risk Zone",
-  "zoneIntermediateFull": "Intermediate Risk Zone",
+  "zoneLowIntermediateFull": "Low Intermediate Risk Zone",
   "zoneHighIntermediateFull": "High Intermediate Risk Zone",
   "zoneHighFull": "High Risk Zone",
-  "zoneVeryHighFull": "Very High Risk Zone",
 
-  "deviceConnecting": "Connecting\u2026",
+  "deviceConnecting": "Pairing\u2026",
   "deviceConnectedLabel": "Connected:",
-  "deviceConnect": "Connect",
+  "deviceConnect": "Pair",
   "deviceDisconnect": "Disconnect",
+  "deviceConnectedTo": "Paired with {displayName}",
+  "@deviceConnectedTo": {
+    "placeholders": {
+      "displayName": { "type": "String" }
+    }
+  },
+  "deviceConnectionError": "Failed to pair",
 
   "selectBaby": "Select baby",
   "searchBabiesHint": "Search babies\u2026",
@@ -155,5 +159,190 @@
   },
   "deleteForever": "Delete Forever",
   "restoreAction": "Restore",
-  "permanentlyDeleteTooltip": "Permanently delete"
+  "permanentlyDeleteTooltip": "Permanently delete",
+  "archivedBabies": "View Archived Babies",
+
+  "pdfTitle": "Bilirubin Report",
+  "pdfExportedAt": "Exported:",
+  "pdfGeneratedBy": "Generated by Bilirubin App",
+  "pdfPatientInfo": "Patient Information",
+  "pdfBirthWeight": "Birth Weight",
+  "pdfAgeAtExport": "Age at Export",
+  "pdfMeasurementsTitle": "Measurements",
+  "pdfColDateTime": "Date/Time",
+  "pdfColBilirubin": "Bilirubin (mg/dL)",
+  "pdfColZone": "Zone",
+  "pdfColDevice": "Device",
+
+  "cloudNotConfigured": "Can't connect to the server",
+  "cloudSyncing": "Syncing to server…",
+  "cloudSyncError": "Sync error",
+  "cloudSynced": "Synced",
+
+  "noReadings": "No Readings",
+  "syncButton": "Synchronise",
+  "syncButtonSyncing": "Syncing…",
+  "metadataTob": "Time of Birth",
+  "errorAccountDeactivated": "Your account has been deactivated. Contact your hospital administrator.",
+
+  "loginSubtitle": "Sign in to continue",
+  "loginEmailLabel": "Email",
+  "loginPasswordLabel": "Password",
+  "loginSignIn": "Sign In",
+  "loginEmailValidation": "Enter your email",
+  "loginPasswordValidation": "Enter your password",
+  "loginContactAdmin": "Contact your hospital administrator to get an account.",
+  "loginUnexpectedError": "An unexpected error occurred.",
+
+  "adminPanelTitle": "Admin",
+  "adminUserManagementTitle": "User Management",
+  "adminUserManagementSubtitle": "Manage all admin, staff, and parent accounts",
+  "adminParentAccessTitle": "Parent Access",
+  "adminParentAccessSubtitle": "Link and unlink parents to babies",
+  "adminTransfersTitle": "Baby Transfers",
+  "adminTransfersSubtitle": "Initiate and manage inter-hospital transfers",
+  "adminAuditTitle": "Audit Events Log",
+  "adminAuditSubtitle": "View a log of sensitive actions in your hospital",
+
+  "userManagementTitle": "User Management",
+  "addAccountFab": "Add Account",
+  "noAccountsFound": "No accounts found.",
+  "roleAll": "All",
+  "roleAdmin": "Admin",
+  "roleStaff": "Staff",
+  "roleParent": "Parent",
+  "deactivateAccountTitle": "Deactivate Account",
+  "reactivateAccountTitle": "Reactivate Account",
+  "deactivateConfirmContent": "Deactivate {name} ({role})? They will lose access immediately.",
+  "@deactivateConfirmContent": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "role": { "type": "String" }
+    }
+  },
+  "reactivateConfirmContent": "Reactivate {name} ({role})? They will regain access.",
+  "@reactivateConfirmContent": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "role": { "type": "String" }
+    }
+  },
+  "deactivatedLabel": "Deactivated",
+  "selfLabel": "(you)",
+  "addAccountDialogTitle": "Add Account",
+  "fullNameLabel": "Full Name",
+  "roleLabel": "Role",
+  "passwordMinLength": "Min 8 characters",
+  "createLabel": "Create",
+  "loadingUsersError": "Error loading users: {error}",
+  "@loadingUsersError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+
+  "parentAccessTitle": "Parent Access",
+  "currentLinksTitle": "Current Links",
+  "noParentLinksYet": "No parent links yet.",
+  "linkParentSectionTitle": "Link a Parent to a Baby",
+  "findParentStep": "Parent Account",
+  "parentEmailLabel": "Parent email",
+  "searchLabel": "Search",
+  "selectBabyStep": "Baby Profile",
+  "linkParentButton": "Link Parent to Baby",
+  "unlinkParentTitle": "Unlink Parent",
+  "unlinkConfirmContent": "Remove {parent}'s access to {baby}?",
+  "@unlinkConfirmContent": {
+    "placeholders": {
+      "parent": { "type": "String" },
+      "baby": { "type": "String" }
+    }
+  },
+  "parentLinkedSuccess": "Parent linked successfully.",
+
+  "babyTransfersTitle": "Baby Transfers",
+  "outgoingTab": "Outgoing",
+  "incomingTab": "Incoming",
+  "initiateTransferFab": "Initiate Transfer",
+  "noOutgoingTransfers": "No outgoing transfers.",
+  "noIncomingTransfers": "No incoming transfers.",
+  "acceptLabel": "Accept",
+  "rejectLabel": "Reject",
+  "initiateTransferDialogTitle": "Initiate Transfer",
+  "babyLabel": "Baby",
+  "targetHospitalCodeLabel": "Target Hospital Code",
+  "hospitalCodeHint": "e.g. RSU-01",
+  "sendLabel": "Send",
+
+  "auditEventsLogTitle": "Audit Events Log",
+  "auditAllFilter": "All",
+  "auditNoEvents": "No events found.",
+  "auditEventBabyCreate": "Baby Created",
+  "auditEventBabyEdit": "Baby Edited",
+  "auditEventBabyDelete": "Baby Deleted",
+  "auditEventMeasurementCreate": "Measurement Recorded",
+  "auditEventMeasurementDelete": "Measurement Deleted",
+  "auditEventExport": "Data Export",
+  "auditEventAccountCreate": "Account Created",
+  "auditEventAccountDeactivate": "Account Deactivated",
+  "auditEventAccountReactivate": "Account Reactivated",
+  "auditEventParentLink": "Parent Linked",
+  "auditEventParentUnlink": "Parent Unlinked",
+  "auditEventDeviceAdd": "Device Connected",
+  "auditEventTransferCreate": "Transfer Initiated",
+  "auditEventTransferAccept": "Transfer Accepted",
+  "auditEventTransferReject": "Transfer Rejected",
+
+  "parentDashboardTitle": "Parent Dashboard",
+  "signOutTooltip": "Sign Out",
+  "awaitingLinkageTitle": "Awaiting linkage",
+  "awaitingLinkageBody": "Your account ({email}) has not yet been linked to a baby by the hospital. Please contact your hospital staff.",
+  "@awaitingLinkageBody": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "measurementsSectionTitle": "Measurements",
+  "noMeasurementsParent": "No measurements yet.",
+
+  "settingsAccountTitle": "Account",
+  "signOutLabel": "Sign Out",
+  "couldNotLoadProfile": "Could not load profile.",
+
+  "adminSearchUsersHint": "Search users…",
+  "adminDeactivate": "Deactivate",
+  "adminReactivate": "Reactivate",
+  "adminErrorGeneric": "Something went wrong. Please try again.",
+  "adminParentNotFound": "Parent account not found.",
+  "adminLinkFailed": "Failed to link parent to baby.",
+  "adminUnlinkFailed": "Failed to remove link.",
+  "transferWarningTitle": "Warning: Permanent Data Loss",
+  "transferWarningBody": "Once this transfer is accepted, your hospital will permanently lose access to this baby’s records and measurements. Export the data before proceeding.",
+  "transferWarningConfirm": "I Understand, Continue",
+  "cancelTransfer": "Cancel Transfer",
+  "adminEditUser": "Edit User",
+  "adminEditUserTitle": "Edit Account",
+  "adminSaveChanges": "Save Changes",
+  "auditEventAccountEdit": "Account Edited",
+  "auditEventTransferCancel": "Transfer Cancelled",
+
+  "parentNoConnectionTitle": "No Internet Connection",
+  "parentNoConnectionBody": "An internet connection is needed to load your baby's data for the first time. Please connect and try again.",
+  "parentSyncLabel": "Sync",
+  "retryAction": "Retry",
+
+  "transferInvalidHospitalCode": "Incorrect hospital code.",
+  "transferSameHospitalError": "Cannot transfer to your own hospital.",
+  "transferConfirmTitle": "Confirm Transfer",
+  "transferConfirmBabyLabel": "Baby being transferred",
+  "transferConfirmYes": "Yes, Continue",
+
+  "deviceUnpair": "Unpair",
+  "linkTo": "Link To",
+  "selectParentAccount": "Select parent account",
+  "searchParentHint": "Search parents…",
+  "searchLinksHint": "Search links…",
+  "noParentAccountsFound": "No parent accounts found.",
+  "linkParentFab": "Link A Parent",
+  "adminLinkAlreadyExists": "This parent is already linked to this baby."
 }

@@ -36,7 +36,7 @@ class CloudSyncRepository {
   Future<void> upsertRows({
     required String table,
     required List<Map<String, dynamic>> rows,
-    String onConflict = 'id',
+    required String onConflict,
   }) async {
     if (rows.isEmpty) return;
 

@@ -29,19 +29,34 @@ const int kBabyMaxAgeYears = 2;
 const double kNomogramMinHours = 3.0;
 
 /// Maximum postnatal age (hours) on the nomogram x-axis.
-const double kNomogramMaxHours = 120.0;
+const double kNomogramMaxHours = 168.0;
 
 /// Default maximum Y-axis value for the nomogram (mg/dL).
-const double kNomogramDefaultYMax = 23.0;
+const double kNomogramDefaultYMax = 25.0;
 
-/// X-axis tick positions (hours of life).
-const List<double> kNomogramXTicks = [3, 12, 24, 48, 72, 96, 120];
+/// X-axis tick positions (hours of life) – one every 12 h.
+const List<double> kNomogramXTicks = [
+  12, 24, 36, 48, 60, 72, 84, 96, 108, 120, 132, 144, 156, 168,
+];
 
 // ── Audit event types ─────────────────────────────────────────────────────────
-const String kAuditExport = 'export';
-const String kAuditBabyEdit = 'baby_edit';
-const String kAuditBabyDelete = 'baby_delete';
+const String kAuditBabyCreate        = 'baby_create';
+const String kAuditBabyEdit          = 'baby_edit';
+const String kAuditBabyDelete        = 'baby_delete';
+const String kAuditMeasurementCreate = 'measurement_create';
 const String kAuditMeasurementDelete = 'measurement_delete';
+const String kAuditExport            = 'export';
+const String kAuditAccountCreate     = 'account_create';
+const String kAuditAccountDeactivate = 'account_deactivate';
+const String kAuditAccountReactivate = 'account_reactivate';
+const String kAuditParentLink        = 'parent_link';
+const String kAuditParentUnlink      = 'parent_unlink';
+const String kAuditDeviceAdd         = 'device_add';
+const String kAuditAccountEdit       = 'account_edit';
+const String kAuditTransferCreate    = 'transfer_create';
+const String kAuditTransferAccept    = 'transfer_accept';
+const String kAuditTransferReject    = 'transfer_reject';
+const String kAuditTransferCancel    = 'transfer_cancel';
 
 // ── Secure storage keys ───────────────────────────────────────────────────────
 const String kImageKeyAlias = 'bilirubin_image_key_v1';
@@ -57,10 +72,6 @@ const String kPrefPiBaseUrl = 'pi_base_url';
 // ── Raspberry Pi beacon discovery ────────────────────────────────────────────
 const String kPiBeaconType = 'bilirubin-pi-beacon';
 const int kPiBeaconPort = 4040;
-
-// ── Fake device ───────────────────────────────────────────────────────────────
-const String kFakeDeviceId = 'FAKE-001';
-const String kFakeDeviceName = 'Simulator';
 
 // ── Export ────────────────────────────────────────────────────────────────────
 const int kExportJsonVersion = 1;

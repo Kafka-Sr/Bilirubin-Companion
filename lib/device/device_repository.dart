@@ -7,7 +7,7 @@ class IncomingMeasurement {
   const IncomingMeasurement({
     required this.measurementId,
     required this.capturedAt,
-    required this.bilirubinMgDl,
+    required this.bilirubinMgdl,
     required this.deviceId,
     required this.modelVersion,
     this.imageBytes,
@@ -20,7 +20,7 @@ class IncomingMeasurement {
   final DateTime capturedAt;
 
   /// Measured bilirubin concentration in mg/dL.
-  final double bilirubinMgDl;
+  final double bilirubinMgdl;
 
   /// Device identifier.
   final String deviceId;

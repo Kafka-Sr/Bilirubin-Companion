@@ -1,14 +1,20 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bilirubin/models/baby.dart';
+import 'package:bilirubin/providers/audit_providers.dart';
 import 'package:bilirubin/providers/database_provider.dart';
+import 'package:bilirubin/providers/sync_providers.dart';
 import 'package:bilirubin/repositories/baby_repository.dart';
 import 'package:bilirubin/providers/sync_queue_providers.dart';
+import 'package:bilirubin/utils/extensions.dart';
 
 /// [BabyRepository] instance, derived from the singleton database.
 final babyRepositoryProvider = Provider<BabyRepository>((ref) {
+  final sync = ref.read(syncServiceProvider);
   return BabyRepository(
     ref.watch(appDatabaseProvider),
     outbox: ref.watch(localSyncOutboxProvider),
+    onQueued: () => sync.drainOutbox().catchError((_) {}),
+    audit: ref.watch(auditRepositoryProvider),
   );
 });
 
@@ -23,7 +29,7 @@ final archivedBabiesListProvider = StreamProvider<List<Baby>>((ref) {
 });
 
 /// The currently selected baby's ID. Null means "none selected".
-final selectedBabyIdProvider = StateProvider<int?>((ref) => null);
+final selectedBabyIdProvider = StateProvider<String?>((ref) => null);
 
 /// The currently selected [Baby] object, or null if none is selected or
 /// the list hasn't loaded yet.
@@ -31,14 +37,5 @@ final selectedBabyProvider = Provider<Baby?>((ref) {
   final id = ref.watch(selectedBabyIdProvider);
   if (id == null) return null;
   return ref.watch(babiesListProvider).valueOrNull
-      ?.firstWhereOrNull((b) => b.id == id);
+      ?.firstWhereOrNull((b) => b.babyId == id);
 });
-
-extension<T> on Iterable<T> {
-  T? firstWhereOrNull(bool Function(T) test) {
-    for (final e in this) {
-      if (test(e)) return e;
-    }
-    return null;
-  }
-}

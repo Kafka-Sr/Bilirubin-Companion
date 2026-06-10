@@ -33,17 +33,17 @@ void _showFullscreen(BuildContext context, ImageProvider image) {
   );
 }
 
-/// Carousel of measurement images for the currently selected baby.
+/// Carousel of measurement cards (one per reading, newest first).
 ///
-/// Each image is stored encrypted on disk; this widget decrypts on demand
-/// using [MeasurementRepository.getDecryptedImage].
+/// Swiping updates [selectedCarouselMeasurementIdProvider] so the reading card
+/// and Bhutani chart dot follow the selection. Cards without an image show a
+/// placeholder instead of being skipped.
 ///
-/// Set [embedded] to true when hosting inside another card so the widget
-/// does not wrap itself in its own [Card].
+/// Set [embedded] to true when hosting inside another card.
 class ImageCarousel extends ConsumerStatefulWidget {
   const ImageCarousel({super.key, required this.babyId, this.embedded = false});
 
-  final int babyId;
+  final String babyId;
   final bool embedded;
 
   @override
@@ -53,6 +53,20 @@ class ImageCarousel extends ConsumerStatefulWidget {
 class _ImageCarouselState extends ConsumerState<ImageCarousel> {
   final _controller = PageController();
   int _currentPage = 0;
+  int _prevLength = 0;
+
+  @override
+  void didUpdateWidget(ImageCarousel old) {
+    super.didUpdateWidget(old);
+    if (old.babyId != widget.babyId) {
+      _currentPage = 0;
+      _prevLength = 0;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_controller.hasClients) _controller.jumpToPage(0);
+        ref.read(selectedCarouselMeasurementIdProvider.notifier).state = null;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -64,18 +78,45 @@ class _ImageCarouselState extends ConsumerState<ImageCarousel> {
   Widget build(BuildContext context) {
     final measurementsAsync = ref.watch(measurementsProvider(widget.babyId));
 
+    ref.listen<String?>(selectedCarouselMeasurementIdProvider, (_, newId) {
+      final measurements =
+          measurementsAsync.valueOrNull ?? [];
+      final idx = newId == null
+          ? 0
+          : measurements.indexWhere((m) => m.measurementId == newId);
+      if (idx != -1 && (_controller.page?.round() ?? 0) != idx) {
+        _controller.animateToPage(
+          idx,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+
     return measurementsAsync.when(
       loading: () => _PlaceholderFrame(
           embedded: widget.embedded, child: const CircularProgressIndicator()),
       error: (e, _) =>
           _PlaceholderFrame(embedded: widget.embedded, child: Text('Error: $e')),
       data: (measurements) {
-        final withImages = measurements.where((m) => m.hasImage).toList();
+        // Snap to newest (page 0) when a new measurement arrives.
+        if (measurements.length > _prevLength && _prevLength > 0) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (_controller.hasClients) _controller.jumpToPage(0);
+            ref.read(selectedCarouselMeasurementIdProvider.notifier).state =
+                null;
+          });
+        }
+        _prevLength = measurements.length;
 
-        if (withImages.isEmpty) {
+        if (measurements.isEmpty) {
           return _PlaceholderFrame(
             embedded: widget.embedded,
-            child: const SizedBox.shrink(),
+            child: Icon(
+              Icons.image_not_supported_outlined,
+              size: 48,
+              color: Theme.of(context).colorScheme.outline,
+            ),
           );
         }
 
@@ -83,34 +124,33 @@ class _ImageCarouselState extends ConsumerState<ImageCarousel> {
           height: 200,
           child: PageView.builder(
             controller: _controller,
-            itemCount: withImages.length,
-            onPageChanged: (i) => setState(() => _currentPage = i),
+            itemCount: measurements.length,
+            onPageChanged: (i) {
+              setState(() => _currentPage = i);
+              // Null on page 0 means "use latest" — avoids stale selection
+              // after a new reading arrives while the user is on page 0.
+              ref.read(selectedCarouselMeasurementIdProvider.notifier).state =
+                  i == 0 ? null : measurements[i].measurementId;
+            },
             itemBuilder: (_, i) {
-              final m = withImages[i];
-              return _EncryptedImageTile(
-                imageRef: m.encryptedImageRef!,
-                measurementRepo: ref.read(measurementRepositoryProvider),
-              );
+              final m = measurements[i];
+              if (m.hasImage && m.encryptedImageRef != null) {
+                return _EncryptedImageTile(
+                  imageRef: m.encryptedImageRef!,
+                  measurementRepo: ref.read(measurementRepositoryProvider),
+                );
+              }
+              return const _NoImageTile();
             },
           ),
         );
 
-        final dots = Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(withImages.length, (i) {
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              margin: const EdgeInsets.symmetric(horizontal: 3),
-              width: _currentPage == i ? 20 : 8,
-              height: 8,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: _currentPage == i
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.outlineVariant,
-              ),
-            );
-          }),
+        final mostRecentIsOld =
+            measurements.isNotEmpty && measurements[0].ageHours > 168;
+        final dots = _CarouselDots(
+          count: measurements.length,
+          currentPage: _currentPage,
+          mostRecentIsOld: mostRecentIsOld,
         );
 
         if (widget.embedded) {
@@ -138,6 +178,63 @@ class _ImageCarouselState extends ConsumerState<ImageCarousel> {
           ),
         );
       },
+    );
+  }
+}
+
+class _CarouselDots extends StatelessWidget {
+  const _CarouselDots({
+    required this.count,
+    required this.currentPage,
+    required this.mostRecentIsOld,
+  });
+
+  final int count;
+  final int currentPage;
+  final bool mostRecentIsOld;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final mostRecentColor =
+        mostRecentIsOld ? const Color(0xFF7C3AED) : colorScheme.error;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(count, (i) {
+        final dotColor = i == 0
+            ? mostRecentColor
+            : (currentPage == i
+                ? colorScheme.primary
+                : colorScheme.outlineVariant);
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          margin: const EdgeInsets.symmetric(horizontal: 3),
+          width: currentPage == i ? 20 : 8,
+          height: 8,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: dotColor,
+          ),
+        );
+      }),
+    );
+  }
+}
+
+class _NoImageTile extends StatelessWidget {
+  const _NoImageTile();
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      child: Center(
+        child: Icon(
+          Icons.image_not_supported_outlined,
+          size: 48,
+          color: Theme.of(context).colorScheme.outline,
+        ),
+      ),
     );
   }
 }
@@ -191,101 +288,33 @@ class _EncryptedImageTileState extends State<_EncryptedImageTile> {
   }
 }
 
-class _PlaceholderFrame extends StatefulWidget {
+class _PlaceholderFrame extends StatelessWidget {
   const _PlaceholderFrame({required this.child, this.embedded = false});
 
   final Widget child;
   final bool embedded;
 
   @override
-  State<_PlaceholderFrame> createState() => _PlaceholderFrameState();
-}
-
-class _PlaceholderFrameState extends State<_PlaceholderFrame> {
-  static const _placeholders = [
-    'assets/images/ashbaby.jpg',
-    'assets/images/ashbebe.jpg',
-    'assets/images/baby.jpg',
-  ];
-
-  final _ctrl = PageController();
-  int _page = 0;
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    final imageStack = SizedBox(
+    final frame = SizedBox(
       height: 200,
-      child: Stack(
-        children: [
-          PageView.builder(
-            controller: _ctrl,
-            itemCount: _placeholders.length,
-            onPageChanged: (i) => setState(() => _page = i),
-            itemBuilder: (_, i) {
-              final image = AssetImage(_placeholders[i]);
-              return GestureDetector(
-                onTap: () => _showFullscreen(context, image),
-                child: Image(
-                  image: image,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  errorBuilder: (_, __, ___) => ColoredBox(
-                    color: colorScheme.surfaceContainerHighest,
-                  ),
-                ),
-              );
-            },
-          ),
-          if (widget.child is! SizedBox)
-            Center(child: widget.child),
-        ],
+      child: ColoredBox(
+        color: colorScheme.surfaceContainerHighest,
+        child: Center(child: child),
       ),
     );
 
-    final dots = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(_placeholders.length, (i) {
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          margin: const EdgeInsets.symmetric(horizontal: 3),
-          width: _page == i ? 20 : 8,
-          height: 8,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            color: _page == i ? colorScheme.primary : colorScheme.outlineVariant,
-          ),
-        );
-      }),
-    );
-
-    if (widget.embedded) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: imageStack,
-          ),
-          const SizedBox(height: 8),
-          dots,
-          const SizedBox(height: 4),
-        ],
+    if (embedded) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: frame,
       );
     }
     return Card(
       clipBehavior: Clip.antiAlias,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [imageStack, const SizedBox(height: 8), dots, const SizedBox(height: 8)],
-      ),
+      child: frame,
     );
   }
 }

@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bilirubin/core/l10n/app_localizations.dart';
 import 'package:bilirubin/models/baby.dart';
+import 'package:bilirubin/providers/auth_providers.dart';
 import 'package:bilirubin/providers/baby_providers.dart';
 import 'package:bilirubin/providers/database_provider.dart';
-import 'package:bilirubin/repositories/audit_repository.dart';
-import 'package:bilirubin/repositories/baby_repository.dart';
 import 'package:bilirubin/utils/input_validators.dart';
 
 /// Shows a modal bottom sheet to add a new baby or edit an existing one.
@@ -42,13 +41,13 @@ class _BabyEditSheetState extends ConsumerState<_BabyEditSheet> {
   @override
   void initState() {
     super.initState();
-    _nameCtrl = TextEditingController(text: widget.existing?.name ?? '');
+    _nameCtrl = TextEditingController(text: widget.existing?.babyName ?? '');
     _weightCtrl = TextEditingController(
       text: widget.existing != null
-          ? widget.existing!.weightKg.toStringAsFixed(1)
+          ? widget.existing!.babyWeight.toStringAsFixed(1)
           : '',
     );
-    _selectedDob = widget.existing?.dateOfBirth;
+    _selectedDob = widget.existing?.babyDob;
   }
 
   @override
@@ -102,19 +101,14 @@ class _BabyEditSheetState extends ConsumerState<_BabyEditSheet> {
     final isEditing = widget.existing != null;
 
     return Padding(
-      padding: EdgeInsets.only(
-        left: 24,
-        right: 24,
-        top: 24,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-      ),
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
       child: Form(
         key: _formKey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // ── Header ────────────────────────────────────────────────────
+            // Header
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -132,7 +126,7 @@ class _BabyEditSheetState extends ConsumerState<_BabyEditSheet> {
             ),
             const SizedBox(height: 16),
 
-            // ── Name ──────────────────────────────────────────────────────
+            // Name
             _fieldLabel(context, l10n.fieldName),
             const SizedBox(height: 6),
             TextFormField(
@@ -140,11 +134,12 @@ class _BabyEditSheetState extends ConsumerState<_BabyEditSheet> {
               decoration: _pillDecoration(),
               textCapitalization: TextCapitalization.words,
               maxLength: 100,
+              buildCounter: (_, {required currentLength, required isFocused, maxLength}) => null,
               validator: (_) => validateName(_nameCtrl.text),
             ),
             const SizedBox(height: 12),
 
-            // ── Weight ────────────────────────────────────────────────────
+            // Weight
             _fieldLabel(context, l10n.fieldWeight),
             const SizedBox(height: 6),
             TextFormField(
@@ -156,18 +151,18 @@ class _BabyEditSheetState extends ConsumerState<_BabyEditSheet> {
             ),
             const SizedBox(height: 12),
 
-            // ── Date of birth ─────────────────────────────────────────────
+            // Date & Time of birth
             _fieldLabel(context, l10n.fieldDob),
             const SizedBox(height: 6),
             _DobField(
-              label: '',
               selected: _selectedDob,
+              isCreating: !isEditing,
               onChanged: (d) => setState(() => _selectedDob = d),
               validator: () => validateDateOfBirth(_selectedDob),
             ),
             const SizedBox(height: 24),
 
-            // ── Save ──────────────────────────────────────────────────────
+            // Save
             FilledButton(
               onPressed: _saving ? null : _save,
               child: _saving
@@ -176,8 +171,12 @@ class _BabyEditSheetState extends ConsumerState<_BabyEditSheet> {
                       width: 18,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : Text(l10n.save),
+                  : Text(
+                      isEditing ? l10n.editAction : l10n.save,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
             ),
+            SizedBox(height: MediaQuery.viewInsetsOf(context).bottom + 24),
           ],
         ),
       ),
@@ -194,31 +193,41 @@ class _BabyEditSheetState extends ConsumerState<_BabyEditSheet> {
     setState(() => _saving = true);
     try {
       final db = ref.read(appDatabaseProvider);
-      final repo = BabyRepository(db);
-      final audit = AuditRepository(db);
+      final repo = ref.read(babyRepositoryProvider);
       final name = sanitiseName(_nameCtrl.text);
       final weight = parseWeight(_weightCtrl.text)!;
 
       if (widget.existing == null) {
+        final hospitalId = ref.read(userProfileProvider).value?.hospitalId;
+        if (hospitalId == null || hospitalId.isEmpty) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text('Profile not ready — please try again.')),
+            );
+            setState(() => _saving = false);
+          }
+          return;
+        }
         await repo.create(
           name: name,
           dateOfBirth: _selectedDob!,
           weightKg: weight,
+          hospitalId: hospitalId,
         );
       } else {
         await repo.update(widget.existing!.copyWith(
-          name: name,
-          dateOfBirth: _selectedDob,
-          weightKg: weight,
+          babyName: name,
+          babyDob: _selectedDob,
+          babyWeight: weight,
         ));
-        await audit.logBabyEdit(widget.existing!.id);
       }
 
       // Auto-select the newly created baby.
       if (widget.existing == null) {
         final babies = await db.babiesDao.watchAllActive().first;
         if (babies.isNotEmpty) {
-          ref.read(selectedBabyIdProvider.notifier).state = babies.last.id;
+          ref.read(selectedBabyIdProvider.notifier).state = babies.last.babyId;
         }
       }
 
@@ -231,75 +240,165 @@ class _BabyEditSheetState extends ConsumerState<_BabyEditSheet> {
 
 class _DobField extends StatelessWidget {
   const _DobField({
-    required this.label,
     required this.selected,
+    required this.isCreating,
     required this.onChanged,
     required this.validator,
   });
 
-  final String label;
   final DateTime? selected;
+  final bool isCreating;
   final ValueChanged<DateTime?> onChanged;
   final String? Function() validator;
+
+  static InputDecoration _pillDecoration({
+    Widget? suffixIcon,
+    String? errorText,
+  }) =>
+      InputDecoration(
+        errorText: errorText,
+        suffixIcon: suffixIcon,
+        filled: true,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(99),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(99),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(99),
+          borderSide: BorderSide.none,
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(99),
+          borderSide: const BorderSide(color: Colors.red),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(99),
+          borderSide: const BorderSide(color: Colors.red),
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
     return FormField<DateTime>(
       initialValue: selected,
       validator: (_) => validator(),
-      builder: (state) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          InkWell(
-            onTap: () async {
-              final now = DateTime.now();
-              final first = now.subtract(const Duration(days: 7));
-              final clampedInitial = selected == null
-                  ? now
-                  : selected!.isBefore(first)
-                      ? first
-                      : selected!.isAfter(now)
+      builder: (state) {
+        final dateText = selected != null
+            ? '${selected!.day}/${selected!.month}/${selected!.year}'
+            : '—';
+        final timeText = selected != null
+            ? '${selected!.hour.toString().padLeft(2, '0')}:'
+              '${selected!.minute.toString().padLeft(2, '0')}'
+            : '—';
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                // Date field
+                Expanded(
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(99),
+                    onTap: () async {
+                      final now = DateTime.now();
+                      final first = now.subtract(const Duration(days: 7));
+                      final clampedInitial = selected == null
                           ? now
-                          : selected!;
-              final picked = await showDatePicker(
-                context: context,
-                initialDate: clampedInitial,
-                firstDate: first,
-                lastDate: now,
-              );
-              if (picked != null) {
-                state.didChange(picked);
-                onChanged(picked);
-              }
-            },
-            borderRadius: BorderRadius.circular(99),
-            child: InputDecorator(
-              decoration: InputDecoration(
-                errorText: state.errorText,
-                suffixIcon: const Icon(Icons.calendar_today_outlined),
-                filled: true,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(99),
-                  borderSide: BorderSide.none,
+                          : selected!.isBefore(first)
+                              ? first
+                              : selected!.isAfter(now)
+                                  ? now
+                                  : selected!;
+
+                      final pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: clampedInitial,
+                        firstDate: first,
+                        lastDate: now,
+                      );
+                      if (pickedDate == null) return;
+                      if (!context.mounted) return;
+
+                      final DateTime result;
+                      if (isCreating && selected == null) {
+                        // First-time create: chain into time picker
+                        final pickedTime = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.fromDateTime(now),
+                        );
+                        if (pickedTime == null) return;
+                        result = DateTime(
+                          pickedDate.year, pickedDate.month, pickedDate.day,
+                          pickedTime.hour, pickedTime.minute,
+                        );
+                      } else {
+                        // Date only — preserve existing time or default to now
+                        final h = selected?.hour ?? now.hour;
+                        final m = selected?.minute ?? now.minute;
+                        result = DateTime(
+                          pickedDate.year, pickedDate.month, pickedDate.day,
+                          h, m,
+                        );
+                      }
+                      state.didChange(result);
+                      onChanged(result);
+                    },
+                    child: InputDecorator(
+                      decoration: _pillDecoration(
+                        suffixIcon: const Icon(Icons.event_outlined),
+                        errorText: state.errorText,
+                      ),
+                      child: Text(dateText),
+                    ),
+                  ),
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(99),
-                  borderSide: BorderSide.none,
+                const SizedBox(width: 8),
+                // Time field
+                Expanded(
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(99),
+                    onTap: () async {
+                      final now = DateTime.now();
+                      final initialTime = selected != null
+                          ? TimeOfDay(
+                              hour: selected!.hour,
+                              minute: selected!.minute,
+                            )
+                          : TimeOfDay.fromDateTime(now);
+
+                      final pickedTime = await showTimePicker(
+                        context: context,
+                        initialTime: initialTime,
+                      );
+                      if (pickedTime == null) return;
+
+                      // Preserve existing date or default to today
+                      final base = selected ?? now;
+                      final result = DateTime(
+                        base.year, base.month, base.day,
+                        pickedTime.hour, pickedTime.minute,
+                      );
+                      state.didChange(result);
+                      onChanged(result);
+                    },
+                    child: InputDecorator(
+                      decoration: _pillDecoration(
+                        suffixIcon: const Icon(Icons.access_time_outlined),
+                      ),
+                      child: Text(timeText),
+                    ),
+                  ),
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(99),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-              child: Text(
-                selected != null
-                    ? '${selected!.day}/${selected!.month}/${selected!.year}'
-                    : '—',
-              ),
+              ],
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      },
     );
   }
 }

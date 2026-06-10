@@ -2,11 +2,14 @@ import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:bilirubin/core/constants.dart';
 import 'package:bilirubin/database/database.dart' hide Baby;
+import 'package:bilirubin/utils/bhutani_classifier.dart' as classifier;
 import 'package:bilirubin/device/device_repository.dart';
 import 'package:bilirubin/models/measurement.dart' as domain;
 import 'package:bilirubin/models/baby.dart';
+import 'package:bilirubin/repositories/audit_repository.dart';
 import 'package:bilirubin/repositories/local_sync_outbox.dart';
 import 'package:bilirubin/security/encryption_service.dart';
 import 'package:bilirubin/utils/input_validators.dart';
@@ -23,13 +26,23 @@ class MeasurementRepository {
     this._db,
     this._encryption, {
     LocalSyncOutbox? outbox,
-  }) : _outbox = outbox;
+    void Function()? onQueued,
+    SupabaseClient? supabase,
+    AuditRepository? audit,
+  }) : _outbox = outbox,
+       _onQueued = onQueued,
+       _supabase = supabase,
+       _audit = audit;
 
   final AppDatabase _db;
   final EncryptionService _encryption;
   final LocalSyncOutbox? _outbox;
+  final void Function()? _onQueued;
+  final SupabaseClient? _supabase;
+  final AuditRepository? _audit;
+  final _imageCache = <String, Uint8List>{};
 
-  // ── Write ──────────────────────────────────────────────────────────────────
+  // Write
 
   /// Processes an incoming measurement event for a specific [baby].
   ///
@@ -39,9 +52,8 @@ class MeasurementRepository {
     IncomingMeasurement event,
     Baby baby,
   ) async {
-    if (!isBilirubinAcceptable(event.bilirubinMgDl)) return;
+    if (!isBilirubinAcceptable(event.bilirubinMgdl)) return;
 
-    final receivedAt = DateTime.now();
     final ageHours = baby.ageHoursAt(event.capturedAt);
 
     String? imageRef;
@@ -51,69 +63,101 @@ class MeasurementRepository {
 
     await _db.measurementsDao.upsertMeasurement(MeasurementsCompanion.insert(
       measurementId: event.measurementId,
-      babyId: baby.id,
+      babyId: baby.babyId,
       capturedAt: event.capturedAt,
-      receivedAt: receivedAt,
       ageHours: ageHours,
-      bilirubinMgDl: event.bilirubinMgDl,
+      bilirubinMgdl: event.bilirubinMgdl,
       hasImage: Value(imageRef != null),
       encryptedImageRef: Value(imageRef),
       deviceId: Value(event.deviceId),
       modelVersion: Value(event.modelVersion),
     ));
+    final zone = classifier.classify(ageHours, event.bilirubinMgdl)?.label ?? 'unknown';
+    _audit?.logMeasurementCreate(
+      event.measurementId,
+      baby.babyId,
+      babyName: baby.babyName,
+      bilirubinMgdl: event.bilirubinMgdl,
+      ageHours: ageHours,
+      zone: zone,
+      deviceId: event.deviceId,
+    );
 
     await _queue('upsert', {
-      'measurementId': event.measurementId,
-      'babyId': baby.id,
-      'capturedAt': event.capturedAt.toIso8601String(),
-      'receivedAt': receivedAt.toIso8601String(),
-      'ageHours': ageHours,
-      'bilirubinMgDl': event.bilirubinMgDl,
-      'hasImage': imageRef != null,
-      'encryptedImageRef': imageRef,
-      'deviceId': event.deviceId,
-      'modelVersion': event.modelVersion,
+      'measurement_id': event.measurementId,
+      'baby_id': baby.babyId,
+      'captured_at': event.capturedAt.toIso8601String(),
+      'age_hours': ageHours,
+      'bilirubin_mgdl': event.bilirubinMgdl,
+      'has_image': imageRef != null,
+      'encrypted_image_ref': imageRef,
+      'device_id': event.deviceId,
+      'model_version': event.modelVersion,
     });
   }
 
-  // ── Read ───────────────────────────────────────────────────────────────────
+  // Read
 
-  Stream<List<domain.Measurement>> watchByBaby(int babyId) =>
+  Stream<List<domain.Measurement>> watchByBaby(String babyId) =>
       _db.measurementsDao
           .watchByBaby(babyId)
           .map((rows) => rows.map(_toModel).toList());
 
-  Future<domain.Measurement?> getLatest(int babyId) async {
+  Future<domain.Measurement?> getLatest(String babyId) async {
     final row = await _db.measurementsDao.getLatest(babyId);
     return row == null ? null : _toModel(row);
   }
 
-  /// Returns the decrypted image bytes for a measurement, or null.
+  /// Returns image bytes for a measurement, or null.
+  ///
+  /// If [imageRef] is a Supabase Storage path (contains '/'), the file is
+  /// downloaded from the bucket and returned as-is (plain JPEG from the Gun).
+  /// Otherwise the ref is a local filename encrypted with [EncryptionService].
   Future<Uint8List?> getDecryptedImage(String imageRef) async {
-    final file = await _imageFile(imageRef);
-    if (!file.existsSync()) return null;
-    final blob = await file.readAsBytes();
-    return _encryption.decrypt(blob);
+    if (_imageCache.containsKey(imageRef)) return _imageCache[imageRef];
+    final Uint8List? result;
+    if (imageRef.contains('/')) {
+      result = await _fetchCloudImage(imageRef);
+    } else {
+      final file = await _imageFile(imageRef);
+      if (!file.existsSync()) return null;
+      final blob = await file.readAsBytes();
+      result = await _encryption.decrypt(blob);
+    }
+    if (result != null) _imageCache[imageRef] = result;
+    return result;
   }
 
-  // ── Delete ─────────────────────────────────────────────────────────────────
+  Future<Uint8List?> _fetchCloudImage(String storagePath) async {
+    final client = _supabase;
+    if (client == null) return null;
+    try {
+      final slash = storagePath.indexOf('/');
+      final bucket = storagePath.substring(0, slash);
+      final path = storagePath.substring(slash + 1);
+      return await client.storage.from(bucket).download(path);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  // Delete
 
   Future<void> delete(String measurementId) async {
-    // Look up the encrypted image ref before deleting the row.
-    final ref = await (_db.select(_db.measurements)
+    // Look up the row before deleting (need imageRef and babyId).
+    final row = await (_db.select(_db.measurements)
           ..where((m) => m.measurementId.equals(measurementId)))
-        .map((r) => r.encryptedImageRef)
         .getSingleOrNull();
 
-    if (ref != null) {
-      final file = await _imageFile(ref);
+    if (row?.encryptedImageRef != null) {
+      final file = await _imageFile(row!.encryptedImageRef!);
       if (file.existsSync()) await file.delete();
     }
     await _db.measurementsDao.deleteMeasurement(measurementId);
-    await _queue('delete', {'measurementId': measurementId});
+    await _queue('delete', {'measurement_id': measurementId});
   }
 
-  // ── Private helpers ────────────────────────────────────────────────────────
+  // Private helpers
 
   Future<String> _persistImage(String measurementId, Uint8List raw) async {
     final encrypted = await _encryption.encrypt(raw);
@@ -133,15 +177,14 @@ class MeasurementRepository {
     return File(p.join(dir.path, safe));
   }
 
-  // ── Mapper ─────────────────────────────────────────────────────────────────
+  // Mapper
 
   static domain.Measurement _toModel(Measurement row) => domain.Measurement(
         measurementId: row.measurementId,
         babyId: row.babyId,
         capturedAt: row.capturedAt,
-        receivedAt: row.receivedAt,
         ageHours: row.ageHours,
-        bilirubinMgDl: row.bilirubinMgDl,
+        bilirubinMgdl: row.bilirubinMgdl,
         hasImage: row.hasImage,
         encryptedImageRef: row.encryptedImageRef,
         deviceId: row.deviceId,
@@ -155,9 +198,10 @@ class MeasurementRepository {
       await outbox.enqueue(
         table: 'measurements',
         action: action,
-        entityId: '${payload['measurementId'] ?? 'unknown'}',
+        entityId: '${payload['measurement_id'] ?? 'unknown'}',
         payload: payload,
       );
+      _onQueued?.call();
     } catch (_) {
       // Temporary staging must not block local capture.
     }

@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Bilirubin Monitor';
+  String get appTitle => 'Biligun Companion';
 
   @override
   String get dashboardTitle => 'Dashboard';
@@ -30,33 +30,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noMeasurementsBody => 'Connect the device and take a measurement.';
 
   @override
-  String deviceConnected(String deviceName, String transport) {
-    return 'Connected: $deviceName ($transport)';
-  }
-
-  @override
-  String get deviceDisconnected => 'Not connected';
-
-  @override
-  String get deviceTransportWifi => 'Wi-Fi';
-
-  @override
-  String get deviceTransportBle => 'BLE';
-
-  @override
-  String get deviceTransportFake => 'Simulator';
+  String get deviceDisconnected => 'Not paired, check Settings';
 
   @override
   String get bhutaniChartTitle => 'Bhutani Nomogram';
 
   @override
-  String get showPreviousBilirubin => 'Show Previous Bilirubin';
+  String get showPreviousBilirubin => 'Show Previous Readings';
+
+  @override
+  String get showReadingsOutside168h => 'Show Readings >168 h';
+
+  @override
+  String get bhutaniOutsideRangeNotice =>
+      'Reminder: This Bhutani nomogram only displays bilirubin readings from ages 0 to 168 hours. Readings beyond this age range are in purple dots.';
+
+  @override
+  String get bhutaniCurrentBeyond168h =>
+      'The baby\'s age is currently beyond 168 hours.';
+
+  @override
+  String get axisLabelTotalSerumBilirubin => 'Total Serum Bilirubin (mg/dL)';
+
+  @override
+  String get axisLabelAgeHours => 'Age (h)';
 
   @override
   String get zoneLow => 'Low Risk';
 
   @override
-  String get zoneIntermediate => 'Intermediate Risk';
+  String get zoneLowIntermediate => 'Low Intermediate Risk';
 
   @override
   String get zoneHighIntermediate => 'High Intermediate Risk';
@@ -65,30 +68,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zoneHigh => 'High Risk';
 
   @override
-  String get zoneVeryHigh => 'Very High Risk';
-
-  @override
   String get recommendationHeader => 'Recommendation';
 
   @override
   String get recommendationLow =>
-      'Bilirubin levels are within the safe range. Continue routine monitoring. No immediate action required.';
+      'Bilirubin levels are within the safe range (below 40th percentile). Continue routine monitoring. No immediate action required.';
 
   @override
-  String get recommendationIntermediate =>
-      'Bilirubin is in the intermediate zone. Repeat measurement in 8–12 hours and monitor closely.';
+  String get recommendationLowIntermediate =>
+      'Bilirubin is in the low intermediate zone (40th–75th percentile). Repeat measurement in 8–12 hours and monitor closely.';
 
   @override
   String get recommendationHighIntermediate =>
-      'Bilirubin is in the high-intermediate zone. Repeat measurement in 4–8 hours. Consider initiating phototherapy per AAP 2022 guidelines.';
+      'Bilirubin is in the high intermediate zone (75th–95th percentile). Repeat measurement in 4–8 hours. Consider initiating phototherapy per AAP 2022 guidelines.';
 
   @override
   String get recommendationHigh =>
-      'Bilirubin is in the high-risk zone. Consider phototherapy immediately. Consult a neonatologist.';
-
-  @override
-  String get recommendationVeryHigh =>
-      'Bilirubin is critically elevated. Immediate intervention required. Escalate to a neonatologist urgently.';
+      'Bilirubin is critically elevated (above 95th percentile). Immediate intervention required. Escalate to a neonatologist urgently.';
 
   @override
   String get metadataTitle => 'Baby Information';
@@ -116,7 +112,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get metadataEdit => 'Edit Baby';
+  String get metadataEdit => 'Edit Data';
 
   @override
   String bilirubinValue(String value) {
@@ -130,13 +126,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addBabyTitle => 'Add Baby';
 
   @override
+  String get editAction => 'Edit';
+
+  @override
   String get fieldName => 'Name';
 
   @override
   String get fieldWeight => 'Weight (kg)';
 
   @override
-  String get fieldDob => 'Date of Birth';
+  String get fieldDob => 'Date & Time of Birth';
 
   @override
   String get selectDate => 'Select date';
@@ -169,20 +168,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get validationNameInvalid => 'Name contains invalid characters.';
 
   @override
-  String get settingsWifi => 'Wi-Fi Configuration';
+  String get settingsPiLanTitle => 'Biligun LAN';
 
   @override
-  String get settingsWifiSsid => 'Network name (SSID)';
+  String get settingsPiAddressLabel => 'Biligun address or URL';
 
   @override
-  String get settingsWifiPassword => 'Password';
+  String get settingsPiAddressHint => '10.42.0.1:7878';
 
   @override
-  String get settingsBle => 'Bluetooth Configuration';
+  String get settingsHotspotTitle => 'Biligun Pairing';
 
   @override
-  String get settingsBleNotAvailable =>
-      'BLE not yet supported in this version.';
+  String get settingsHotspotInstructions =>
+      'If the phone and Biligun are on the same Wi-Fi network, the app will discover the Biligun automatically. Make sure the app connects to the Biligun\'s hotspot connection.';
+
+  @override
+  String get settingsPiSave => 'Connect';
+
+  @override
+  String get settingsPiClear => 'Disconnect';
+
+  @override
+  String get settingsPiBeaconUse => 'Use';
+
+  @override
+  String get settingsPiBeaconDescription =>
+      'If the phone and Biligun are on the same Wi-Fi network, the app can discover the Biligun automatically by beacon. Supabase still stores the synced history.';
 
   @override
   String get settingsLanguage => 'Language';
@@ -263,7 +275,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zoneLowFull => 'Low Risk Zone';
 
   @override
-  String get zoneIntermediateFull => 'Intermediate Risk Zone';
+  String get zoneLowIntermediateFull => 'Low Intermediate Risk Zone';
 
   @override
   String get zoneHighIntermediateFull => 'High Intermediate Risk Zone';
@@ -272,19 +284,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zoneHighFull => 'High Risk Zone';
 
   @override
-  String get zoneVeryHighFull => 'Very High Risk Zone';
-
-  @override
-  String get deviceConnecting => 'Connecting…';
+  String get deviceConnecting => 'Pairing…';
 
   @override
   String get deviceConnectedLabel => 'Connected:';
 
   @override
-  String get deviceConnect => 'Connect';
+  String get deviceConnect => 'Pair';
 
   @override
   String get deviceDisconnect => 'Disconnect';
+
+  @override
+  String deviceConnectedTo(String displayName) {
+    return 'Paired with $displayName';
+  }
+
+  @override
+  String get deviceConnectionError => 'Failed to pair';
 
   @override
   String get selectBaby => 'Select baby';
@@ -324,4 +341,449 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get permanentlyDeleteTooltip => 'Permanently delete';
+
+  @override
+  String get archivedBabies => 'View Archived Babies';
+
+  @override
+  String get pdfTitle => 'Bilirubin Report';
+
+  @override
+  String get pdfExportedAt => 'Exported:';
+
+  @override
+  String get pdfGeneratedBy => 'Generated by Bilirubin App';
+
+  @override
+  String get pdfPatientInfo => 'Patient Information';
+
+  @override
+  String get pdfBirthWeight => 'Birth Weight';
+
+  @override
+  String get pdfAgeAtExport => 'Age at Export';
+
+  @override
+  String get pdfMeasurementsTitle => 'Measurements';
+
+  @override
+  String get pdfColDateTime => 'Date/Time';
+
+  @override
+  String get pdfColBilirubin => 'Bilirubin (mg/dL)';
+
+  @override
+  String get pdfColZone => 'Zone';
+
+  @override
+  String get pdfColDevice => 'Device';
+
+  @override
+  String get cloudNotConfigured => 'Can\'t connect to the server';
+
+  @override
+  String get cloudSyncing => 'Syncing to server…';
+
+  @override
+  String get cloudSyncError => 'Sync error';
+
+  @override
+  String get cloudSynced => 'Synced';
+
+  @override
+  String get noReadings => 'No Readings';
+
+  @override
+  String get syncButton => 'Synchronise';
+
+  @override
+  String get syncButtonSyncing => 'Syncing…';
+
+  @override
+  String get metadataTob => 'Time of Birth';
+
+  @override
+  String get errorAccountDeactivated =>
+      'Your account has been deactivated. Contact your hospital administrator.';
+
+  @override
+  String get loginSubtitle => 'Sign in to continue';
+
+  @override
+  String get loginEmailLabel => 'Email';
+
+  @override
+  String get loginPasswordLabel => 'Password';
+
+  @override
+  String get loginSignIn => 'Sign In';
+
+  @override
+  String get loginEmailValidation => 'Enter your email';
+
+  @override
+  String get loginPasswordValidation => 'Enter your password';
+
+  @override
+  String get loginContactAdmin =>
+      'Contact your hospital administrator to get an account.';
+
+  @override
+  String get loginUnexpectedError => 'An unexpected error occurred.';
+
+  @override
+  String get adminPanelTitle => 'Admin';
+
+  @override
+  String get adminUserManagementTitle => 'User Management';
+
+  @override
+  String get adminUserManagementSubtitle =>
+      'Manage all admin, staff, and parent accounts';
+
+  @override
+  String get adminParentAccessTitle => 'Parent Access';
+
+  @override
+  String get adminParentAccessSubtitle => 'Link and unlink parents to babies';
+
+  @override
+  String get adminTransfersTitle => 'Baby Transfers';
+
+  @override
+  String get adminTransfersSubtitle =>
+      'Initiate and manage inter-hospital transfers';
+
+  @override
+  String get adminAuditTitle => 'Audit Events Log';
+
+  @override
+  String get adminAuditSubtitle =>
+      'View a log of sensitive actions in your hospital';
+
+  @override
+  String get userManagementTitle => 'User Management';
+
+  @override
+  String get addAccountFab => 'Add Account';
+
+  @override
+  String get noAccountsFound => 'No accounts found.';
+
+  @override
+  String get roleAll => 'All';
+
+  @override
+  String get roleAdmin => 'Admin';
+
+  @override
+  String get roleStaff => 'Staff';
+
+  @override
+  String get roleParent => 'Parent';
+
+  @override
+  String get deactivateAccountTitle => 'Deactivate Account';
+
+  @override
+  String get reactivateAccountTitle => 'Reactivate Account';
+
+  @override
+  String deactivateConfirmContent(String name, String role) {
+    return 'Deactivate $name ($role)? They will lose access immediately.';
+  }
+
+  @override
+  String reactivateConfirmContent(String name, String role) {
+    return 'Reactivate $name ($role)? They will regain access.';
+  }
+
+  @override
+  String get deactivatedLabel => 'Deactivated';
+
+  @override
+  String get selfLabel => '(you)';
+
+  @override
+  String get addAccountDialogTitle => 'Add Account';
+
+  @override
+  String get fullNameLabel => 'Full Name';
+
+  @override
+  String get roleLabel => 'Role';
+
+  @override
+  String get passwordMinLength => 'Min 8 characters';
+
+  @override
+  String get createLabel => 'Create';
+
+  @override
+  String loadingUsersError(String error) {
+    return 'Error loading users: $error';
+  }
+
+  @override
+  String get parentAccessTitle => 'Parent Access';
+
+  @override
+  String get currentLinksTitle => 'Current Links';
+
+  @override
+  String get noParentLinksYet => 'No parent links yet.';
+
+  @override
+  String get linkParentSectionTitle => 'Link a Parent to a Baby';
+
+  @override
+  String get findParentStep => 'Parent Account';
+
+  @override
+  String get parentEmailLabel => 'Parent email';
+
+  @override
+  String get searchLabel => 'Search';
+
+  @override
+  String get selectBabyStep => 'Baby Profile';
+
+  @override
+  String get linkParentButton => 'Link Parent to Baby';
+
+  @override
+  String get unlinkParentTitle => 'Unlink Parent';
+
+  @override
+  String unlinkConfirmContent(String parent, String baby) {
+    return 'Remove $parent\'s access to $baby?';
+  }
+
+  @override
+  String get parentLinkedSuccess => 'Parent linked successfully.';
+
+  @override
+  String get babyTransfersTitle => 'Baby Transfers';
+
+  @override
+  String get outgoingTab => 'Outgoing';
+
+  @override
+  String get incomingTab => 'Incoming';
+
+  @override
+  String get initiateTransferFab => 'Initiate Transfer';
+
+  @override
+  String get noOutgoingTransfers => 'No outgoing transfers.';
+
+  @override
+  String get noIncomingTransfers => 'No incoming transfers.';
+
+  @override
+  String get acceptLabel => 'Accept';
+
+  @override
+  String get rejectLabel => 'Reject';
+
+  @override
+  String get initiateTransferDialogTitle => 'Initiate Transfer';
+
+  @override
+  String get babyLabel => 'Baby';
+
+  @override
+  String get targetHospitalCodeLabel => 'Target Hospital Code';
+
+  @override
+  String get hospitalCodeHint => 'e.g. RSU-01';
+
+  @override
+  String get sendLabel => 'Send';
+
+  @override
+  String get auditEventsLogTitle => 'Audit Events Log';
+
+  @override
+  String get auditAllFilter => 'All';
+
+  @override
+  String get auditNoEvents => 'No events found.';
+
+  @override
+  String get auditEventBabyCreate => 'Baby Created';
+
+  @override
+  String get auditEventBabyEdit => 'Baby Edited';
+
+  @override
+  String get auditEventBabyDelete => 'Baby Deleted';
+
+  @override
+  String get auditEventMeasurementCreate => 'Measurement Recorded';
+
+  @override
+  String get auditEventMeasurementDelete => 'Measurement Deleted';
+
+  @override
+  String get auditEventExport => 'Data Export';
+
+  @override
+  String get auditEventAccountCreate => 'Account Created';
+
+  @override
+  String get auditEventAccountDeactivate => 'Account Deactivated';
+
+  @override
+  String get auditEventAccountReactivate => 'Account Reactivated';
+
+  @override
+  String get auditEventParentLink => 'Parent Linked';
+
+  @override
+  String get auditEventParentUnlink => 'Parent Unlinked';
+
+  @override
+  String get auditEventDeviceAdd => 'Device Connected';
+
+  @override
+  String get auditEventTransferCreate => 'Transfer Initiated';
+
+  @override
+  String get auditEventTransferAccept => 'Transfer Accepted';
+
+  @override
+  String get auditEventTransferReject => 'Transfer Rejected';
+
+  @override
+  String get parentDashboardTitle => 'Parent Dashboard';
+
+  @override
+  String get signOutTooltip => 'Sign Out';
+
+  @override
+  String get awaitingLinkageTitle => 'Awaiting linkage';
+
+  @override
+  String awaitingLinkageBody(String email) {
+    return 'Your account ($email) has not yet been linked to a baby by the hospital. Please contact your hospital staff.';
+  }
+
+  @override
+  String get measurementsSectionTitle => 'Measurements';
+
+  @override
+  String get noMeasurementsParent => 'No measurements yet.';
+
+  @override
+  String get settingsAccountTitle => 'Account';
+
+  @override
+  String get signOutLabel => 'Sign Out';
+
+  @override
+  String get couldNotLoadProfile => 'Could not load profile.';
+
+  @override
+  String get adminSearchUsersHint => 'Search users…';
+
+  @override
+  String get adminDeactivate => 'Deactivate';
+
+  @override
+  String get adminReactivate => 'Reactivate';
+
+  @override
+  String get adminErrorGeneric => 'Something went wrong. Please try again.';
+
+  @override
+  String get adminParentNotFound => 'Parent account not found.';
+
+  @override
+  String get adminLinkFailed => 'Failed to link parent to baby.';
+
+  @override
+  String get adminUnlinkFailed => 'Failed to remove link.';
+
+  @override
+  String get transferWarningTitle => 'Warning: Permanent Data Loss';
+
+  @override
+  String get transferWarningBody =>
+      'Once this transfer is accepted, your hospital will permanently lose access to this baby’s records and measurements. Export the data before proceeding.';
+
+  @override
+  String get transferWarningConfirm => 'I Understand, Continue';
+
+  @override
+  String get cancelTransfer => 'Cancel Transfer';
+
+  @override
+  String get adminEditUser => 'Edit User';
+
+  @override
+  String get adminEditUserTitle => 'Edit Account';
+
+  @override
+  String get adminSaveChanges => 'Save Changes';
+
+  @override
+  String get auditEventAccountEdit => 'Account Edited';
+
+  @override
+  String get auditEventTransferCancel => 'Transfer Cancelled';
+
+  @override
+  String get parentNoConnectionTitle => 'No Internet Connection';
+
+  @override
+  String get parentNoConnectionBody =>
+      'An internet connection is needed to load your baby\'s data for the first time. Please connect and try again.';
+
+  @override
+  String get parentSyncLabel => 'Sync';
+
+  @override
+  String get retryAction => 'Retry';
+
+  @override
+  String get transferInvalidHospitalCode => 'Incorrect hospital code.';
+
+  @override
+  String get transferSameHospitalError =>
+      'Cannot transfer to your own hospital.';
+
+  @override
+  String get transferConfirmTitle => 'Confirm Transfer';
+
+  @override
+  String get transferConfirmBabyLabel => 'Baby being transferred';
+
+  @override
+  String get transferConfirmYes => 'Yes, Continue';
+
+  @override
+  String get deviceUnpair => 'Unpair';
+
+  @override
+  String get linkTo => 'Link To';
+
+  @override
+  String get selectParentAccount => 'Select parent account';
+
+  @override
+  String get searchParentHint => 'Search parents…';
+
+  @override
+  String get searchLinksHint => 'Search links…';
+
+  @override
+  String get noParentAccountsFound => 'No parent accounts found.';
+
+  @override
+  String get linkParentFab => 'Link A Parent';
+
+  @override
+  String get adminLinkAlreadyExists =>
+      'This parent is already linked to this baby.';
 }

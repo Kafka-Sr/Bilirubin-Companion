@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
-import 'package:flutter/foundation.dart';
+import 'dart:typed_data';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:pointycastle/export.dart';
@@ -17,14 +17,14 @@ class AppLockService {
   final FlutterSecureStorage _storage;
   final LocalAuthentication _localAuth;
 
-  // ── Lock state ─────────────────────────────────────────────────────────────
+  // Lock state
 
   Future<bool> isLockEnabled() async {
     final v = await _storage.read(key: kAppLockEnabledAlias);
     return v == 'true';
   }
 
-  // ── PIN management ─────────────────────────────────────────────────────────
+  // PIN management
 
   /// Stores a SHA-256 + salt hash of [pin]. Enables lock automatically.
   Future<void> enablePin(String pin) async {
@@ -54,7 +54,7 @@ class AppLockService {
     return _constantTimeEquals(candidate, storedHash);
   }
 
-  // ── Biometric ──────────────────────────────────────────────────────────────
+  // Biometric
 
   /// Returns true if biometric hardware is available and enrolled.
   Future<bool> canUseBiometric() async {
@@ -83,7 +83,7 @@ class AppLockService {
     }
   }
 
-  // ── Helpers ────────────────────────────────────────────────────────────────
+  // Helpers
 
   Uint8List _hashPin(String pin, Uint8List salt) {
     final digest = SHA256Digest();
@@ -108,16 +108,4 @@ class AppLockService {
     }
     return diff == 0;
   }
-}
-
-/// Stub for platforms that don't support local_auth (Windows, Linux desktop).
-@visibleForTesting
-class NoOpAppLockService extends AppLockService {
-  NoOpAppLockService() : super();
-
-  @override
-  Future<bool> canUseBiometric() async => false;
-
-  @override
-  Future<bool> authenticateBiometric() async => false;
 }

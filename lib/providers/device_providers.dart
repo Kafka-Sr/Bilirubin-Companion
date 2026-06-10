@@ -1,30 +1,49 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bilirubin/device/device_repository.dart';
-import 'package:bilirubin/device/fake_device_repository.dart';
+import 'package:bilirubin/device/null_device_repository.dart';
 import 'package:bilirubin/device/pi_device_repository.dart';
 import 'package:bilirubin/models/device_connection_state.dart';
 import 'package:bilirubin/models/device_info.dart';
+import 'package:bilirubin/providers/audit_providers.dart';
 import 'package:bilirubin/providers/pi_discovery_providers.dart';
 import 'package:bilirubin/providers/baby_providers.dart';
 import 'package:bilirubin/providers/measurement_providers.dart';
 import 'package:bilirubin/providers/settings_providers.dart';
 
-/// The active [DeviceRepository] implementation (fake in v1).
+/// Derives the single "winning" base URL.
 ///
-/// Swap [FakeDeviceRepository] for [WifiDeviceRepository] or
-/// [BleDeviceRepository] in a future release.
-final deviceRepositoryProvider = Provider<DeviceRepository>((ref) {
-  final discoveredBeacons = ref.watch(piBeaconListProvider).valueOrNull ?? const [];
-  final discoveredBaseUrl = discoveredBeacons.isNotEmpty
-      ? discoveredBeacons.first.baseUrl
-      : '';
+/// Manual URL (saved by the user) takes priority over beacon auto-discovery.
+/// Beacon is only used as a fallback when no manual URL is stored — matching
+/// standard IoT app behaviour (Home Assistant, Hue, etc.).
+///
+/// Being a [Provider<String>], Riverpod only notifies dependents when the
+/// *value* changes. When a manual URL is set, [piBeaconListProvider] is not
+/// watched at all — beacon ticks have zero cost and cannot rebuild
+/// [deviceRepositoryProvider], eliminating the 10-second disconnect bug.
+final activeBaseUrlProvider = Provider<String>((ref) {
   final piBaseUrl = ref.watch(piBaseUrlProvider);
-  final baseUrl = discoveredBaseUrl.isNotEmpty ? discoveredBaseUrl : piBaseUrl;
-  final repo = baseUrl.isNotEmpty
-      ? PiDeviceRepository(baseUrl: baseUrl)
-      : FakeDeviceRepository();
-  ref.onDispose(repo.dispose);
-  return repo;
+  if (piBaseUrl.isNotEmpty) return piBaseUrl;
+  final discoveredBeacons =
+      ref.watch(piBeaconListProvider).valueOrNull ?? const [];
+  return discoveredBeacons.isNotEmpty ? discoveredBeacons.first.baseUrl : '';
+});
+
+/// The active [DeviceRepository] implementation.
+///
+/// Watches [activeBaseUrlProvider] (a String) rather than the raw beacon
+/// StreamProvider. Rebuilds only when the URL *value* changes.
+/// Auto-connects via [Future.microtask] whenever a new repo is created.
+final deviceRepositoryProvider = Provider<DeviceRepository>((ref) {
+  final baseUrl = ref.watch(activeBaseUrlProvider);
+
+  if (baseUrl.isNotEmpty) {
+    final repo = PiDeviceRepository(baseUrl: baseUrl);
+    ref.onDispose(repo.dispose);
+    Future.microtask(() => repo.connect());
+    return repo;
+  }
+
+  return NullDeviceRepository();
 });
 
 /// Live stream of device connection states.
@@ -40,8 +59,11 @@ final deviceInfoProvider = StreamProvider<DeviceInfo?>((ref) {
 /// Whether the "Show Previous Bilirubin" toggle is on.
 final showHistoryProvider = StateProvider<bool>((ref) => false);
 
+/// Whether the "Show Readings Outside 168 h" toggle is on.
+final showOutsideRangeProvider = StateProvider<bool>((ref) => false);
+
 /// Bridge: listens to incoming device measurements and persists them
-/// for the currently selected baby.
+/// for the currently selected baby. Also logs device connections to audit.
 ///
 /// This provider must be eagerly activated in [main.dart] via
 /// `ref.read(measurementBridgeProvider)` so that measurements are
@@ -49,10 +71,25 @@ final showHistoryProvider = StateProvider<bool>((ref) => false);
 final measurementBridgeProvider = Provider<void>((ref) {
   final repo = ref.watch(deviceRepositoryProvider);
   final measurementRepo = ref.watch(measurementRepositoryProvider);
+  String? loggedDeviceId;
 
   ref.listen<AsyncValue<DeviceConnectionState>>(
     connectionStateProvider,
-    (_, __) {}, // just keep the stream alive
+    (_, next) {
+      final state = next.valueOrNull;
+      if (state == DeviceConnectionState.connected) {
+        final info = ref.read(deviceInfoProvider).valueOrNull;
+        if (info != null && info.deviceId != loggedDeviceId) {
+          loggedDeviceId = info.deviceId;
+          ref.read(auditRepositoryProvider).logDeviceAdd(
+            info.deviceId,
+            deviceName: info.displayName,
+          );
+        }
+      } else {
+        loggedDeviceId = null;
+      }
+    },
   );
 
   // Subscribe to incoming measurements from the device.

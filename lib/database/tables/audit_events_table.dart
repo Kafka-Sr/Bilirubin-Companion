@@ -10,9 +10,15 @@ class AuditEvents extends Table {
   TextColumn get eventType => text()();
 
   // Optional foreign-key references (nullable — not all events relate to all entities).
-  IntColumn get babyId => integer().nullable()();
+  TextColumn get babyId => text().nullable()();
   TextColumn get measurementId => text().nullable()();
   TextColumn get deviceId => text().nullable()();
+
+  /// Hospital this event belongs to (for cloud-side RLS filtering).
+  TextColumn get hospitalId => text().nullable()();
+
+  /// Human-readable summary of the event.
+  TextColumn get message => text().nullable()();
 
   /// Arbitrary JSON payload for additional context.
   TextColumn get detailsJson => text().nullable()();

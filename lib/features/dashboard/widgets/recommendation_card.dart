@@ -22,7 +22,7 @@ class RecommendationCard extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // ── Coloured header bar ──────────────────────────────────────────
+          // Coloured header bar
           Container(
             color: zoneColor,
             padding:
@@ -36,7 +36,7 @@ class RecommendationCard extends ConsumerWidget {
               textAlign: TextAlign.center,
             ),
           ),
-          // ── Body ─────────────────────────────────────────────────────────
+          // Body
           Padding(
             padding: const EdgeInsets.all(16),
             child: zone == null
@@ -74,14 +74,12 @@ class RecommendationCard extends ConsumerWidget {
     switch (zone) {
       case BhutaniZone.low:
         return l10n.recommendationLow;
-      case BhutaniZone.intermediate:
-        return l10n.recommendationIntermediate;
+      case BhutaniZone.lowIntermediate:
+        return l10n.recommendationLowIntermediate;
       case BhutaniZone.highIntermediate:
         return l10n.recommendationHighIntermediate;
       case BhutaniZone.high:
         return l10n.recommendationHigh;
-      case BhutaniZone.veryHigh:
-        return l10n.recommendationVeryHigh;
     }
   }
 }

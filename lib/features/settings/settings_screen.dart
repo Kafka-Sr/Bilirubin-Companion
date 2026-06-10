@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:bilirubin/core/l10n/app_localizations.dart';
+import 'package:bilirubin/models/device_connection_state.dart';
 import 'package:bilirubin/models/pi_beacon.dart';
+import 'package:bilirubin/features/shared/pairing_status_icon.dart';
 import 'package:bilirubin/features/shared/pin_lock_screen.dart';
+import 'package:bilirubin/providers/auth_providers.dart';
+import 'package:bilirubin/providers/device_providers.dart';
 import 'package:bilirubin/providers/pi_discovery_providers.dart';
 import 'package:bilirubin/providers/settings_providers.dart';
+import 'package:bilirubin/providers/supabase_providers.dart';
 import 'package:bilirubin/security/app_lock_service.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -14,108 +20,153 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final isStaffOrAdmin = ref.watch(isStaffOrAdminProvider);
 
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/dashboard'),
+          onPressed: () => context.pop(),
         ),
         title: Text(l10n.settingsTitle),
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8),
-        children: const [
-          _PiLanSection(),
-          _WifiSection(),
-          _BleSection(),
-          _LanguageSection(),
-          _ThemeSection(),
-          _AppLockSection(),
+        children: [
+          const _AccountSection(),
+          if (isStaffOrAdmin) const _HotspotSection(),
+          const _LanguageSection(),
+          const _ThemeSection(),
+          if (isStaffOrAdmin) const _AppLockSection(),
         ],
       ),
     );
   }
 }
 
-// ── Raspberry Pi LAN ─────────────────────────────────────────────────────────
+// Account
 
-class _PiLanSection extends ConsumerStatefulWidget {
-  const _PiLanSection();
+class _AccountSection extends ConsumerWidget {
+  const _AccountSection();
 
   @override
-  ConsumerState<_PiLanSection> createState() => _PiLanSectionState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final profileAsync = ref.watch(userProfileProvider);
+    final user = ref.watch(supabaseUserProvider);
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
+    return _Section(
+      title: l10n.settingsAccountTitle,
+      icon: Icons.account_circle_outlined,
+      children: [
+        profileAsync.when(
+          loading: () => const LinearProgressIndicator(),
+          error: (_, __) => Text(l10n.couldNotLoadProfile),
+          data: (profile) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                profile?.fullName ?? user?.email ?? '—',
+                style: theme.textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 4),
+              Row(children: [
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: cs.primaryContainer,
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                  child: Text(
+                    (profile?.role ?? 'unknown').toUpperCase(),
+                    style: theme.textTheme.labelSmall
+                        ?.copyWith(color: cs.onPrimaryContainer),
+                  ),
+                ),
+              ]),
+              if (user?.email != null) ...[
+                const SizedBox(height: 4),
+                Text(user!.email!,
+                    style: theme.textTheme.bodySmall
+                        ?.copyWith(color: cs.outline)),
+              ],
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        OutlinedButton.icon(
+          icon: const Icon(Icons.logout, size: 18),
+          label: Text(l10n.signOutLabel),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: cs.error,
+            side: BorderSide(color: cs.error),
+          ),
+          onPressed: () async {
+            await Supabase.instance.client.auth.signOut();
+            // Router redirect will send to /login automatically.
+          },
+        ),
+      ],
+    );
+  }
 }
 
-class _PiLanSectionState extends ConsumerState<_PiLanSection> {
-  late final TextEditingController _baseUrlCtrl;
+// Hotspot Connection
+
+class _HotspotSection extends ConsumerStatefulWidget {
+  const _HotspotSection();
 
   @override
-  void initState() {
-    super.initState();
-    _baseUrlCtrl = TextEditingController(text: ref.read(piBaseUrlProvider));
-  }
+  ConsumerState<_HotspotSection> createState() => _HotspotSectionState();
+}
 
-  @override
-  void dispose() {
-    _baseUrlCtrl.dispose();
-    super.dispose();
+class _HotspotSectionState extends ConsumerState<_HotspotSection> {
+  PairingState _pairingState(DeviceConnectionState? state) {
+    if (state == DeviceConnectionState.connected) return PairingState.paired;
+    if (state == DeviceConnectionState.connecting ||
+        state == DeviceConnectionState.scanning) { return PairingState.pairing; }
+    return PairingState.notPaired;
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final connectionState = ref.watch(connectionStateProvider).valueOrNull;
     final beaconsAsync = ref.watch(piBeaconListProvider);
     final beacons = beaconsAsync.valueOrNull ?? const <PiBeacon>[];
 
     return _Section(
-      title: 'Raspberry Pi LAN',
+      title: l10n.settingsHotspotTitle,
       icon: Icons.router_outlined,
       children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Text(
+                l10n.settingsHotspotInstructions,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            PairingStatusIcon(state: _pairingState(connectionState), size: 20),
+          ],
+        ),
         if (beacons.isNotEmpty) ...[
+          const SizedBox(height: 12),
           _BeaconList(
             beacons: beacons,
             onUseBeacon: (beacon) {
-              _baseUrlCtrl.text = beacon.baseUrl;
               ref.read(piBaseUrlProvider.notifier).set(beacon.baseUrl);
             },
           ),
-          const SizedBox(height: 12),
         ],
-        TextField(
-          controller: _baseUrlCtrl,
-          keyboardType: TextInputType.url,
-          decoration: const InputDecoration(
-            labelText: 'Pi address or URL',
-            hintText: '192.168.1.50:8080 or http://raspi.local:8080',
-          ),
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            FilledButton.icon(
-              icon: const Icon(Icons.save_outlined),
-              label: const Text('Save Pi address'),
-              onPressed: () {
-                ref.read(piBaseUrlProvider.notifier).set(_baseUrlCtrl.text);
-              },
-            ),
-            const SizedBox(width: 12),
-            TextButton(
-              onPressed: () {
-                _baseUrlCtrl.clear();
-                ref.read(piBaseUrlProvider.notifier).clear();
-              },
-              child: const Text('Clear'),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'If the phone and Pi are on the same Wi-Fi network, the app can discover the Pi automatically by beacon. Supabase still stores the synced history.',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.outline,
-              ),
-        ),
       ],
     );
   }
@@ -132,6 +183,7 @@ class _BeaconList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       children: [
         for (final beacon in beacons)
@@ -142,7 +194,7 @@ class _BeaconList extends StatelessWidget {
             subtitle: Text('${beacon.baseUrl} • ${beacon.deviceId}'),
             trailing: TextButton(
               onPressed: () => onUseBeacon(beacon),
-              child: const Text('Use'),
+              child: Text(l10n.settingsPiBeaconUse),
             ),
           ),
       ],
@@ -150,79 +202,7 @@ class _BeaconList extends StatelessWidget {
   }
 }
 
-// ── Wi-Fi ─────────────────────────────────────────────────────────────────────
-
-class _WifiSection extends StatefulWidget {
-  const _WifiSection();
-
-  @override
-  State<_WifiSection> createState() => _WifiSectionState();
-}
-
-class _WifiSectionState extends State<_WifiSection> {
-  final _ssidCtrl = TextEditingController();
-  final _passCtrl = TextEditingController();
-  bool _obscure = true;
-
-  @override
-  void dispose() {
-    _ssidCtrl.dispose();
-    _passCtrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return _Section(
-      title: l10n.settingsWifi,
-      icon: Icons.wifi,
-      children: [
-        TextField(
-          controller: _ssidCtrl,
-          decoration: InputDecoration(labelText: l10n.settingsWifiSsid),
-        ),
-        const SizedBox(height: 12),
-        TextField(
-          controller: _passCtrl,
-          obscureText: _obscure,
-          decoration: InputDecoration(
-            labelText: l10n.settingsWifiPassword,
-            suffixIcon: IconButton(
-              icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility),
-              onPressed: () => setState(() => _obscure = !_obscure),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// ── BLE ───────────────────────────────────────────────────────────────────────
-
-class _BleSection extends StatelessWidget {
-  const _BleSection();
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return _Section(
-      title: l10n.settingsBle,
-      icon: Icons.bluetooth,
-      children: [
-        Text(
-          l10n.settingsBleNotAvailable,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.outline,
-              ),
-        ),
-      ],
-    );
-  }
-}
-
-// ── Language ──────────────────────────────────────────────────────────────────
+// Language
 
 class _LanguageSection extends ConsumerWidget {
   const _LanguageSection();
@@ -262,7 +242,7 @@ class _LanguageSection extends ConsumerWidget {
   }
 }
 
-// ── Theme ─────────────────────────────────────────────────────────────────────
+// Theme
 
 class _ThemeSection extends ConsumerWidget {
   const _ThemeSection();
@@ -284,30 +264,30 @@ class _ThemeSection extends ConsumerWidget {
             onSelectionChanged: (s) =>
                 ref.read(appThemeModeProvider.notifier).set(s.first),
             segments: [
-            ButtonSegment(
-              value: ThemeMode.system,
-              label: Text(l10n.settingsThemeSystem),
-              icon: const Icon(Icons.brightness_auto),
-            ),
-            ButtonSegment(
-              value: ThemeMode.light,
-              label: Text(l10n.settingsThemeLight),
-              icon: const Icon(Icons.light_mode),
-            ),
-            ButtonSegment(
-              value: ThemeMode.dark,
-              label: Text(l10n.settingsThemeDark),
-              icon: const Icon(Icons.dark_mode),
-            ),
-          ],
-        ),
+              ButtonSegment(
+                value: ThemeMode.system,
+                label: Text(l10n.settingsThemeSystem),
+                icon: const Icon(Icons.brightness_auto),
+              ),
+              ButtonSegment(
+                value: ThemeMode.light,
+                label: Text(l10n.settingsThemeLight),
+                icon: const Icon(Icons.light_mode),
+              ),
+              ButtonSegment(
+                value: ThemeMode.dark,
+                label: Text(l10n.settingsThemeDark),
+                icon: const Icon(Icons.dark_mode),
+              ),
+            ],
+          ),
         ),
       ],
     );
   }
 }
 
-// ── App lock ──────────────────────────────────────────────────────────────────
+// App lock
 
 class _AppLockSection extends ConsumerWidget {
   const _AppLockSection();
@@ -350,7 +330,7 @@ class _AppLockSection extends ConsumerWidget {
   }
 }
 
-// ── Shared section wrapper ────────────────────────────────────────────────────
+// Shared section wrapper
 
 class _Section extends StatelessWidget {
   const _Section({

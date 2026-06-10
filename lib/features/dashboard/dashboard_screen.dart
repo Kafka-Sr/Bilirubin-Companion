@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:bilirubin/core/l10n/app_localizations.dart';
 import 'package:bilirubin/features/dashboard/widgets/baby_metadata_section.dart';
 import 'package:bilirubin/features/dashboard/widgets/baby_selector.dart';
@@ -9,7 +10,35 @@ import 'package:bilirubin/features/dashboard/widgets/empty_state.dart';
 import 'package:bilirubin/features/dashboard/widgets/image_carousel.dart';
 import 'package:bilirubin/features/dashboard/widgets/latest_result_card.dart';
 import 'package:bilirubin/features/dashboard/widgets/recommendation_card.dart';
+import 'package:bilirubin/providers/auth_providers.dart';
 import 'package:bilirubin/providers/baby_providers.dart';
+import 'package:bilirubin/providers/sync_providers.dart';
+
+class _AppBarPill extends StatelessWidget {
+  const _AppBarPill({
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton(
+      onPressed: onPressed,
+      style: OutlinedButton.styleFrom(
+        shape: const CircleBorder(),
+        padding: EdgeInsets.zero,
+        minimumSize: const Size(48, 48),
+        maximumSize: const Size(48, 48),
+      ),
+      child: Icon(icon, size: 20),
+    );
+  }
+}
 
 /// Main dashboard screen — composes all dashboard widgets.
 class DashboardScreen extends ConsumerWidget {
@@ -21,8 +50,27 @@ class DashboardScreen extends ConsumerWidget {
     final babiesAsync = ref.watch(babiesListProvider);
     final baby = ref.watch(selectedBabyProvider);
 
+    final isAdmin = ref.watch(isAdminProvider);
+
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.dashboardTitle)),
+      appBar: AppBar(
+        title: Text(l10n.dashboardTitle),
+        actions: [
+          if (isAdmin)
+            _AppBarPill(
+              icon: Icons.admin_panel_settings_outlined,
+              label: l10n.adminPanelTitle,
+              onPressed: () => context.push('/admin'),
+            ),
+          const SizedBox(width: 8),
+          _AppBarPill(
+            icon: Icons.settings_outlined,
+            label: l10n.settingsTitle,
+            onPressed: () => context.push('/settings'),
+          ),
+          const SizedBox(width: 16),
+        ],
+      ),
       body: babiesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
@@ -33,7 +81,15 @@ class DashboardScreen extends ConsumerWidget {
 
           return RefreshIndicator(
             onRefresh: () async {
-              // Re-read stream — no-op but satisfies the gesture.
+              ref.read(syncStatusProvider.notifier).set(SyncStatus.syncing);
+              try {
+                final sync = ref.read(syncServiceProvider);
+                await sync.drainOutbox();
+                await sync.pullChanges();
+                ref.read(syncStatusProvider.notifier).set(SyncStatus.idle);
+              } catch (_) {
+                ref.read(syncStatusProvider.notifier).set(SyncStatus.error);
+              }
             },
             child: CustomScrollView(
               slivers: [
@@ -58,21 +114,21 @@ class DashboardScreen extends ConsumerWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                ImageCarousel(babyId: baby.id, embedded: true),
+                                ImageCarousel(babyId: baby.babyId, embedded: true),
                                 const SizedBox(height: 1),
-                                const LatestResultCard(embedded: true),
+                                LatestResultCard(babyId: baby.babyId, embedded: true),
                               ],
                             ),
                           ),
                         ),
 
-                        // 5. Bhutani chart
-                        BhutaniChart(babyId: baby.id),
+                        // 4. Bhutani chart
+                        BhutaniChart(babyId: baby.babyId),
 
-                        // 6. Baby metadata
+                        // 5. Baby metadata
                         BabyMetadataSection(baby: baby),
 
-                        // 7. Recommendation
+                        // 6. Recommendation
                         const RecommendationCard(),
 
                         const SizedBox(height: 24),
