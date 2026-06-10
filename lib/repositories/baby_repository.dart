@@ -158,7 +158,7 @@ class BabyRepository {
     }
   }
 
-  // ── Mapper ─────────────────────────────────────────────────────────────────
+  // Mapper
 
   static domain.Baby _toModel(Baby row) => domain.Baby(
         babyId: row.babyId,

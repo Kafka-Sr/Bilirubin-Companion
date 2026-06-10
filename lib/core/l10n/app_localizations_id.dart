@@ -113,7 +113,7 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get metadataEdit => 'Ubah';
+  String get metadataEdit => 'Ubah Data';
 
   @override
   String bilirubinValue(String value) {
@@ -435,7 +435,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get loginUnexpectedError => 'Terjadi kesalahan yang tidak terduga.';
 
   @override
-  String get adminPanelTitle => 'Dasbor Admin';
+  String get adminPanelTitle => 'Admin';
 
   @override
   String get adminUserManagementTitle => 'Manajemen Pengguna';

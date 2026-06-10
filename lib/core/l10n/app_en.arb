@@ -47,7 +47,7 @@
       "hours": { "type": "String" }
     }
   },
-  "metadataEdit": "Edit Baby",
+  "metadataEdit": "Edit Data",
 
   "bilirubinValue": "{value} mg/dL",
   "@bilirubinValue": {
@@ -194,7 +194,7 @@
   "loginContactAdmin": "Contact your hospital administrator to get an account.",
   "loginUnexpectedError": "An unexpected error occurred.",
 
-  "adminPanelTitle": "Admin Panel",
+  "adminPanelTitle": "Admin",
   "adminUserManagementTitle": "User Management",
   "adminUserManagementSubtitle": "Manage all admin, staff, and parent accounts",
   "adminParentAccessTitle": "Parent Access",

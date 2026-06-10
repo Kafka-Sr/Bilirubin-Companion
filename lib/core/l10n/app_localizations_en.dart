@@ -112,7 +112,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get metadataEdit => 'Edit Baby';
+  String get metadataEdit => 'Edit Data';
 
   @override
   String bilirubinValue(String value) {
@@ -432,7 +432,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginUnexpectedError => 'An unexpected error occurred.';
 
   @override
-  String get adminPanelTitle => 'Admin Panel';
+  String get adminPanelTitle => 'Admin';
 
   @override
   String get adminUserManagementTitle => 'User Management';

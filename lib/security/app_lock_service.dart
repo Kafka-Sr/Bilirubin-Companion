@@ -17,14 +17,14 @@ class AppLockService {
   final FlutterSecureStorage _storage;
   final LocalAuthentication _localAuth;
 
-  // ── Lock state ─────────────────────────────────────────────────────────────
+  // Lock state
 
   Future<bool> isLockEnabled() async {
     final v = await _storage.read(key: kAppLockEnabledAlias);
     return v == 'true';
   }
 
-  // ── PIN management ─────────────────────────────────────────────────────────
+  // PIN management
 
   /// Stores a SHA-256 + salt hash of [pin]. Enables lock automatically.
   Future<void> enablePin(String pin) async {
@@ -54,7 +54,7 @@ class AppLockService {
     return _constantTimeEquals(candidate, storedHash);
   }
 
-  // ── Biometric ──────────────────────────────────────────────────────────────
+  // Biometric
 
   /// Returns true if biometric hardware is available and enrolled.
   Future<bool> canUseBiometric() async {
@@ -83,7 +83,7 @@ class AppLockService {
     }
   }
 
-  // ── Helpers ────────────────────────────────────────────────────────────────
+  // Helpers
 
   Uint8List _hashPin(String pin, Uint8List salt) {
     final digest = SHA256Digest();

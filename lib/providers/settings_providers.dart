@@ -3,14 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bilirubin/core/constants.dart';
 
-// ── SharedPreferences singleton ───────────────────────────────────────────────
+// SharedPreferences singleton
 
 final sharedPreferencesProvider =
     Provider<SharedPreferences>((ref) => throw UnimplementedError(
           'sharedPreferencesProvider must be overridden in ProviderScope.',
         ));
 
-// ── Theme mode ────────────────────────────────────────────────────────────────
+// Theme mode
 
 class _ThemeModeNotifier extends StateNotifier<ThemeMode> {
   _ThemeModeNotifier(this._prefs) : super(_load(_prefs));
@@ -36,7 +36,7 @@ final appThemeModeProvider =
   return _ThemeModeNotifier(ref.watch(sharedPreferencesProvider));
 });
 
-// ── Locale ────────────────────────────────────────────────────────────────────
+// Locale
 
 class _LocaleNotifier extends StateNotifier<Locale> {
   _LocaleNotifier(this._prefs) : super(_load(_prefs));
@@ -61,7 +61,7 @@ final appLocaleProvider = StateNotifierProvider<_LocaleNotifier, Locale>((ref) {
   return _LocaleNotifier(ref.watch(sharedPreferencesProvider));
 });
 
-// ── Pi LAN endpoint ──────────────────────────────────────────────────────────
+// Pi LAN endpoint
 
 class _PiBaseUrlNotifier extends StateNotifier<String> {
   _PiBaseUrlNotifier(this._prefs)
@@ -86,7 +86,7 @@ final piBaseUrlProvider =
   return _PiBaseUrlNotifier(ref.watch(sharedPreferencesProvider));
 });
 
-// ── App lock toggle ───────────────────────────────────────────────────────────
+// App lock toggle
 
 /// Simple in-memory flag for whether the lock screen should be shown.
 /// The authoritative "lock enabled" state lives in flutter_secure_storage

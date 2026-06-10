@@ -25,7 +25,7 @@ class AuditRepository {
   final LocalSyncOutbox? _outbox;
   final _uuid = const Uuid();
 
-  // ── Baby ───────────────────────────────────────────────────────────────────
+  // Baby
 
   Future<void> logBabyCreate(
     String babyId, {
@@ -93,7 +93,7 @@ class AuditRepository {
     );
   }
 
-  // ── Measurement ────────────────────────────────────────────────────────────
+  // Measurement
 
   Future<void> logMeasurementCreate(
     String measurementId,
@@ -120,7 +120,7 @@ class AuditRepository {
     );
   }
 
-  // ── Export ─────────────────────────────────────────────────────────────────
+  // Export
 
   Future<void> logExport(
     String babyId, {
@@ -139,7 +139,7 @@ class AuditRepository {
     );
   }
 
-  // ── Account ────────────────────────────────────────────────────────────────
+  // Account
 
   Future<void> logAccountCreate(
     String targetUserId, {
@@ -210,7 +210,7 @@ class AuditRepository {
     );
   }
 
-  // ── Parent access ──────────────────────────────────────────────────────────
+  // Parent access
 
   Future<void> logParentLink(
     String parentId,
@@ -246,7 +246,7 @@ class AuditRepository {
     );
   }
 
-  // ── Device ─────────────────────────────────────────────────────────────────
+  // Device
 
   Future<void> logDeviceAdd(String deviceId, {required String deviceName}) {
     final details = <String, dynamic>{
@@ -260,7 +260,7 @@ class AuditRepository {
     );
   }
 
-  // ── Transfer ───────────────────────────────────────────────────────────────
+  // Transfer
 
   Future<void> logTransferCreate(
     String babyId, {
@@ -330,7 +330,7 @@ class AuditRepository {
     );
   }
 
-  // ── Private ────────────────────────────────────────────────────────────────
+  // Private
 
   Future<void> _insert({
     required String eventType,

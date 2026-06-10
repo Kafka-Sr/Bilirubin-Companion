@@ -37,7 +37,7 @@
   "metadataDob": "Tanggal Lahir",
   "metadataAge": "Usia",
   "metadataAgeHours": "{hours} jam",
-  "metadataEdit": "Ubah",
+  "metadataEdit": "Ubah Data",
 
   "bilirubinValue": "{value} mg/dL",
 
@@ -154,7 +154,7 @@
   "loginContactAdmin": "Hubungi administrator rumah sakit Anda untuk mendapatkan akun.",
   "loginUnexpectedError": "Terjadi kesalahan yang tidak terduga.",
 
-  "adminPanelTitle": "Dasbor Admin",
+  "adminPanelTitle": "Admin",
   "adminUserManagementTitle": "Manajemen Pengguna",
   "adminUserManagementSubtitle": "Kelola semua akun admin, staf, dan orang tua",
   "adminParentAccessTitle": "Akses Orang Tua",

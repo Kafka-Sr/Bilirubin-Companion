@@ -4,7 +4,7 @@
 import 'package:bilirubin/models/bhutani_zone.dart';
 import 'package:bilirubin/core/constants.dart';
 
-// ── Boundary curves ───────────────────────────────────────────────────────────
+// Boundary curves
 // Each list is a piecewise-linear curve of (ageHours, bilirubinMgDl) anchors.
 // Values represent the LOWER threshold of the zone above the named percentile.
 // Curves plateau after ~96 h (dashed region in the Bhutani nomogram image).
@@ -51,7 +51,7 @@ const List<(double, double)> kBoundaryHighIntermediate = [
   (168, 12.5),
 ];
 
-// ── Public API ────────────────────────────────────────────────────────────────
+// Public API
 
 /// Linearly interpolates [bilirubinMgDl] threshold from [curve] at [ageHours].
 ///

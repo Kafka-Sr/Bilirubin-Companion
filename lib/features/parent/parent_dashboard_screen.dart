@@ -92,7 +92,7 @@ class ParentDashboardScreen extends ConsumerWidget {
   }
 }
 
-// ── Baby selector row ─────────────────────────────────────────────────────────
+// Baby selector row
 
 class _ParentBabySelector extends ConsumerStatefulWidget {
   const _ParentBabySelector();
@@ -167,7 +167,7 @@ class _ParentBabySelectorState extends ConsumerState<_ParentBabySelector> {
   }
 }
 
-// ── Offline warning ───────────────────────────────────────────────────────────
+// Offline warning
 
 class _OfflineWarning extends StatelessWidget {
   const _OfflineWarning({required this.onRetry});
@@ -208,7 +208,7 @@ class _OfflineWarning extends StatelessWidget {
   }
 }
 
-// ── Sync pill ─────────────────────────────────────────────────────────────────
+// Sync pill
 
 class _ParentSyncPill extends ConsumerWidget {
   const _ParentSyncPill();
@@ -262,7 +262,7 @@ class _ParentSyncPill extends ConsumerWidget {
   }
 }
 
-// ── Baby pill variants ────────────────────────────────────────────────────────
+// Baby pill variants
 
 class _StaticPill extends StatelessWidget {
   const _StaticPill({required this.baby});

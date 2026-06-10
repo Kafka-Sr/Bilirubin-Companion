@@ -42,7 +42,7 @@ class MeasurementRepository {
   final AuditRepository? _audit;
   final _imageCache = <String, Uint8List>{};
 
-  // ── Write ──────────────────────────────────────────────────────────────────
+  // Write
 
   /// Processes an incoming measurement event for a specific [baby].
   ///
@@ -96,7 +96,7 @@ class MeasurementRepository {
     });
   }
 
-  // ── Read ───────────────────────────────────────────────────────────────────
+  // Read
 
   Stream<List<domain.Measurement>> watchByBaby(String babyId) =>
       _db.measurementsDao
@@ -141,7 +141,7 @@ class MeasurementRepository {
     }
   }
 
-  // ── Delete ─────────────────────────────────────────────────────────────────
+  // Delete
 
   Future<void> delete(String measurementId) async {
     // Look up the row before deleting (need imageRef and babyId).
@@ -157,7 +157,7 @@ class MeasurementRepository {
     await _queue('delete', {'measurement_id': measurementId});
   }
 
-  // ── Private helpers ────────────────────────────────────────────────────────
+  // Private helpers
 
   Future<String> _persistImage(String measurementId, Uint8List raw) async {
     final encrypted = await _encryption.encrypt(raw);
@@ -177,7 +177,7 @@ class MeasurementRepository {
     return File(p.join(dir.path, safe));
   }
 
-  // ── Mapper ─────────────────────────────────────────────────────────────────
+  // Mapper
 
   static domain.Measurement _toModel(Measurement row) => domain.Measurement(
         measurementId: row.measurementId,

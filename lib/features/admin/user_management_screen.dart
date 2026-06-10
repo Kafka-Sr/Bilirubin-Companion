@@ -190,7 +190,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
 
 }
 
-// ── Role filter bar ───────────────────────────────────────────────────────────
+// Role filter bar
 
 class _RoleFilterBar extends StatelessWidget {
   const _RoleFilterBar({required this.selected, required this.onChanged});
@@ -224,7 +224,7 @@ class _RoleFilterBar extends StatelessWidget {
   }
 }
 
-// ── User tile ─────────────────────────────────────────────────────────────────
+// User tile
 
 class _UserTile extends StatelessWidget {
   const _UserTile({
@@ -355,7 +355,7 @@ class _RoleBadge extends StatelessWidget {
   }
 }
 
-// ── Add account dialog ────────────────────────────────────────────────────────
+// Add account dialog
 
 class _AddAccountDialog extends ConsumerStatefulWidget {
   const _AddAccountDialog({required this.ref});
@@ -513,7 +513,7 @@ class _AddAccountDialogState extends ConsumerState<_AddAccountDialog> {
   }
 }
 
-// ── Edit account dialog ───────────────────────────────────────────────────────
+// Edit account dialog
 
 class _EditAccountDialog extends ConsumerStatefulWidget {
   const _EditAccountDialog({required this.ref, required this.user});

@@ -20,7 +20,7 @@ class EncryptionService {
   final FlutterSecureStorage _storage;
   Uint8List? _cachedKey;
 
-  // ── Public API ─────────────────────────────────────────────────────────────
+  // Public API
 
   /// Encrypts [plaintext] and returns the combined IV + ciphertext + tag blob.
   Future<Uint8List> encrypt(Uint8List plaintext) async {
@@ -52,7 +52,7 @@ class EncryptionService {
     return cipher.process(ciphertextWithTag);
   }
 
-  // ── Private helpers ────────────────────────────────────────────────────────
+  // Private helpers
 
   Future<Uint8List> _getOrCreateKey() async {
     if (_cachedKey != null) return _cachedKey!;

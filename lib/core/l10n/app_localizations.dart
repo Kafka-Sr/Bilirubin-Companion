@@ -287,7 +287,7 @@ abstract class AppLocalizations {
   /// No description provided for @metadataEdit.
   ///
   /// In en, this message translates to:
-  /// **'Edit Baby'**
+  /// **'Edit Data'**
   String get metadataEdit;
 
   /// No description provided for @bilirubinValue.
@@ -893,7 +893,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminPanelTitle.
   ///
   /// In en, this message translates to:
-  /// **'Admin Panel'**
+  /// **'Admin'**
   String get adminPanelTitle;
 
   /// No description provided for @adminUserManagementTitle.
